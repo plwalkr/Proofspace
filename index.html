@@ -1,2219 +1,859 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ProofSpace • Astral Forge</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
-
-    :root {
-      --bg: #060913;
-      --bg-2: #0c1224;
-      --panel: rgba(16, 22, 40, 0.84);
-      --panel-solid: #10172d;
-      --panel-soft: rgba(255, 255, 255, 0.05);
-      --line: rgba(255, 255, 255, 0.10);
-      --line-strong: rgba(255, 255, 255, 0.18);
-      --text: #f3f7ff;
-      --muted: #aeb9d7;
-      --cyan: #66f0ff;
-      --violet: #b86bff;
-      --gold: #ffd66d;
-      --green: #71f8a3;
-      --red: #ff7e9b;
-      --shadow: 0 24px 70px rgba(0,0,0,0.45);
-      --radius-xl: 28px;
-      --radius-lg: 22px;
-      --radius-md: 16px;
-      --radius-sm: 12px;
-      --grad-main: linear-gradient(135deg, rgba(102,240,255,0.95), rgba(184,107,255,0.95));
-      --grad-soft: linear-gradient(135deg, rgba(102,240,255,0.12), rgba(184,107,255,0.12));
-      --chip: rgba(255,255,255,0.06);
-    }
-
-    body.light {
-      --bg: #edf4ff;
-      --bg-2: #f7fbff;
-      --panel: rgba(255, 255, 255, 0.92);
-      --panel-solid: #ffffff;
-      --panel-soft: rgba(15, 23, 42, 0.04);
-      --line: rgba(15, 23, 42, 0.10);
-      --line-strong: rgba(15, 23, 42, 0.18);
-      --text: #10182a;
-      --muted: #58657f;
-      --shadow: 0 20px 48px rgba(58, 77, 120, 0.15);
-      --chip: rgba(15,23,42,0.04);
-    }
-
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; min-height: 100%; }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 15% 0%, rgba(102,240,255,0.16), transparent 26%),
-        radial-gradient(circle at 100% 0%, rgba(184,107,255,0.18), transparent 30%),
-        radial-gradient(circle at 50% 120%, rgba(255,214,109,0.10), transparent 22%),
-        var(--bg);
-      overflow-x: hidden;
-      transition: background .25s ease, color .25s ease;
-    }
-
-    canvas#particles {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-      pointer-events: none;
-      opacity: 0.75;
-    }
-
-    .aurora {
-      position: fixed;
-      inset: auto -10% -18% -10%;
-      height: 42vh;
-      z-index: -1;
-      filter: blur(70px);
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 20% 50%, rgba(102,240,255,0.14), transparent 28%),
-        radial-gradient(circle at 55% 60%, rgba(184,107,255,0.16), transparent 24%),
-        radial-gradient(circle at 78% 48%, rgba(113,248,163,0.10), transparent 22%);
-      animation: auroraShift 10s ease-in-out infinite alternate;
-    }
-
-    @keyframes auroraShift {
-      from { transform: translateY(0) scale(1); }
-      to   { transform: translateY(-18px) scale(1.03); }
-    }
-
-    .shell {
-      width: min(1420px, calc(100% - 24px));
-      margin: 0 auto;
-      padding-bottom: 60px;
-    }
-
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      backdrop-filter: blur(16px);
-      background: rgba(6, 9, 19, 0.64);
-      border-bottom: 1px solid var(--line);
-    }
-
-    body.light .header { background: rgba(237, 244, 255, 0.72); }
-
-    .header-inner {
-      width: min(1420px, calc(100% - 24px));
-      margin: 0 auto;
-      padding: 16px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      min-width: 0;
-    }
-
-    .brand-mark {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: var(--grad-main);
-      color: #09111d;
-      font-size: 31px;
-      font-weight: 900;
-      box-shadow: 0 0 34px rgba(102,240,255,0.30);
-      flex: 0 0 auto;
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(24px, 3vw, 34px);
-      letter-spacing: -0.05em;
-      line-height: 1;
-    }
-
-    .brand-copy {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-
-    .version {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      background: var(--grad-soft);
-      border: 1px solid rgba(102,240,255,0.18);
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    button, input, select, textarea {
-      font: inherit;
-    }
-
-    .btn {
-      border: 1px solid var(--line);
-      background: var(--panel);
-      color: var(--text);
-      padding: 12px 16px;
-      border-radius: 999px;
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
-      box-shadow: var(--shadow);
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      border-color: rgba(102,240,255,0.40);
-    }
-
-    .btn.primary {
-      background: var(--grad-main);
-      color: #09111d;
-      border-color: transparent;
-      font-weight: 800;
-    }
-
-    .btn.secondary {
-      background: transparent;
-      box-shadow: none;
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: 1.18fr .82fr;
-      gap: 18px;
-      padding: 28px 0 18px;
-    }
-
-    .card, .panel, .metric, .modal-shell, .debug-drawer, .debug-fab {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      background: var(--panel);
-    }
-
-    .hero-main {
-      position: relative;
-      overflow: hidden;
-      padding: 28px;
-    }
-
-    .hero-main::before {
-      content: "";
-      position: absolute;
-      inset: -16% auto auto -8%;
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(102,240,255,0.18), transparent 60%);
-      pointer-events: none;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--cyan);
-      font-weight: 800;
-      margin-bottom: 14px;
-    }
-
-    .hero-title {
-      margin: 0;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(34px, 4.8vw, 58px);
-      line-height: .95;
-      letter-spacing: -0.06em;
-      max-width: 12ch;
-    }
-
-    .hero-copy {
-      margin: 16px 0 0;
-      color: var(--muted);
-      line-height: 1.75;
-      max-width: 64ch;
-      font-size: 16px;
-    }
-
-    .hero-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .pill {
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: var(--chip);
-      padding: 10px 14px;
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .hero-side {
-      display: grid;
-      gap: 18px;
-    }
-
-    .side-card {
-      padding: 22px;
-    }
-
-    .side-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 19px;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .side-copy {
-      color: var(--muted);
-      line-height: 1.7;
-      font-size: 14px;
-    }
-
-    .mission-box {
-      margin-top: 14px;
-      padding: 14px;
-      border-radius: 18px;
-      background: rgba(0,0,0,0.14);
-      border: 1px solid var(--line);
-      min-height: 96px;
-      line-height: 1.65;
-      color: var(--muted);
-      white-space: pre-wrap;
-    }
-
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 18px;
-      margin: 8px 0 22px;
-    }
-
-    .metric {
-      padding: 18px;
-      border-radius: 24px;
-      background: var(--panel);
-    }
-
-    .metric-label {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--muted);
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .metric-value {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(24px, 3vw, 34px);
-      line-height: 1;
-      letter-spacing: -0.05em;
-      font-weight: 800;
-    }
-
-    .metric-note {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 8px;
-    }
-
-    .workbench {
-      display: grid;
-      grid-template-columns: 1.16fr .84fr;
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-
-    .panel {
-      padding: 20px;
-    }
-
-    .panel-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .panel-title h2 {
-      margin: 0;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 22px;
-      letter-spacing: -0.03em;
-    }
-
-    .panel-sub {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.65;
-      margin-top: 6px;
-    }
-
-    .toolbar-grid {
-      display: grid;
-      grid-template-columns: 1.3fr repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      align-items: center;
-    }
-
-    .field, .select, .textarea {
-      width: 100%;
-      background: rgba(0,0,0,0.14);
-      color: var(--text);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 15px 16px;
-      outline: none;
-    }
-
-    .textarea {
-      min-height: 120px;
-      resize: vertical;
-      line-height: 1.65;
-    }
-
-    .field:focus, .select:focus, .textarea:focus {
-      border-color: rgba(102,240,255,0.52);
-      box-shadow: 0 0 0 3px rgba(102,240,255,0.12);
-    }
-
-    .chip-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .chip {
-      border: 1px solid var(--line);
-      background: var(--chip);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-size: 13px;
-      font-weight: 800;
-      transition: transform .16s ease, border-color .16s ease, background .16s ease;
-    }
-
-    .chip.active {
-      background: var(--grad-soft);
-      border-color: rgba(102,240,255,0.32);
-    }
-
-    .chip:hover { transform: translateY(-1px); }
-
-    .formula-grid {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      margin-top: 16px;
-    }
-
-    .lab-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .lab-result {
-      min-height: 92px;
-      border-radius: 18px;
-      background: rgba(0,0,0,0.14);
-      border: 1px solid var(--line);
-      padding: 16px;
-      white-space: pre-wrap;
-      line-height: 1.6;
-      color: var(--muted);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
-
-    .mini-list {
-      display: grid;
-      gap: 12px;
-      margin-top: 14px;
-      max-height: 360px;
-      overflow: auto;
-      padding-right: 4px;
-    }
-
-    .history-item {
-      padding: 14px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: rgba(0,0,0,0.12);
-    }
-
-    .history-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 700;
-    }
-
-    .history-body {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      line-height: 1.55;
-      color: var(--text);
-      font-size: 13px;
-      white-space: pre-wrap;
-    }
-
-    .proof-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 18px;
-    }
-
-    .proof-card {
-      position: relative;
-      overflow: hidden;
-      border-radius: 24px;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      padding: 20px;
-      cursor: pointer;
-      box-shadow: var(--shadow);
-      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
-      min-height: 266px;
-    }
-
-    .proof-card::before {
-      content: "";
-      position: absolute;
-      inset: auto auto -70px -55px;
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(102,240,255,0.15), transparent 64%);
-      pointer-events: none;
-      transition: transform .22s ease;
-    }
-
-    .proof-card:hover {
-      transform: translateY(-6px) scale(1.01);
-      box-shadow: 0 28px 68px rgba(0,0,0,0.50);
-      border-color: rgba(184,107,255,0.44);
-    }
-
-    .proof-card:hover::before { transform: scale(1.14); }
-
-    .proof-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .proof-icon {
-      font-size: 40px;
-      line-height: 1;
-    }
-
-    .tag-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .tag {
-      padding: 7px 10px;
-      border-radius: 999px;
-      background: var(--chip);
-      border: 1px solid var(--line);
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .proof-title {
-      margin: 18px 0 10px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 24px;
-      line-height: 1.04;
-      letter-spacing: -0.04em;
-    }
-
-    .proof-formula {
-      padding: 14px;
-      border-radius: 16px;
-      background: rgba(0,0,0,0.16);
-      border: 1px solid rgba(102,240,255,0.14);
-      color: var(--cyan);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      overflow-x: auto;
-      font-size: 18px;
-      margin: 14px 0;
-      white-space: nowrap;
-    }
-
-    .proof-copy {
-      color: var(--muted);
-      line-height: 1.67;
-      font-size: 14px;
-    }
-
-    .proof-footer {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--line);
-      background: transparent;
-      color: var(--text);
-      flex: 0 0 auto;
-    }
-
-    .icon-btn.active {
-      background: rgba(255,126,155,0.12);
-      border-color: rgba(255,126,155,0.40);
-    }
-
-    .section-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 12px;
-      margin: 6px 0 18px;
-    }
-
-    .section-head h2 {
-      margin: 0;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 26px;
-      letter-spacing: -0.04em;
-    }
-
-    .section-note {
-      color: var(--muted);
-      line-height: 1.65;
-      font-size: 14px;
-      max-width: 62ch;
-    }
-
-    .empty {
-      display: none;
-      padding: 80px 20px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 18px;
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      background: rgba(5, 7, 12, 0.80);
-      backdrop-filter: blur(14px);
-      z-index: 80;
-    }
-
-    .modal.open { display: flex; }
-
-    .modal-shell {
-      width: min(940px, 100%);
-      max-height: 94vh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      background: var(--panel-solid);
-    }
-
-    .modal-head, .modal-foot {
-      padding: 20px 22px;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      background: rgba(255,255,255,0.03);
-    }
-
-    .modal-foot {
-      border-bottom: 0;
-      border-top: 1px solid var(--line);
-    }
-
-    .modal-body {
-      padding: 24px;
-      overflow: auto;
-    }
-
-    .modal-badge {
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: var(--grad-soft);
-      border: 1px solid rgba(102,240,255,0.18);
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .modal-title {
-      margin: 0 0 18px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: clamp(28px, 4vw, 40px);
-      line-height: 1;
-      letter-spacing: -0.05em;
-    }
-
-    .modal-hero {
-      min-height: 220px;
-      border-radius: 24px;
-      display: grid;
-      place-items: center;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(102,240,255,0.12), transparent 28%),
-        radial-gradient(circle at 80% 20%, rgba(184,107,255,0.16), transparent 24%),
-        rgba(0,0,0,0.16);
-      border: 1px solid var(--line);
-      font-size: 104px;
-      margin-bottom: 22px;
-    }
-
-    .detail-section {
-      margin-bottom: 22px;
-    }
-
-    .detail-label {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--cyan);
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .detail-body {
-      color: var(--muted);
-      line-height: 1.72;
-      white-space: pre-wrap;
-    }
-
-    .formula-box {
-      color: var(--cyan);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 22px;
-      line-height: 1.45;
-      padding: 20px;
-      border-radius: 20px;
-      background: rgba(0,0,0,0.18);
-      border-left: 4px solid var(--violet);
-      border-top: 1px solid var(--line);
-      border-right: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      overflow-x: auto;
-      white-space: nowrap;
-    }
-
-    .close-btn {
-      width: 44px;
-      height: 44px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      border: 1px solid var(--line);
-      background: transparent;
-      color: var(--text);
-      font-size: 24px;
-    }
-
-    .debug-fab {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 75;
-      border-radius: 999px;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(10, 15, 28, 0.90);
-    }
-
-    .fab-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 14px rgba(113,248,163,0.75);
-    }
-
-    .debug-drawer {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: min(520px, 100%);
-      height: 100vh;
-      z-index: 90;
-      transform: translateX(100%);
-      transition: transform .24s ease;
-      border-radius: 0;
-      display: flex;
-      flex-direction: column;
-      background: rgba(12, 17, 30, 0.96);
-      backdrop-filter: blur(18px);
-    }
-
-    body.light .debug-drawer {
-      background: rgba(255, 255, 255, 0.97);
-    }
-
-    .debug-drawer.open {
-      transform: translateX(0);
-    }
-
-    .debug-head, .debug-foot {
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .debug-foot {
-      border-top: 1px solid var(--line);
-      border-bottom: 0;
-      margin-top: auto;
-      flex-wrap: wrap;
-    }
-
-    .debug-title {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 24px;
-      letter-spacing: -0.04em;
-      margin: 0;
-    }
-
-    .debug-sub {
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 4px;
-    }
-
-    .debug-body {
-      padding: 18px 20px 24px;
-      overflow: auto;
-      display: grid;
-      gap: 18px;
-    }
-
-    .debug-block {
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      background: rgba(0,0,0,0.10);
-      padding: 16px;
-    }
-
-    .debug-block h3 {
-      margin: 0 0 12px;
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 18px;
-      letter-spacing: -0.03em;
-    }
-
-    .kv {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px 12px;
-      align-items: center;
-      font-size: 14px;
-    }
-
-    .kv .label { color: var(--muted); }
-    .kv .value { font-weight: 700; text-align: right; }
-
-    .debug-status {
-      display: grid;
-      gap: 10px;
-    }
-
-    .status-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--line);
-    }
-
-    .status-row strong { font-size: 14px; }
-
-    .status-ok,
-    .status-warn {
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-weight: 800;
-    }
-
-    .status-ok {
-      background: rgba(113,248,163,0.14);
-      color: var(--green);
-      border: 1px solid rgba(113,248,163,0.22);
-    }
-
-    .status-warn {
-      background: rgba(255,126,155,0.12);
-      color: var(--red);
-      border: 1px solid rgba(255,126,155,0.20);
-    }
-
-    .log-box {
-      max-height: 240px;
-      overflow: auto;
-      background: rgba(0,0,0,0.16);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: 12px;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      color: var(--muted);
-    }
-
-    .footer-note {
-      margin-top: 26px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.7;
-      text-align: center;
-    }
-
-    @media (max-width: 1080px) {
-      .hero, .workbench {
-        grid-template-columns: 1fr;
-      }
-      .metrics {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .toolbar-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 720px) {
-      .shell, .header-inner {
-        width: min(100%, calc(100% - 18px));
-      }
-      .hero-main, .side-card, .panel, .metric, .modal-body {
-        padding: 18px;
-      }
-      .toolbar-grid, .formula-grid {
-        grid-template-columns: 1fr;
-      }
-      .metrics {
-        grid-template-columns: 1fr;
-      }
-      .proof-grid {
-        grid-template-columns: 1fr;
-      }
-      .actions {
-        width: 100%;
-        justify-content: stretch;
-      }
-      .actions .btn {
-        flex: 1 1 auto;
-      }
-      .debug-fab {
-        right: 12px;
-        bottom: 12px;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>ProofSpace • Vault Edition</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+:root {
+  --bg:#050813; --bg2:#0b1020; --panel:rgba(13,19,36,.86); --panelSolid:#10172c; --line:rgba(255,255,255,.10);
+  --line2:rgba(255,255,255,.18); --text:#f3f7ff; --muted:#a9b6d8; --cyan:#67efff; --violet:#b86bff; --gold:#ffd76d;
+  --green:#70f6a1; --red:#ff809a; --shadow:0 24px 70px rgba(0,0,0,.42); --r1:28px; --r2:22px; --r3:16px;
+  --grad:linear-gradient(135deg, rgba(103,239,255,.95), rgba(184,107,255,.94)); --chip:rgba(255,255,255,.06);
+}
+body.light {
+  --bg:#eef5ff; --bg2:#f8fbff; --panel:rgba(255,255,255,.92); --panelSolid:#fff; --line:rgba(16,24,40,.10);
+  --line2:rgba(16,24,40,.18); --text:#10182a; --muted:#5b6882; --shadow:0 18px 42px rgba(68,88,129,.14); --chip:rgba(18,26,44,.05);
+}
+* { box-sizing:border-box; }
+html, body { margin:0; padding:0; min-height:100%; }
+body {
+  font-family:'Inter',system-ui,sans-serif; color:var(--text);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(103,239,255,.14), transparent 26%),
+    radial-gradient(circle at 90% 0%, rgba(184,107,255,.17), transparent 28%),
+    radial-gradient(circle at 50% 110%, rgba(255,215,109,.08), transparent 24%),
+    var(--bg);
+  overflow-x:hidden;
+}
+canvas#stars { position:fixed; inset:0; width:100%; height:100%; z-index:-2; pointer-events:none; opacity:.82; }
+.aurora { position:fixed; inset:auto -10% -18% -10%; height:42vh; z-index:-1; filter:blur(70px); pointer-events:none;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(103,239,255,.15), transparent 28%),
+    radial-gradient(circle at 52% 58%, rgba(184,107,255,.18), transparent 24%),
+    radial-gradient(circle at 78% 46%, rgba(112,246,161,.12), transparent 22%);
+  animation:floatGlow 9s ease-in-out infinite alternate;
+}
+@keyframes floatGlow { from{transform:translateY(0) scale(1)} to{transform:translateY(-20px) scale(1.03)} }
+.app { width:min(1450px, calc(100% - 24px)); margin:0 auto; padding-bottom:70px; }
+.header { position:sticky; top:0; z-index:60; backdrop-filter:blur(16px); background:rgba(5,8,19,.66); border-bottom:1px solid var(--line); }
+body.light .header { background:rgba(238,245,255,.75); }
+.header-inner { width:min(1450px, calc(100% - 24px)); margin:0 auto; padding:16px 0; display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+.brand { display:flex; align-items:center; gap:14px; min-width:0; }
+.brand-mark { width:58px; height:58px; border-radius:50%; background:var(--grad); display:grid; place-items:center; font-size:30px; font-weight:900; color:#09111d; box-shadow:0 0 34px rgba(103,239,255,.28); flex:0 0 auto; }
+.brand h1 { margin:0; font-family:'Space Grotesk',sans-serif; font-size:clamp(24px,3vw,34px); letter-spacing:-.05em; line-height:1; }
+.subtle { color:var(--muted); font-size:13px; margin-top:4px; }
+.version { display:inline-flex; align-items:center; gap:8px; margin-top:8px; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:800; letter-spacing:.05em; background:linear-gradient(135deg, rgba(103,239,255,.10), rgba(184,107,255,.12)); border:1px solid rgba(103,239,255,.16); }
+.actions { display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+button, input, select, textarea { font:inherit; }
+.btn { border:1px solid var(--line); background:var(--panel); color:var(--text); padding:12px 16px; border-radius:999px; box-shadow:var(--shadow); transition:transform .18s ease,border-color .18s ease; }
+.btn:hover { transform:translateY(-2px); border-color:rgba(103,239,255,.38); }
+.btn.primary { background:var(--grad); color:#09111d; border-color:transparent; font-weight:800; }
+.btn.secondary { background:transparent; box-shadow:none; }
+
+.hero { display:grid; grid-template-columns:1.1fr .9fr; gap:18px; padding:28px 0 18px; }
+.card,.panel,.metric,.modal-shell,.debug-drawer,.debug-fab,.sim-shell { border:1px solid var(--line); border-radius:var(--r1); box-shadow:var(--shadow); background:var(--panel); backdrop-filter:blur(10px); }
+.card,.panel { padding:24px; }
+.eyebrow { display:inline-flex; padding:7px 12px; border-radius:999px; background:linear-gradient(135deg, rgba(103,239,255,.10), rgba(184,107,255,.12)); border:1px solid rgba(103,239,255,.16); font-size:11px; font-weight:800; letter-spacing:.11em; text-transform:uppercase; }
+.hero-title { font-family:'Space Grotesk',sans-serif; font-size:clamp(34px,4vw,56px); line-height:.98; letter-spacing:-.06em; margin:16px 0 14px; }
+.hero-copy { color:var(--muted); line-height:1.78; font-size:16px; max-width:66ch; }
+.hero-badges,.chip-row,.stat-row,.source-row,.tag-row { display:flex; gap:10px; flex-wrap:wrap; }
+.pill,.chip,.badge,.src-pill { padding:9px 12px; border-radius:999px; background:var(--chip); border:1px solid var(--line); font-size:12px; }
+.side-stack { display:grid; gap:18px; }
+.side-title,.section-head h2,.panel-title h2,.modal-title,.sim-title,.debug-title { margin:0; font-family:'Space Grotesk',sans-serif; letter-spacing:-.04em; }
+.side-copy,.panel-sub,.section-note,.metric-note,.detail-body,.debug-sub,.sim-copy { color:var(--muted); line-height:1.72; }
+.metric-grid { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:16px; margin:8px 0 26px; }
+.metric { padding:20px; }
+.metric-label { font-size:12px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); font-weight:800; }
+.metric-value { margin-top:10px; font-size:32px; font-weight:800; letter-spacing:-.05em; }
+.controls { display:grid; grid-template-columns:1.1fr repeat(4, .55fr); gap:12px; align-items:stretch; }
+.field,.select,.textarea { width:100%; background:rgba(0,0,0,.16); color:var(--text); border:1px solid var(--line); border-radius:18px; padding:15px 16px; outline:none; }
+.textarea { min-height:112px; resize:vertical; }
+.panels { display:grid; grid-template-columns:1.2fr .8fr; gap:18px; margin-bottom:22px; }
+.section-head { display:flex; justify-content:space-between; gap:16px; align-items:flex-end; margin:8px 0 16px; }
+.proof-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:16px; }
+.proof-card { padding:20px; border-radius:24px; border:1px solid var(--line); background:
+  radial-gradient(circle at 100% 0%, rgba(184,107,255,.12), transparent 28%),
+  radial-gradient(circle at 0% 100%, rgba(103,239,255,.10), transparent 26%),
+  rgba(255,255,255,.02);
+  box-shadow:var(--shadow); cursor:pointer; transition:transform .18s ease,border-color .18s ease;
+}
+.proof-card:hover { transform:translateY(-4px); border-color:rgba(103,239,255,.34); }
+.proof-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+.proof-title { margin:0; font-family:'Space Grotesk',sans-serif; font-size:26px; letter-spacing:-.04em; line-height:1.02; }
+.statement { margin:12px 0 14px; color:var(--cyan); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:18px; line-height:1.55; min-height:58px; }
+.proof-snippet { color:var(--muted); line-height:1.7; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; min-height:95px; }
+.meta { display:flex; justify-content:space-between; gap:10px; margin-top:16px; color:var(--muted); font-size:12px; }
+.source-strong { color:var(--gold); }
+.favorite-heart { font-size:22px; opacity:.85; }
+.empty { display:none; text-align:center; color:var(--muted); padding:60px 20px; border:1px dashed var(--line2); border-radius:24px; }
+
+.curator-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:12px; }
+.curator-grid .full { grid-column:1/-1; }
+.kvlist { display:grid; gap:12px; }
+.kv { display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; }
+.kv .label { color:var(--muted); }
+.kv .value { font-weight:800; text-align:right; }
+.log-box { max-height:220px; overflow:auto; background:rgba(0,0,0,.16); border:1px solid var(--line); border-radius:16px; padding:12px; white-space:pre-wrap; font-size:12px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; color:var(--muted); }
+
+.modal,.sim-modal { position:fixed; inset:0; background:rgba(3,7,18,.72); backdrop-filter:blur(10px); display:none; align-items:center; justify-content:center; z-index:100; padding:16px; }
+.modal.open,.sim-modal.open { display:flex; }
+.modal-shell { width:min(980px, 100%); max-height:94vh; overflow:hidden; display:flex; flex-direction:column; }
+.modal-head,.modal-foot,.sim-head,.debug-head,.debug-foot { padding:18px 22px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line); }
+.modal-foot,.debug-foot { border-top:1px solid var(--line); border-bottom:0; margin-top:auto; flex-wrap:wrap; }
+.modal-body { padding:24px; overflow:auto; display:grid; gap:18px; }
+.modal-hero { min-height:200px; border-radius:22px; display:grid; place-items:center; font-size:92px; background:
+  radial-gradient(circle at 20% 20%, rgba(103,239,255,.12), transparent 28%),
+  radial-gradient(circle at 80% 16%, rgba(184,107,255,.16), transparent 24%),
+  rgba(255,255,255,.02);
+  border:1px solid var(--line);
+}
+.modal-title { font-size:clamp(30px,4vw,42px); line-height:1; }
+.formula-box { color:var(--cyan); font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:20px; line-height:1.55; padding:18px; border-radius:20px; background:rgba(0,0,0,.16); border:1px solid var(--line); border-left:4px solid var(--violet); overflow:auto; white-space:nowrap; }
+.detail-label { font-size:12px; text-transform:uppercase; letter-spacing:.16em; color:var(--cyan); font-weight:800; margin-bottom:10px; }
+.detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.close-btn { width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:transparent; color:var(--text); font-size:24px; }
+
+.sim-shell { width:min(920px, 100%); max-height:94vh; overflow:hidden; display:flex; flex-direction:column; }
+.sim-body { padding:20px 22px 24px; overflow:auto; display:grid; gap:16px; }
+.sim-canvas { width:100%; height:380px; border-radius:22px; border:1px solid var(--line); background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); }
+.slider-row { display:grid; grid-template-columns:120px 1fr 70px; gap:12px; align-items:center; }
+.range { width:100%; }
+.mono { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+.sim-note { padding:14px 16px; border-radius:16px; background:rgba(255,255,255,.03); border:1px solid var(--line); color:var(--muted); line-height:1.7; }
+
+.debug-fab { position:fixed; right:18px; bottom:18px; z-index:80; border-radius:999px; padding:12px 16px; display:flex; align-items:center; gap:10px; background:rgba(10,15,28,.90); }
+.fab-dot { width:10px; height:10px; border-radius:50%; background:var(--green); box-shadow:0 0 14px rgba(112,246,161,.75); }
+.debug-drawer { position:fixed; top:0; right:0; width:min(520px, 100%); height:100vh; z-index:90; transform:translateX(100%); transition:transform .24s ease; border-radius:0; display:flex; flex-direction:column; background:rgba(12,17,30,.96); }
+body.light .debug-drawer { background:rgba(255,255,255,.97); }
+.debug-drawer.open { transform:translateX(0); }
+.debug-body { padding:18px 20px 24px; overflow:auto; display:grid; gap:18px; }
+.debug-block { border:1px solid var(--line); border-radius:20px; background:rgba(0,0,0,.10); padding:16px; }
+.debug-block h3 { margin:0 0 12px; font-family:'Space Grotesk',sans-serif; font-size:18px; letter-spacing:-.03em; }
+.status-row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 14px; border-radius:14px; background:rgba(255,255,255,.03); border:1px solid var(--line); }
+.status-ok,.status-warn { padding:6px 10px; border-radius:999px; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
+.status-ok { background:rgba(112,246,161,.13); color:var(--green); border:1px solid rgba(112,246,161,.22); }
+.status-warn { background:rgba(255,128,154,.12); color:var(--red); border:1px solid rgba(255,128,154,.2); }
+
+@media (max-width:1100px) {
+  .hero,.panels,.detail-grid,.proof-grid { grid-template-columns:1fr 1fr; }
+  .proof-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .controls { grid-template-columns:1fr 1fr; }
+  .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:760px) {
+  .app,.header-inner { width:min(100%, calc(100% - 18px)); }
+  .hero,.panels,.proof-grid,.detail-grid,.controls,.curator-grid,.metric-grid { grid-template-columns:1fr; }
+  .card,.panel,.metric,.modal-body,.sim-body { padding:18px; }
+  .actions { width:100%; justify-content:stretch; }
+  .actions .btn { flex:1 1 auto; }
+}
+</style>
 </head>
 <body>
-  <canvas id="particles"></canvas>
-  <div class="aurora"></div>
+<canvas id="stars"></canvas>
+<div class="aurora"></div>
 
-  <header class="header">
-    <div class="header-inner">
-      <div class="brand">
-        <div class="brand-mark">∞</div>
-        <div>
-          <h1>ProofSpace</h1>
-          <div class="brand-copy">Astral Forge • theorem gallery, formula lab, and future-proof debug console</div>
-          <div class="version" id="versionBadge">v6.1 • Astral Forge • Apr 11 2026</div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn secondary" id="themeBtn" type="button">☀️ Theme</button>
-        <button class="btn" id="surpriseBtn" type="button">🎲 Random theorem</button>
-        <button class="btn" id="favoritesBtn" type="button">❤️ Favorites <span id="favoritesCount">0</span></button>
-        <button class="btn primary" id="debugBtnTop" type="button">🛠 Debug console</button>
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark">∞</div>
+      <div>
+        <h1>ProofSpace</h1>
+        <div class="subtle">Vault Edition • proof museum, source trust, and simulation where it actually helps</div>
+        <div class="version" id="versionBadge">v7.0 • Vault Edition • Apr 11 2026</div>
       </div>
     </div>
-  </header>
-
-  <main class="shell">
-    <section class="hero">
-      <div class="hero-main card">
-        <div class="eyebrow">Mathematical baddassery • forged properly</div>
-        <h2 class="hero-title">A cosmic vault of ideas that actually works.</h2>
-        <p class="hero-copy">
-          This version takes the original ProofSpace shell and turns it into a real single-file app:
-          searchable theorems, favorites, modal deep-dives, a formula playground, lab history, a mission queue,
-          and a floating debug drawer that shows diagnostics, copies a full report, exports state, and gives us a clean way to keep moving forward.
-        </p>
-        <div class="hero-badges">
-          <div class="pill">Single HTML file</div>
-          <div class="pill">Debug-first</div>
-          <div class="pill">Mobile-safe</div>
-          <div class="pill">Local save state</div>
-          <div class="pill">No frameworks</div>
-        </div>
-      </div>
-
-      <div class="hero-side">
-        <div class="side-card card">
-          <div class="side-title">Current mission</div>
-          <div class="side-copy">A notes area that persists locally so the site can remember what to improve next.</div>
-          <textarea class="textarea" id="missionNotes" placeholder="Example: Add graphing, theorem animations, proof families, or challenge mode..."></textarea>
-          <div class="mission-box" id="missionMirror">No mission note yet. Drop a next-step idea above and it will live here.</div>
-        </div>
-
-        <div class="side-card card">
-          <div class="side-title">What changed from the original</div>
-          <div class="side-copy">
-            The uploaded version had a striking visual shell, but its core behavior was incomplete:
-            several buttons referenced missing functions, the theorem dataset only had a few entries, and the script explicitly said the rest of the JavaScript was omitted. That is the main thing this rebuild fixes.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="metrics">
-      <div class="metric">
-        <div class="metric-label">Theorems loaded</div>
-        <div class="metric-value" id="metricProofs">0</div>
-        <div class="metric-note">Searchable cards with detail views.</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Favorites saved</div>
-        <div class="metric-value" id="metricFavorites">0</div>
-        <div class="metric-note">Stored in local browser memory.</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Lab history</div>
-        <div class="metric-value" id="metricHistory">0</div>
-        <div class="metric-note">Recent calculations and transforms.</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">System status</div>
-        <div class="metric-value" id="metricStatus">READY</div>
-        <div class="metric-note">Backed by self-checks in the debug console.</div>
-      </div>
-    </section>
-
-    <section class="workbench">
-      <div class="panel">
-        <div class="panel-title">
-          <div>
-            <h2>Forge controls</h2>
-            <div class="panel-sub">Search, filter, sort, and steer the theorem vault without the UI fighting you.</div>
-          </div>
-        </div>
-
-        <div class="toolbar-grid">
-          <input class="field" id="searchInput" type="text" placeholder="Search theorems, formulas, missions, or concepts..." />
-          <select class="select" id="categorySelect">
-            <option value="all">All categories</option>
-          </select>
-          <select class="select" id="difficultySelect">
-            <option value="all">All difficulty</option>
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
-            <option value="Legendary">Legendary</option>
-          </select>
-          <select class="select" id="sortSelect">
-            <option value="featured">Sort: featured</option>
-            <option value="title">Sort: title</option>
-            <option value="difficulty">Sort: difficulty</option>
-            <option value="time">Sort: read time</option>
-          </select>
-        </div>
-
-        <div class="chip-row" id="quickChips"></div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-title">
-          <div>
-            <h2>Formula lab</h2>
-            <div class="panel-sub">Evaluate expressions, estimate derivatives, numerically integrate, and generate compact sequence sums.</div>
-          </div>
-        </div>
-
-        <div class="formula-grid">
-          <input class="field" id="formulaInput" type="text" placeholder="Try: sin(pi/6)^2 + cos(pi/6)^2  or  x^3 - 2*x + 1" />
-          <button class="btn primary" id="evalBtn" type="button">Run</button>
-        </div>
-
-        <div class="lab-actions">
-          <button class="btn" id="deriveBtn" type="button">Derivative at x</button>
-          <button class="btn" id="integrateBtn" type="button">Integral a→b</button>
-          <button class="btn" id="sumBtn" type="button">Sequence sum</button>
-          <button class="btn secondary" id="clearLabBtn" type="button">Clear history</button>
-        </div>
-
-        <div class="lab-result" id="labResult">The forge is listening.</div>
-
-        <div class="mini-list" id="labHistory"></div>
-      </div>
-    </section>
-
-    <section>
-      <div class="section-head">
-        <div>
-          <h2>Theorem vault</h2>
-          <div class="section-note">Click any card for the deep view. Favorite the ones that make your brain levitate.</div>
-        </div>
-      </div>
-
-      <div class="proof-grid" id="proofGrid"></div>
-      <div class="empty" id="emptyState">
-        No matches in the vault. Try a looser search or clear the filters.
-      </div>
-    </section>
-
-    <div class="footer-note">
-      Built as a single-file upgrade path so you can keep iterating without dragging a whole framework caravan behind you.
-    </div>
-  </main>
-
-  <div class="modal" id="proofModal">
-    <div class="modal-shell">
-      <div class="modal-head">
-        <div class="modal-badge" id="modalBadge">Category</div>
-        <button class="close-btn" type="button" id="closeModalBtn">×</button>
-      </div>
-      <div class="modal-body">
-        <h3 class="modal-title" id="modalTitle"></h3>
-        <div class="modal-hero" id="modalGraphic">∞</div>
-
-        <div class="detail-section">
-          <div class="detail-label">Core statement</div>
-          <div class="formula-box" id="modalFormula"></div>
-        </div>
-
-        <div class="detail-section">
-          <div class="detail-label">Why it matters</div>
-          <div class="detail-body" id="modalExplanation"></div>
-        </div>
-
-        <div class="detail-section">
-          <div class="detail-label">Real mission use</div>
-          <div class="detail-body" id="modalUsage"></div>
-        </div>
-
-        <div class="detail-section">
-          <div class="detail-label">Challenge question</div>
-          <div class="detail-body" id="modalChallenge"></div>
-        </div>
-      </div>
-      <div class="modal-foot">
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn" id="copyFormulaBtn" type="button">📋 Copy formula</button>
-          <button class="btn" id="favoriteModalBtn" type="button">❤️ Favorite</button>
-        </div>
-        <button class="btn primary" id="closeModalBtn2" type="button">Close</button>
-      </div>
+    <div class="actions">
+      <button class="btn secondary" id="themeBtn" type="button">☀️ Theme</button>
+      <button class="btn" id="surpriseBtn" type="button">🎲 Random proof</button>
+      <button class="btn" id="favoritesBtn" type="button">❤️ Favorites <span id="favoritesCount">0</span></button>
+      <button class="btn primary" id="debugBtnTop" type="button">🛠 Debug</button>
     </div>
   </div>
+</header>
 
-  <button class="debug-fab" id="debugFab" type="button" aria-label="Open debug console">
-    <span class="fab-dot"></span>
-    <span>Debug</span>
-  </button>
-
-  <aside class="debug-drawer" id="debugDrawer">
-    <div class="debug-head">
-      <div>
-        <h2 class="debug-title">Forge Debug Console</h2>
-        <div class="debug-sub">The button that keeps the project moving instead of getting lost in the void.</div>
+<main class="app">
+  <section class="hero">
+    <div class="card">
+      <div class="eyebrow">Mathematical baddassery, but curated</div>
+      <h2 class="hero-title">A theorem vault instead of a calculator.</h2>
+      <p class="hero-copy">This version leans hard into what you actually wanted: a bigger proof library, deeper cards, source-trust badges, local custom proof entry, and a simulation layer for proofs that deserve to be seen moving. It is built to keep growing without turning into a chaos goblin.</p>
+      <div class="hero-badges">
+        <div class="pill">28 curated cards</div>
+        <div class="pill">Deep modal views</div>
+        <div class="pill">Source trust badges</div>
+        <div class="pill">Add your own proof</div>
+        <div class="pill">Simulation-ready</div>
       </div>
-      <button class="close-btn" id="closeDebugBtn" type="button">×</button>
+    </div>
+    <div class="side-stack">
+      <div class="card">
+        <h3 class="side-title">Identity of the site</h3>
+        <div class="side-copy">Proof first. Trust second. Simulation where it clarifies. No fake calculator bloat. No fluff cards pretending to be scholarship.</div>
+      </div>
+      <div class="card">
+        <h3 class="side-title">Curator mission</h3>
+        <textarea id="missionNotes" class="textarea" placeholder="Example: add a Kepler deep card with a cleaner historical timeline, or build a knot-theory wing later."></textarea>
+        <div class="sim-note" id="missionMirror">No mission note yet. Put your next move here and the vault will remember it locally.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="metric-grid">
+    <div class="metric"><div class="metric-label">Proof cards</div><div class="metric-value" id="metricProofs">0</div><div class="metric-note">Base library plus local custom additions.</div></div>
+    <div class="metric"><div class="metric-label">Peer reviewed tagged</div><div class="metric-value" id="metricPeer">0</div><div class="metric-note">Cards explicitly marked with peer-reviewed support.</div></div>
+    <div class="metric"><div class="metric-label">Simulations live</div><div class="metric-value" id="metricSim">0</div><div class="metric-note">Proofs with visual demos instead of static worship.</div></div>
+    <div class="metric"><div class="metric-label">Favorites</div><div class="metric-value" id="metricFav">0</div><div class="metric-note">Saved in local browser memory.</div></div>
+  </section>
+
+  <section class="panels">
+    <div class="panel">
+      <div class="panel-title"><div><h2>Vault controls</h2><div class="panel-sub">Search the theorem library by concept, proof flavor, source tier, or simulation support.</div></div></div>
+      <div class="controls">
+        <input id="searchInput" class="field" type="text" placeholder="Search proofs, theorem names, source tiers, uses, or history..." />
+        <select id="categorySelect" class="select"><option value="all">All categories</option></select>
+        <select id="difficultySelect" class="select">
+          <option value="all">All difficulty</option>
+          <option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Legendary</option>
+        </select>
+        <select id="tierSelect" class="select"><option value="all">All source tiers</option></select>
+        <select id="simSelect" class="select">
+          <option value="all">All simulation status</option>
+          <option value="yes">Simulation ready</option>
+          <option value="no">Static only</option>
+        </select>
+      </div>
+      <div class="chip-row" id="quickChips"></div>
     </div>
 
-    <div class="debug-body">
-      <section class="debug-block">
-        <h3>Build snapshot</h3>
-        <div class="kv">
-          <div class="label">Version</div><div class="value" id="dbgVersion"></div>
-          <div class="label">Build date</div><div class="value" id="dbgDate"></div>
-          <div class="label">Theme</div><div class="value" id="dbgTheme"></div>
-          <div class="label">Viewport</div><div class="value" id="dbgViewport"></div>
-          <div class="label">Theorems</div><div class="value" id="dbgTheorems"></div>
-          <div class="label">Favorites</div><div class="value" id="dbgFavorites"></div>
-          <div class="label">History entries</div><div class="value" id="dbgHistory"></div>
-        </div>
-      </section>
-
-      <section class="debug-block">
-        <h3>Self-checks</h3>
-        <div class="debug-status" id="debugChecks"></div>
-        <div class="lab-actions" style="margin-top:14px;">
-          <button class="btn" id="runChecksBtn" type="button">Run checks</button>
-          <button class="btn" id="copyReportBtn" type="button">Copy report</button>
-        </div>
-      </section>
-
-      <section class="debug-block">
-        <h3>State logistics</h3>
-        <div class="lab-actions">
-          <button class="btn" id="exportStateBtn" type="button">Export state</button>
-          <button class="btn" id="importStateBtn" type="button">Import state</button>
-          <button class="btn secondary" id="resetStateBtn" type="button">Reset local state</button>
-        </div>
-        <textarea class="textarea" id="stateBox" placeholder="Exported state will appear here. You can paste state here and import it."></textarea>
-      </section>
-
-      <section class="debug-block">
-        <h3>Event log</h3>
-        <div class="log-box" id="logBox">Booting forge...</div>
-      </section>
+    <div class="panel">
+      <div class="panel-title"><div><h2>Curator workbench</h2><div class="panel-sub">Add your own proof cards without touching the source code. These entries save locally and show up in the same grid.</div></div></div>
+      <div class="curator-grid">
+        <input id="customTitle" class="field" placeholder="Proof title" />
+        <input id="customCategory" class="field" placeholder="Category" />
+        <input id="customStatement" class="field full" placeholder="Core statement or theorem line" />
+        <textarea id="customProof" class="textarea full" placeholder="Proof summary or why it works"></textarea>
+        <input id="customTier" class="field" placeholder="Source tier, e.g. Peer reviewed / textbook" />
+        <input id="customSource" class="field" placeholder="Best source note or citation hint" />
+      </div>
+      <div class="stat-row" style="margin-top:14px;">
+        <button class="btn primary" id="addCustomBtn" type="button">Add proof</button>
+        <button class="btn" id="clearCustomBtn" type="button">Clear custom library</button>
+      </div>
     </div>
+  </section>
 
-    <div class="debug-foot">
-      <button class="btn primary" id="closeDebugBtn2" type="button">Done</button>
+  <section>
+    <div class="section-head">
+      <div>
+        <h2>Theorem vault</h2>
+        <div class="section-note">Click a card for the deep view. Where a proof benefits from motion, launch its simulation from the modal.</div>
+      </div>
+      <div class="chip">Showing <span id="visibleCount">0</span> cards</div>
     </div>
-  </aside>
+    <div class="proof-grid" id="proofGrid"></div>
+    <div class="empty" id="emptyState">No matches in the vault. Clear a filter or cast a wider net.</div>
+  </section>
+</main>
 
-  <script>
-    const APP = {
-      version: "v6.1",
-      codename: "Astral Forge",
-      buildDate: "2026-04-11",
-      storageKey: "proofspace_astral_forge_state"
-    };
+<div class="modal" id="proofModal">
+  <div class="modal-shell">
+    <div class="modal-head">
+      <div class="chip-row">
+        <div class="chip" id="modalCategory"></div>
+        <div class="chip source-strong" id="modalTier"></div>
+      </div>
+      <button class="close-btn" id="closeModalBtn" type="button">×</button>
+    </div>
+    <div class="modal-body">
+      <h3 class="modal-title" id="modalTitle"></h3>
+      <div class="modal-hero" id="modalGraphic">∞</div>
 
-    const proofsDB = [
-      {
-        id: 1,
-        title: "Pythagorean Theorem",
-        category: "Geometry",
-        difficulty: "Beginner",
-        readTime: 2,
-        proof: "a^2 + b^2 = c^2",
-        explanation: "In a right triangle, the area relationship between the legs and the hypotenuse is exact. It is the gateway drug to geometric reasoning and dimensional sanity.",
-        usage: "Distance calculation, navigation, CAD geometry, vector magnitude, and literally half of engineering's quiet backstage work.",
-        graphic: "📐",
-        challenge: "If one leg is 9 and the hypotenuse is 15, what is the other leg?"
-      },
-      {
-        id: 2,
-        title: "Euler’s Identity",
-        category: "Complex Analysis",
-        difficulty: "Advanced",
-        readTime: 4,
-        proof: "e^(i*pi) + 1 = 0",
-        explanation: "This stunning relation welds together the five most famous constants in mathematics through complex exponentials.",
-        usage: "Signal processing, wave analysis, Fourier methods, control theory, and every place oscillation meets elegance.",
-        graphic: "🌀",
-        challenge: "Why does complex exponentiation naturally encode rotation?"
-      },
-      {
-        id: 3,
-        title: "Tsiolkovsky Rocket Equation",
-        category: "Space",
-        difficulty: "Intermediate",
-        readTime: 4,
-        proof: "Δv = v_e * ln(m_0 / m_f)",
-        explanation: "A rocket gains velocity by throwing mass backward. The logarithm is the brutal truth telling you fuel gets harder and harder to convert into extra speed.",
-        usage: "Mission design, staging logic, payload trade studies, and the sacred pain of launch vehicle math.",
-        graphic: "🚀",
-        challenge: "Why is the logarithm so punishing for single-stage rockets?"
-      },
-      {
-        id: 4,
-        title: "Kepler’s Third Law",
-        category: "Space",
-        difficulty: "Intermediate",
-        readTime: 3,
-        proof: "T^2 proportional to a^3",
-        explanation: "Orbital period scales with the semi-major axis in a precise way. Nature prefers clean power laws when gravity runs the show.",
-        usage: "Satellite timing, transfer planning, orbital estimation, and quick intuition about why distant orbits move like sleepy kings.",
-        graphic: "🪐",
-        challenge: "What happens to orbital period when the orbital radius doubles?"
-      },
-      {
-        id: 5,
-        title: "Bayes’ Theorem",
-        category: "Probability",
-        difficulty: "Intermediate",
-        readTime: 4,
-        proof: "P(A|B) = P(B|A)P(A)/P(B)",
-        explanation: "Bayes tells you how to update belief when new evidence arrives. It is the math of changing your mind without becoming an idiot.",
-        usage: "Diagnostics, machine learning, spam filtering, reliability analysis, and every good detective story in equation form.",
-        graphic: "🎯",
-        challenge: "Why do low base rates trick people so badly?"
-      },
-      {
-        id: 6,
-        title: "Gaussian Distribution",
-        category: "Statistics",
-        difficulty: "Intermediate",
-        readTime: 5,
-        proof: "f(x) = (1/(σ*sqrt(2π))) * e^(-((x-μ)^2)/(2σ^2))",
-        explanation: "The bell curve appears whenever many small independent effects pile up. Chaos conspires to create smoothness.",
-        usage: "Noise models, test variation, quality control, estimation, and deciding if a weird result is truly weird.",
-        graphic: "🔔",
-        challenge: "Why do sums of random variables drift toward normality?"
-      },
-      {
-        id: 7,
-        title: "Fundamental Theorem of Calculus",
-        category: "Calculus",
-        difficulty: "Intermediate",
-        readTime: 5,
-        proof: "d/dx ∫[a→x] f(t)dt = f(x)",
-        explanation: "Differentiation and integration are inverse dances. Motion and accumulation finally stop pretending to be strangers.",
-        usage: "Everywhere rates become totals: heat flow, distance, fuel use, electric charge, finance, and blood-pressure-inducing homework sets.",
-        graphic: "∫",
-        challenge: "Why does the derivative of accumulated area recover the original function?"
-      },
-      {
-        id: 8,
-        title: "Shannon Entropy",
-        category: "Information Theory",
-        difficulty: "Advanced",
-        readTime: 5,
-        proof: "H(X) = -Σ p(x) log_2 p(x)",
-        explanation: "Entropy measures surprise. The less predictable the message, the more information it can carry.",
-        usage: "Compression, communication systems, cryptography, machine learning, and understanding why randomness is expensive and useful.",
-        graphic: "📡",
-        challenge: "Why does a fair coin carry more entropy than a coin that lands heads 99% of the time?"
-      },
-      {
-        id: 9,
-        title: "Navier–Stokes Momentum Form",
-        category: "Physics",
-        difficulty: "Legendary",
-        readTime: 7,
-        proof: "ρ(∂v/∂t + v·∇v) = -∇p + μ∇^2v + f",
-        explanation: "Fluid motion is governed by inertia, pressure, viscosity, and external forces locked in a glorious knife fight.",
-        usage: "Aerodynamics, combustion, weather, pump systems, blood flow, and every engineer who has ever stared into turbulence and sighed.",
-        graphic: "🌊",
-        challenge: "Which term becomes dominant when viscosity is tiny and velocity is huge?"
-      },
-      {
-        id: 10,
-        title: "Einstein Mass-Energy Relation",
-        category: "Physics",
-        difficulty: "Beginner",
-        readTime: 3,
-        proof: "E = mc^2",
-        explanation: "Mass is compressed energy with attitude. The speed of light squared is the conversion hammer that makes the result outrageous.",
-        usage: "Nuclear energy, particle physics, stellar processes, and explaining why tiny masses can unleash absurd power.",
-        graphic: "☄️",
-        challenge: "Why is c squared the thing that makes the conversion enormous?"
-      },
-      {
-        id: 11,
-        title: "Cauchy–Schwarz Inequality",
-        category: "Linear Algebra",
-        difficulty: "Advanced",
-        readTime: 4,
-        proof: "|u·v| <= ||u|| ||v||",
-        explanation: "The dot product cannot exceed the product of magnitudes. It is geometry acting like a stern but fair bouncer.",
-        usage: "Proofs, optimization, vector analysis, machine learning, and basically every place angles quietly matter.",
-        graphic: "🧭",
-        challenge: "When does equality occur?"
-      },
-      {
-        id: 12,
-        title: "Fourier Series",
-        category: "Signals",
-        difficulty: "Advanced",
-        readTime: 6,
-        proof: "f(x) = a_0/2 + Σ[a_n cos(nx) + b_n sin(nx)]",
-        explanation: "Complicated periodic behavior can be rebuilt from simple sines and cosines. Waves are the alphabet of recurring phenomena.",
-        usage: "Audio, vibration, rotating machinery, thermal cycles, communications, and turning ugly signals into understandable ingredients.",
-        graphic: "🎵",
-        challenge: "Why do discontinuities create ringing near jumps?"
-      },
-      {
-        id: 13,
-        title: "Logistic Growth",
-        category: "Modeling",
-        difficulty: "Beginner",
-        readTime: 3,
-        proof: "dP/dt = rP(1 - P/K)",
-        explanation: "Growth starts fast, then slows as capacity limits bite back. Nature rarely grants infinite exponential nonsense for long.",
-        usage: "Population dynamics, adoption curves, resource-limited growth, and systems that sprint before they settle.",
-        graphic: "🌱",
-        challenge: "Why does growth slow near carrying capacity?"
-      },
-      {
-        id: 14,
-        title: "Blackbody Radiation Peak",
-        category: "Physics",
-        difficulty: "Advanced",
-        readTime: 5,
-        proof: "λ_max T = b",
-        explanation: "Hotter objects radiate more strongly at shorter wavelengths. Heat changes color in a way the cosmos cannot hide.",
-        usage: "Astrophysics, thermal cameras, furnace design, star classification, and reading temperature out of light itself.",
-        graphic: "🔥",
-        challenge: "Why does the peak shift toward blue as temperature rises?"
-      },
-      {
-        id: 15,
-        title: "Determinant as Volume Scale",
-        category: "Linear Algebra",
-        difficulty: "Intermediate",
-        readTime: 4,
-        proof: "Volume scale factor = |det(A)|",
-        explanation: "A matrix stretches or squashes space, and the determinant tells you by how much volume changes.",
-        usage: "Transformations, Jacobians, geometry engines, robotics, and understanding when a mapping crushes dimension to dust.",
-        graphic: "🧊",
-        challenge: "What does a determinant of zero tell you?"
-      },
-      {
-        id: 16,
-        title: "Simple Harmonic Motion",
-        category: "Physics",
-        difficulty: "Intermediate",
-        readTime: 3,
-        proof: "x'' + ω^2 x = 0",
-        explanation: "When restoring force is proportional to displacement, systems oscillate with dignified regularity.",
-        usage: "Springs, pendulums, vibration control, acoustics, and almost every object that wobbles without immediately falling apart.",
-        graphic: "🕰️",
-        challenge: "How does changing ω affect oscillation speed?"
-      }
+      <div>
+        <div class="detail-label">Core statement</div>
+        <div class="formula-box" id="modalStatement"></div>
+      </div>
+
+      <div class="detail-grid">
+        <div>
+          <div class="detail-label">Proof sketch</div>
+          <div class="detail-body" id="modalProof"></div>
+        </div>
+        <div>
+          <div class="detail-label">Why it matters</div>
+          <div class="detail-body" id="modalWhy"></div>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <div>
+          <div class="detail-label">Real mission use</div>
+          <div class="detail-body" id="modalUse"></div>
+        </div>
+        <div>
+          <div class="detail-label">Historical note</div>
+          <div class="detail-body" id="modalHistory"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="detail-label">Challenge question</div>
+        <div class="detail-body" id="modalChallenge"></div>
+      </div>
+
+      <div>
+        <div class="detail-label">Source spine</div>
+        <div class="source-row" id="modalSources"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <div class="stat-row">
+        <button class="btn" id="copyStatementBtn" type="button">📋 Copy statement</button>
+        <button class="btn" id="favoriteModalBtn" type="button">❤️ Favorite</button>
+        <button class="btn primary" id="simulateBtn" type="button">✨ Simulate proof</button>
+      </div>
+      <button class="btn" id="closeModalBtn2" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="sim-modal" id="simModal">
+  <div class="sim-shell">
+    <div class="sim-head">
+      <div>
+        <h3 class="sim-title" id="simTitle">Simulation</h3>
+        <div class="debug-sub" id="simSub">Visual explanation layer</div>
+      </div>
+      <button class="close-btn" id="closeSimBtn" type="button">×</button>
+    </div>
+    <div class="sim-body">
+      <canvas id="simCanvas" class="sim-canvas" width="860" height="380"></canvas>
+      <div class="slider-row">
+        <label for="simSlider">Parameter</label>
+        <input id="simSlider" class="range" type="range" min="0" max="100" value="50" />
+        <div class="mono" id="simValue">50</div>
+      </div>
+      <div class="sim-note" id="simNote">This space changes depending on the proof.</div>
+    </div>
+  </div>
+</div>
+
+<button class="debug-fab" id="debugFab" type="button"><span class="fab-dot"></span><span>Debug</span></button>
+
+<aside class="debug-drawer" id="debugDrawer">
+  <div class="debug-head">
+    <div>
+      <h2 class="debug-title">Vault Debug</h2>
+      <div class="debug-sub">Checks content quality, source completeness, simulation coverage, and local save state.</div>
+    </div>
+    <button class="close-btn" id="closeDebugBtn" type="button">×</button>
+  </div>
+  <div class="debug-body">
+    <div class="debug-block">
+      <h3>System snapshot</h3>
+      <div class="kvlist">
+        <div class="kv"><div class="label">Version</div><div class="value" id="dbgVersion"></div></div>
+        <div class="kv"><div class="label">Cards loaded</div><div class="value" id="dbgCards"></div></div>
+        <div class="kv"><div class="label">Peer reviewed tagged</div><div class="value" id="dbgPeer"></div></div>
+        <div class="kv"><div class="label">Simulation ready</div><div class="value" id="dbgSim"></div></div>
+        <div class="kv"><div class="label">Custom cards</div><div class="value" id="dbgCustom"></div></div>
+      </div>
+    </div>
+    <div class="debug-block">
+      <h3>Validator</h3>
+      <div id="debugStatus"></div>
+    </div>
+    <div class="debug-block">
+      <h3>Forward motion log</h3>
+      <div class="log-box" id="debugLog"></div>
+    </div>
+  </div>
+  <div class="debug-foot">
+    <button class="btn" id="copyDebugBtn" type="button">Copy report</button>
+    <button class="btn" id="exportStateBtn" type="button">Export state</button>
+    <button class="btn" id="importStateBtn" type="button">Import state</button>
+    <button class="btn primary" id="runChecksBtn" type="button">Run checks</button>
+  </div>
+</aside>
+
+<script>
+const VERSION = "v7.0 • Vault Edition • Apr 11 2026";
+const BASE_PROOFS = [{"id": 1, "title": "Pythagorean Theorem", "category": "Geometry", "difficulty": "Beginner", "readTime": "4 min", "tier": "Peer reviewed + historical", "peer": true, "sim": "pythag", "statement": "a² + b² = c² for a right triangle.", "proof": "A classical area-rearrangement proof places four identical right triangles inside a square in two different ways. The leftover area is once expressed as c² and once as a² + b², forcing equality.", "why": "It turns distance into structure. This theorem is the backbone of Euclidean measurement, coordinates, engineering tolerances, and wave/vector geometry.", "usage": "Distance formulas, CAD geometry, machine alignment, signal vectors, orbital state geometry.", "history": "Known in ancient cultures long before the Greek proof tradition; the theorem became a model example of what it means to prove something geometrically.", "challenge": "Can you explain why the proof still works if the right triangle is scaled up or down?", "sources": [["The 2500-Year-Old Pythagorean Theorem", "The American Mathematical Monthly", 2000], ["Leonardo da Vinci's Proof of the Pythagorean Theorem", "The College Mathematics Journal", 2016]]}, {"id": 2, "title": "Bayes' Theorem", "category": "Probability", "difficulty": "Intermediate", "readTime": "5 min", "tier": "Peer reviewed", "peer": true, "sim": "bayes", "statement": "P(A|B) = P(B|A)P(A) / P(B).", "proof": "Start from the definition of conditional probability in two ways: P(A∩B)=P(A|B)P(B) and P(A∩B)=P(B|A)P(A). Equating them and dividing by P(B) yields Bayes' theorem.", "why": "It is the engine of belief updating. It tells you how to move from prior expectation to posterior judgment when new evidence arrives.", "usage": "Medical testing, fault diagnosis, spam filtering, sensor fusion, scientific inference.", "history": "Named after Thomas Bayes, but its modern force comes from centuries of probabilistic and statistical development.", "challenge": "Why can a rare condition produce many false alarms even with a highly accurate test?", "sources": [["Understanding diagnostic tests 1: sensitivity, specificity and predictive values", "Acta Paediatrica", 2007], ["Understanding diagnostic tests 2: likelihood ratios, pre- and post-test probabilities and their use in clinical practice", "Acta Paediatrica", 2007]]}, {"id": 3, "title": "Euler's Formula", "category": "Complex Analysis", "difficulty": "Intermediate", "readTime": "5 min", "tier": "Textbook / expository", "peer": false, "sim": "euler", "statement": "e^(ix) = cos(x) + i sin(x).", "proof": "Match the power series for e^x, sin(x), and cos(x), then substitute ix into the exponential series. Even powers form the cosine series and odd powers form i·sin(x).", "why": "It welds exponentials, trigonometry, and complex numbers into one of the most compact bridges in mathematics.", "usage": "AC circuits, oscillations, quantum phases, Fourier analysis, controls.", "history": "The identity e^(iπ)+1=0 became famous because it compresses several fundamental constants into a single sentence of mathematics.", "challenge": "What happens to e^(ix) on the complex plane as x increases steadily?", "sources": [["Complex Analysis", "Princeton University Press", 2003]]}, {"id": 4, "title": "Fundamental Theorem of Calculus", "category": "Calculus", "difficulty": "Intermediate", "readTime": "6 min", "tier": "Textbook / classic", "peer": false, "sim": "area", "statement": "Differentiation and integration are inverse processes under suitable conditions.", "proof": "Define an accumulation function F(x)=∫_a^x f(t)dt. Then analyze the difference quotient of F using continuity of f. The second part follows by applying the chain of antiderivative and net accumulation.", "why": "It connects rate and accumulation — the central miracle that makes calculus usable rather than decorative.", "usage": "Motion, heat transfer, accumulated emissions, fluid totals, energy balances.", "history": "The theorem sits at the heart of the Newton–Leibniz synthesis that made calculus a working machine.", "challenge": "Why does continuity matter when turning an area function into a derivative?", "sources": [["Calculus, Volume 1", "OpenStax", 2016]]}, {"id": 5, "title": "Kepler's Third Law", "category": "Space Math", "difficulty": "Intermediate", "readTime": "5 min", "tier": "Historical + textbook", "peer": false, "sim": "orbit", "statement": "For bodies orbiting the same primary, T² is proportional to a³.", "proof": "Under Newtonian gravity, balancing centripetal acceleration with gravitational acceleration for circular motion gives T² = 4π²a³/(GM). Elliptic orbits keep the same scaling with semi-major axis.", "why": "It exposes a deep rhythm in orbital motion: bigger orbits take disproportionately longer.", "usage": "Satellite period estimation, mission planning, transfer orbit reasoning.", "history": "Kepler extracted the pattern from astronomical data before Newton explained why it had to be true.", "challenge": "If the semi-major axis doubles, does the period double, quadruple, or change by another factor?", "sources": [["The Geometry of Celestial Mechanics", "Cambridge University Press", 2016], ["Early Numerical Analysis in Kepler's New Astronomy", "Science in Context", 2010]]}, {"id": 6, "title": "Cauchy–Schwarz Inequality", "category": "Linear Algebra", "difficulty": "Advanced", "readTime": "6 min", "tier": "Textbook / classic", "peer": false, "sim": "vector", "statement": "|u·v| ≤ ||u|| ||v||.", "proof": "Consider ||u - tv||² for real t. Because it is always nonnegative, its quadratic discriminant must be nonpositive, giving the inequality.", "why": "It is the gatekeeper behind angles, projections, correlation, and many norm estimates.", "usage": "Signal processing, regression, error bounds, inner-product spaces.", "history": "One of the great reusable lemmas in analysis and linear algebra.", "challenge": "When does equality happen, and what does that mean geometrically?", "sources": [["Linear Algebra Done Right", "Springer", 2015]]}, {"id": 7, "title": "Triangle Inequality", "category": "Geometry", "difficulty": "Beginner", "readTime": "3 min", "tier": "Textbook / classic", "peer": false, "sim": "triangle", "statement": "For distances, going directly is never longer than taking a detour: |x+y| ≤ |x| + |y|.", "proof": "In Euclidean geometry, two sides of a triangle must together exceed the third. In vector form, it follows from norm properties and Cauchy–Schwarz.", "why": "It captures the shape of distance itself.", "usage": "Error bounds, tolerances, navigation, signal estimates.", "history": "This is one of the quiet structural laws that shows up almost everywhere a norm exists.", "challenge": "Can equality happen? What would the geometry have to look like?", "sources": [["Principles of Mathematical Analysis", "McGraw-Hill", 1976]]}, {"id": 8, "title": "Inclusion–Exclusion Principle", "category": "Combinatorics", "difficulty": "Intermediate", "readTime": "4 min", "tier": "Textbook / classic", "peer": false, "sim": "venn", "statement": "To count a union, add single sets, subtract overlaps, add triple overlaps, and continue alternating.", "proof": "Each element that appears in k sets is counted exactly 1 time after the alternating sum is completed.", "why": "It fixes overcounting with surgical precision.", "usage": "Probability, scheduling conflicts, combinatorics, database logic.", "history": "A foundational counting method that becomes more powerful as overlap structures get messier.", "challenge": "Why does an element in exactly three sets end up counted once overall?", "sources": [["Introductory Combinatorics", "Pearson", 2005]]}, {"id": 9, "title": "Binomial Theorem", "category": "Algebra", "difficulty": "Beginner", "readTime": "4 min", "tier": "Textbook / classic", "peer": false, "sim": "pascal", "statement": "(x+y)^n = Σ C(n,k)x^(n-k)y^k.", "proof": "Expand by choosing either x or y from each factor. The number of ways to pick y exactly k times is C(n,k).", "why": "It turns repeated multiplication into organized combinatorics.", "usage": "Series expansions, probability models, approximation.", "history": "Closely tied to Pascal's triangle and combinatorial reasoning.", "challenge": "Why do the coefficients line up exactly with a counting argument?", "sources": [["Concrete Mathematics", "Addison-Wesley", 1994]]}, {"id": 10, "title": "Chinese Remainder Theorem", "category": "Number Theory", "difficulty": "Advanced", "readTime": "6 min", "tier": "Textbook / historical", "peer": false, "sim": "residue", "statement": "A system of congruences with pairwise coprime moduli has a unique solution modulo the product.", "proof": "Construct basis numbers that hit one residue class while vanishing modulo the others, then add the pieces.", "why": "It lets you solve local modular problems and stitch them into a single global answer.", "usage": "Cryptography, modular scheduling, fast arithmetic.", "history": "An ancient result with surprisingly modern computational importance.", "challenge": "Why is pairwise coprimeness the exact structural condition that makes the stitching work?", "sources": [["An Introduction to the Theory of Numbers", "Oxford University Press", 2008]]}, {"id": 11, "title": "Euclid's Proof of Infinitely Many Primes", "category": "Number Theory", "difficulty": "Beginner", "readTime": "4 min", "tier": "Historical + textbook", "peer": false, "sim": "primes", "statement": "There are infinitely many prime numbers.", "proof": "Assume finitely many primes p1,…,pn. Consider N=p1p2…pn+1. No listed prime divides N, so either N is prime or has a new prime factor.", "why": "It is one of the cleanest examples of contradiction producing something eternal.", "usage": "Prime theory, cryptography foundations, proof style pedagogy.", "history": "A legendary proof from Euclid that still feels modern in its precision.", "challenge": "Why does adding 1 to the product break divisibility by every prime in the original list?", "sources": [["Euclid's Elements", "Ancient classical source", 300]]}, {"id": 12, "title": "Taylor Series", "category": "Calculus", "difficulty": "Advanced", "readTime": "6 min", "tier": "Textbook / classic", "peer": false, "sim": "taylor", "statement": "A smooth function can often be approximated near a point by a polynomial built from its derivatives.", "proof": "Repeated integration by parts or mean-value-form remainder arguments show that the polynomial plus remainder reconstructs the function.", "why": "It converts complicated functions into local polynomial behavior you can actually compute with.", "usage": "Approximation, controls, numerical methods, physics.", "history": "One of the core bridges between exact functions and practical approximation.", "challenge": "What makes a Taylor polynomial excellent near the center but unreliable far away?", "sources": [["Calculus", "James Stewart", 2015]]}, {"id": 13, "title": "Law of Large Numbers", "category": "Probability", "difficulty": "Advanced", "readTime": "6 min", "tier": "Textbook / classic", "peer": false, "sim": "coin", "statement": "Sample averages converge toward expected value under broad conditions.", "proof": "There are several proofs; one route controls variance of the sample mean and shows deviations become unlikely as n grows.", "why": "It explains why repeated measurement stabilizes rather than drifting forever.", "usage": "Reliability, quality control, Monte Carlo simulation, testing.", "history": "A cornerstone result making probability operational in the real world.", "challenge": "Why does averaging tame randomness rather than amplify it?", "sources": [["Probability and Measure", "Wiley", 1995]]}, {"id": 14, "title": "Central Limit Theorem", "category": "Probability", "difficulty": "Legendary", "readTime": "7 min", "tier": "Textbook / classic", "peer": false, "sim": "clt", "statement": "Sums of many independent random variables trend toward a normal distribution after rescaling.", "proof": "Characteristic functions provide a powerful route: the transform of the normalized sum converges to the transform of a Gaussian.", "why": "It is why bell-curve behavior appears everywhere even when the original ingredients are not bell-shaped.", "usage": "Statistics, uncertainty estimation, manufacturing variation, measurement error.", "history": "One of the deepest reasons normal models keep showing up in practice.", "challenge": "Why do many tiny influences often produce a Gaussian-looking result?", "sources": [["A First Course in Probability", "Pearson", 2014]]}, {"id": 15, "title": "Euler Characteristic for Polyhedra", "category": "Topology", "difficulty": "Intermediate", "readTime": "5 min", "tier": "Historical + textbook", "peer": false, "sim": "poly", "statement": "For many polyhedra, V - E + F = 2.", "proof": "One intuitive proof peels a polyhedron into a planar graph and shows the quantity is invariant under edge removal steps that simplify the figure without changing the result.", "why": "It reveals that shape has structure deeper than measurement.", "usage": "Mesh analysis, topology, graphics, network structure.", "history": "A gateway drug into topology: numbers surviving deformation.", "challenge": "Why does stretching a polyhedron not change this count?", "sources": [["Topology", "Munkres", 2000]]}, {"id": 16, "title": "Noether's Theorem", "category": "Physics Math", "difficulty": "Legendary", "readTime": "7 min", "tier": "Peer reviewed / classic", "peer": true, "sim": "symmetry", "statement": "Continuous symmetries of a physical system correspond to conserved quantities.", "proof": "Within the Lagrangian framework, invariance of the action under a continuous transformation yields a divergence identity that becomes a conservation law.", "why": "It explains why energy, momentum, and angular momentum are not arbitrary bookkeeping tricks but consequences of symmetry.", "usage": "Field theory, mechanics, modern physics, engineering models.", "history": "A 20th-century masterpiece tying abstract symmetry directly to measurable conservation.", "challenge": "If time-translation symmetry broke, what familiar conservation law would be threatened?", "sources": [["Invariant Variation Problems", "Nachrichten von der Gesellschaft der Wissenschaften zu Göttingen", 1918], ["Noether's Theorems: Applications in Mechanics and Field Theory", "Springer", 2018]]}, {"id": 17, "title": "Conservation of Energy in a Conservative Field", "category": "Physics Math", "difficulty": "Intermediate", "readTime": "5 min", "tier": "Textbook / classic", "peer": false, "sim": "energy", "statement": "Kinetic plus potential energy remains constant in a conservative system.", "proof": "Work-energy arguments show that the loss of potential exactly equals the gain in kinetic energy when forces derive from a potential.", "why": "It compresses dynamics into a single invariant balance.", "usage": "Mechanisms, orbit transfers, oscillators, vehicle motion.", "history": "One of the most powerful simplifications in physical reasoning.", "challenge": "What changes when friction enters the picture?", "sources": [["Classical Mechanics", "Taylor", 2005]]}, {"id": 18, "title": "Green's Theorem", "category": "Calculus", "difficulty": "Advanced", "readTime": "6 min", "tier": "Textbook / classic", "peer": false, "sim": "field", "statement": "A line integral around a plane curve equals a double integral over the enclosed region for suitable vector fields.", "proof": "Partition the region into thin strips and track cancellation of interior boundary contributions, then pass to the limit.", "why": "It turns circulation around a boundary into behavior inside the region.", "usage": "Fluid flow, electromagnetism, planar vector analysis.", "history": "One of the bridge theorems that makes vector calculus feel magical.", "challenge": "Why do interior boundary pieces cancel when the region is subdivided?", "sources": [["Vector Calculus", "Marsden & Tromba", 2011]]}, {"id": 19, "title": "Stokes' Theorem", "category": "Calculus", "difficulty": "Legendary", "readTime": "7 min", "tier": "Textbook / classic", "peer": false, "sim": "stokes", "statement": "The circulation of a vector field around a boundary equals the flux of curl through the surface.", "proof": "It generalizes Green's theorem; locally, oriented surface patches contribute interior edges with opposite signs, leaving only the boundary.", "why": "It unifies local rotation and global circulation.", "usage": "Electromagnetism, fluid mechanics, geometry.", "history": "A high-level structural theorem that ties many integral theorems together.", "challenge": "What does curl measure locally that a boundary integral measures globally?", "sources": [["Div, Grad, Curl, and All That", "Norton", 2005]]}, {"id": 20, "title": "Spectral Theorem (Finite-Dimensional Symmetric Case)", "category": "Linear Algebra", "difficulty": "Advanced", "readTime": "6 min", "tier": "Textbook / classic", "peer": false, "sim": "eigen", "statement": "A real symmetric matrix can be diagonalized by an orthogonal basis of eigenvectors.", "proof": "Use existence of an eigenvalue, orthogonality of eigenvectors from distinct eigenvalues, and induction on invariant orthogonal complements.", "why": "It makes hard operators understandable as independent directions.", "usage": "Principal components, vibrations, stress modes, data analysis.", "history": "One of the reasons symmetry is computational gold.", "challenge": "Why is symmetry the structural ingredient that gives orthogonal eigenvectors?", "sources": [["Matrix Analysis", "Cambridge University Press", 2013]]}, {"id": 21, "title": "Jensen's Inequality", "category": "Analysis", "difficulty": "Advanced", "readTime": "5 min", "tier": "Textbook / classic", "peer": false, "sim": "convex", "statement": "For convex f, f(E[X]) ≤ E[f(X)].", "proof": "Convexity means the graph lies below every secant/interpolation rule. Averaging then preserves the inequality.", "why": "It captures a deep relationship between shape and averaging.", "usage": "Optimization, information theory, risk analysis.", "history": "A foundational convexity result used almost everywhere modern optimization lives.", "challenge": "What changes if the function is concave instead?", "sources": [["Convex Optimization", "Cambridge University Press", 2004]]}, {"id": 22, "title": "AM–GM Inequality", "category": "Algebra", "difficulty": "Beginner", "readTime": "4 min", "tier": "Textbook / classic", "peer": false, "sim": "amgm", "statement": "For nonnegative numbers, the arithmetic mean is at least the geometric mean.", "proof": "For two variables, rewrite ((a-b)^2 ≥ 0). Higher-dimensional versions follow by induction or Jensen's inequality.", "why": "It is a tiny-looking inequality with huge optimization reach.", "usage": "Bounds, design tradeoffs, economics, algebraic estimates.", "history": "A standard but powerful move in olympiad and applied optimization reasoning.", "challenge": "When does equality happen, and why is that the balanced case?", "sources": [["The Cauchy-Schwarz Master Class", "Cambridge University Press", 2007]]}, {"id": 23, "title": "Pick's Theorem", "category": "Geometry", "difficulty": "Intermediate", "readTime": "4 min", "tier": "Textbook / expository", "peer": false, "sim": "lattice", "statement": "For a lattice polygon, Area = I + B/2 - 1.", "proof": "It is first shown for rectangles and simple triangles, then extended by decomposing polygons and checking the formula is additive.", "why": "It turns area into counting on a grid.", "usage": "Discrete geometry, tilings, educational visualization.", "history": "A favorite example of geometry becoming arithmetic.", "challenge": "Why does cutting a lattice polygon into pieces preserve the formula cleanly?", "sources": [["Proofs from THE BOOK", "Springer", 2010]]}, {"id": 24, "title": "Cantor's Diagonal Argument", "category": "Logic", "difficulty": "Intermediate", "readTime": "5 min", "tier": "Historical + textbook", "peer": false, "sim": "diagonal", "statement": "The real numbers are uncountable.", "proof": "Assume a list of reals exists. Build a new real by changing the nth digit of the nth listed number, ensuring disagreement with every entry.", "why": "It proves some infinities are strictly larger than others.", "usage": "Foundations, computability, logic, information limits.", "history": "A bombshell in the foundations of mathematics.", "challenge": "Why can the diagonal construction never accidentally reproduce a listed number?", "sources": [["Naive Set Theory", "Dover", 1995]]}, {"id": 25, "title": "Fermat's Little Theorem", "category": "Number Theory", "difficulty": "Intermediate", "readTime": "4 min", "tier": "Textbook / classic", "peer": false, "sim": "modpow", "statement": "If p is prime and p does not divide a, then a^(p-1) ≡ 1 mod p.", "proof": "Permute the nonzero residue classes modulo p by multiplying by a. The products agree modulo p, and cancellation gives the result.", "why": "It is a modular heartbeat for primality ideas and cryptographic reasoning.", "usage": "RSA intuition, modular arithmetic, computational number theory.", "history": "A compact theorem with enormous algorithmic afterlife.", "challenge": "Why is multiplication by a modulo p a permutation when gcd(a,p)=1?", "sources": [["Elementary Number Theory", "McGraw-Hill", 2007]]}, {"id": 26, "title": "Lagrange Multipliers", "category": "Optimization", "difficulty": "Advanced", "readTime": "5 min", "tier": "Textbook / classic", "peer": false, "sim": "constraint", "statement": "At a constrained extremum, the gradient of the objective aligns with the gradient of the constraint.", "proof": "Any allowable first-order motion lies tangent to the constraint surface; therefore the directional derivative of the objective vanishes along tangent directions, forcing gradient alignment.", "why": "It transforms constrained optimization from guesswork into geometry.", "usage": "Design optimization, economics, calibration, resource allocation.", "history": "A standard method whose geometric meaning is often more illuminating than the algebra.", "challenge": "Why should the steepest ascent direction become trapped against the constraint surface?", "sources": [["Vector Calculus", "Marsden & Tromba", 2011]]}, {"id": 27, "title": "Shannon Entropy Maximization of the Uniform Distribution", "category": "Information Theory", "difficulty": "Advanced", "readTime": "5 min", "tier": "Peer reviewed / classic", "peer": true, "sim": "entropy", "statement": "Among distributions on n outcomes, entropy is maximized by the uniform distribution.", "proof": "Concavity of the log function or Jensen's inequality shows any unevenness lowers entropy relative to the uniform case.", "why": "It formalizes the idea that perfect spread equals maximal uncertainty.", "usage": "Coding, inference, thermodynamics analogies, decision systems.", "history": "A key conceptual pillar in information theory.", "challenge": "Why does concentrating probability on one outcome inevitably reduce uncertainty?", "sources": [["A Mathematical Theory of Communication", "Bell System Technical Journal", 1948]]}, {"id": 28, "title": "Rolle's Theorem", "category": "Calculus", "difficulty": "Beginner", "readTime": "3 min", "tier": "Textbook / classic", "peer": false, "sim": "rolle", "statement": "If a differentiable function has equal endpoint values, then some interior point has derivative zero.", "proof": "Continuity guarantees a maximum or minimum; differentiability forces horizontal tangent at an interior extremum.", "why": "It is a small theorem that powers the Mean Value Theorem and much of differential reasoning.", "usage": "Root-counting, error bounds, theorem chaining in calculus.", "history": "An elegant bridge from qualitative shape to exact derivative information.", "challenge": "Why do the endpoint conditions matter so much?", "sources": [["Calculus", "OpenStax", 2016]]}];
+const ICONS = {
+  "Geometry":"📐","Probability":"🎲","Complex Analysis":"🌀","Calculus":"∫","Space Math":"🪐","Linear Algebra":"🧭",
+  "Combinatorics":"🧩","Algebra":"⚙️","Number Theory":"🔢","Topology":"🕸️","Physics Math":"🚀","Analysis":"📈",
+  "Logic":"♾️","Optimization":"🎯","Information Theory":"📡"
+};
+const QUICK_FILTERS = ["Geometry","Probability","Space Math","Number Theory","Calculus","Peer reviewed","Simulation ready"];
+
+const state = {
+  favorites: loadJSON("proofspace.vault.favorites", []),
+  mission: localStorage.getItem("proofspace.vault.mission") || "",
+  custom: loadJSON("proofspace.vault.customCards", []),
+  currentId: null,
+  simId: null
+};
+
+function loadJSON(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+function saveJSON(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+const $ = id => document.getElementById(id);
+const difficultyOrder = {Beginner:1, Intermediate:2, Advanced:3, Legendary:4};
+
+function allProofs() { return [...BASE_PROOFS, ...state.custom]; }
+function norm(v) { return String(v ?? "").toLowerCase(); }
+function hasSim(p) { return !!p.sim && p.sim !== "none"; }
+function isFav(id) { return state.favorites.includes(id); }
+
+function init() {
+  $("missionNotes").value = state.mission;
+  updateMission();
+  $("missionNotes").addEventListener("input", e => {
+    state.mission = e.target.value;
+    localStorage.setItem("proofspace.vault.mission", state.mission);
+    updateMission();
+    runChecks(false);
+  });
+  populateFilters();
+  renderQuickChips();
+  bindEvents();
+  createStars();
+  applyTheme(window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+  render();
+  runChecks(false);
+}
+
+function populateFilters() {
+  const cats = [...new Set(allProofs().map(p => p.category))].sort();
+  const tiers = [...new Set(allProofs().map(p => p.tier))].sort();
+  $("categorySelect").innerHTML = '<option value="all">All categories</option>' + cats.map(v => `<option>${escapeHtml(v)}</option>`).join("");
+  $("tierSelect").innerHTML = '<option value="all">All source tiers</option>' + tiers.map(v => `<option>${escapeHtml(v)}</option>`).join("");
+}
+
+function renderQuickChips() {
+  $("quickChips").innerHTML = QUICK_FILTERS.map(label => `<button class="btn secondary chip" data-quick="${escapeAttr(label)}">${escapeHtml(label)}</button>`).join("");
+  [...document.querySelectorAll("[data-quick]")].forEach(btn => btn.addEventListener("click", () => {
+    const label = btn.getAttribute("data-quick");
+    if (label === "Peer reviewed") {
+      $("tierSelect").value = "all";
+      $("searchInput").value = "peer reviewed";
+    } else if (label === "Simulation ready") {
+      $("simSelect").value = "yes";
+    } else {
+      $("categorySelect").value = label;
+    }
+    render();
+  }));
+}
+
+function bindEvents() {
+  ["searchInput","categorySelect","difficultySelect","tierSelect","simSelect"].forEach(id => $(id).addEventListener("input", render));
+  $("themeBtn").addEventListener("click", () => applyTheme(!document.body.classList.contains("light")));
+  $("surpriseBtn").addEventListener("click", randomProof);
+  $("favoritesBtn").addEventListener("click", showFavorites);
+  $("closeModalBtn").addEventListener("click", closeModal);
+  $("closeModalBtn2").addEventListener("click", closeModal);
+  $("proofModal").addEventListener("click", e => { if (e.target.id === "proofModal") closeModal(); });
+  $("copyStatementBtn").addEventListener("click", copyStatement);
+  $("favoriteModalBtn").addEventListener("click", toggleCurrentFavorite);
+  $("simulateBtn").addEventListener("click", openSim);
+  $("closeSimBtn").addEventListener("click", closeSim);
+  $("simModal").addEventListener("click", e => { if (e.target.id === "simModal") closeSim(); });
+  $("simSlider").addEventListener("input", drawSimulation);
+  $("addCustomBtn").addEventListener("click", addCustomProof);
+  $("clearCustomBtn").addEventListener("click", clearCustomProofs);
+  ["debugFab","debugBtnTop"].forEach(id => $(id).addEventListener("click", () => $("debugDrawer").classList.add("open")));
+  $("closeDebugBtn").addEventListener("click", () => $("debugDrawer").classList.remove("open"));
+  $("runChecksBtn").addEventListener("click", () => runChecks(true));
+  $("copyDebugBtn").addEventListener("click", copyDebugReport);
+  $("exportStateBtn").addEventListener("click", exportState);
+  $("importStateBtn").addEventListener("click", importState);
+  window.addEventListener("keydown", e => {
+    if (e.key === "Escape") { closeModal(); closeSim(); $("debugDrawer").classList.remove("open"); }
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[ch]));
+}
+function escapeAttr(s) { return escapeHtml(s).replace(/'/g, "&#39;"); }
+
+function filteredProofs() {
+  const q = norm($("searchInput").value.trim());
+  const category = $("categorySelect").value;
+  const diff = $("difficultySelect").value;
+  const tier = $("tierSelect").value;
+  const sim = $("simSelect").value;
+
+  return allProofs().filter(p => {
+    const hay = norm([p.title,p.category,p.statement,p.proof,p.why,p.usage,p.history,p.challenge,p.tier,(p.sources||[]).map(s=>Array.isArray(s)?s.join(" "):String(s)).join(" ")].join(" "));
+    const qOk = !q || hay.includes(q);
+    const cOk = category === "all" || p.category === category;
+    const dOk = diff === "all" || p.difficulty === diff;
+    const tOk = tier === "all" || p.tier === tier;
+    const sOk = sim === "all" || (sim === "yes" ? hasSim(p) : !hasSim(p));
+    return qOk && cOk && dOk && tOk && sOk;
+  }).sort((a,b) => {
+    const favDelta = (isFav(b.id)?1:0) - (isFav(a.id)?1:0);
+    if (favDelta) return favDelta;
+    return difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty] || a.title.localeCompare(b.title);
+  });
+}
+
+function render() {
+  const proofs = filteredProofs();
+  $("proofGrid").innerHTML = proofs.map(cardHTML).join("");
+  $("emptyState").style.display = proofs.length ? "none" : "block";
+  $("visibleCount").textContent = proofs.length;
+  $("metricProofs").textContent = allProofs().length;
+  $("metricPeer").textContent = allProofs().filter(p => p.peer).length;
+  $("metricSim").textContent = allProofs().filter(hasSim).length;
+  $("metricFav").textContent = state.favorites.length;
+  $("favoritesCount").textContent = state.favorites.length;
+  [...document.querySelectorAll(".proof-card")].forEach(el => el.addEventListener("click", () => showProof(Number(el.dataset.id))));
+}
+
+function cardHTML(p) {
+  return `
+  <article class="proof-card" data-id="${p.id}">
+    <div class="proof-top">
+      <div>
+        <div class="chip-row">
+          <div class="chip">${escapeHtml(p.category)}</div>
+          <div class="chip source-strong">${escapeHtml(p.tier)}</div>
+        </div>
+        <h3 class="proof-title">${escapeHtml(p.title)}</h3>
+      </div>
+      <div class="favorite-heart">${isFav(p.id) ? "❤️" : "🤍"}</div>
+    </div>
+    <div class="statement">${escapeHtml(p.statement)}</div>
+    <div class="proof-snippet">${escapeHtml(p.proof)}</div>
+    <div class="tag-row">
+      <div class="badge">${escapeHtml(p.difficulty)}</div>
+      <div class="badge">${escapeHtml(p.readTime)}</div>
+      <div class="badge">${hasSim(p) ? "Simulation ready" : "Static deep card"}</div>
+    </div>
+    <div class="meta">
+      <span>${p.peer ? "Peer-reviewed support" : "Curated source spine"}</span>
+      <span>${(p.sources||[]).length} source${(p.sources||[]).length === 1 ? "" : "s"}</span>
+    </div>
+  </article>`;
+}
+
+function showProof(id) {
+  const p = allProofs().find(x => x.id === id);
+  if (!p) return;
+  state.currentId = id;
+  $("modalCategory").textContent = p.category;
+  $("modalTier").textContent = p.tier;
+  $("modalTitle").textContent = p.title;
+  $("modalGraphic").textContent = ICONS[p.category] || "∞";
+  $("modalStatement").textContent = p.statement;
+  $("modalProof").textContent = p.proof;
+  $("modalWhy").textContent = p.why;
+  $("modalUse").textContent = p.usage || "No mission-use note yet.";
+  $("modalHistory").textContent = p.history || "No historical note yet.";
+  $("modalChallenge").textContent = p.challenge || "No challenge question yet.";
+  $("modalSources").innerHTML = (p.sources || []).map(src => {
+    const t = Array.isArray(src) ? `${src[0]} • ${src[1]}${src[2] ? " • " + src[2] : ""}` : String(src);
+    return `<div class="src-pill">${escapeHtml(t)}</div>`;
+  }).join("");
+  $("simulateBtn").style.display = hasSim(p) ? "inline-flex" : "none";
+  $("favoriteModalBtn").textContent = isFav(id) ? "💔 Unfavorite" : "❤️ Favorite";
+  $("proofModal").classList.add("open");
+}
+
+function closeModal() { $("proofModal").classList.remove("open"); }
+function copyStatement() {
+  const p = allProofs().find(x => x.id === state.currentId);
+  if (!p) return;
+  navigator.clipboard.writeText(`${p.title}\n${p.statement}`);
+}
+function toggleCurrentFavorite() {
+  const id = state.currentId;
+  if (!id) return;
+  if (isFav(id)) state.favorites = state.favorites.filter(v => v !== id);
+  else state.favorites.unshift(id);
+  saveJSON("proofspace.vault.favorites", state.favorites);
+  render();
+  showProof(id);
+  runChecks(false);
+}
+function randomProof() {
+  const pool = filteredProofs();
+  if (!pool.length) return;
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  showProof(pick.id);
+}
+function showFavorites() {
+  $("searchInput").value = "";
+  $("categorySelect").value = "all";
+  $("difficultySelect").value = "all";
+  $("tierSelect").value = "all";
+  $("simSelect").value = "all";
+  const cards = allProofs().filter(p => isFav(p.id));
+  $("proofGrid").innerHTML = cards.map(cardHTML).join("");
+  $("emptyState").style.display = cards.length ? "none" : "block";
+  $("visibleCount").textContent = cards.length;
+  [...document.querySelectorAll(".proof-card")].forEach(el => el.addEventListener("click", () => showProof(Number(el.dataset.id))));
+}
+
+function updateMission() {
+  $("missionMirror").textContent = state.mission.trim() || "No mission note yet. Put your next move here and the vault will remember it locally.";
+}
+
+function addCustomProof() {
+  const title = $("customTitle").value.trim();
+  const category = $("customCategory").value.trim() || "Custom";
+  const statement = $("customStatement").value.trim();
+  const proof = $("customProof").value.trim();
+  const tier = $("customTier").value.trim() || "User-added";
+  const source = $("customSource").value.trim();
+  if (!title || !statement || !proof) {
+    alert("Give the proof a title, statement, and proof summary first.");
+    return;
+  }
+  const nextId = Math.max(...allProofs().map(p => p.id), 0) + 1;
+  state.custom.push({
+    id: nextId, title, category, statement, proof, difficulty:"Custom", readTime:"Custom", tier,
+    peer:/peer/i.test(tier) || /journal|review/i.test(source), sim:"none",
+    why:"Custom proof card added from the curator workbench.",
+    usage:"Add a mission-use note later if you want.",
+    history:"User-added entry.",
+    challenge:"What is the cleanest way to explain this proof to someone smart but new to it?",
+    sources: source ? [source] : []
+  });
+  saveJSON("proofspace.vault.customCards", state.custom);
+  ["customTitle","customCategory","customStatement","customProof","customTier","customSource"].forEach(id => $(id).value = "");
+  populateFilters();
+  render();
+  runChecks(true);
+}
+function clearCustomProofs() {
+  state.custom = [];
+  saveJSON("proofspace.vault.customCards", state.custom);
+  populateFilters();
+  render();
+  runChecks(true);
+}
+
+function openSim() {
+  const p = allProofs().find(x => x.id === state.currentId);
+  if (!p || !hasSim(p)) return;
+  state.simId = p.id;
+  $("simTitle").textContent = `${p.title} • Simulation`;
+  $("simSub").textContent = p.statement;
+  $("simSlider").value = 50;
+  $("simModal").classList.add("open");
+  drawSimulation();
+}
+function closeSim() { $("simModal").classList.remove("open"); }
+function drawSimulation() {
+  const p = allProofs().find(x => x.id === state.simId);
+  const canvas = $("simCanvas");
+  const ctx = canvas.getContext("2d");
+  const v = Number($("simSlider").value);
+  $("simValue").textContent = String(v);
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = "rgba(255,255,255,0.02)";
+  ctx.fillRect(0,0,w,h);
+  if (!p) return;
+  const styles = {
+    cyan:"#67efff", violet:"#b86bff", gold:"#ffd76d", green:"#70f6a1", red:"#ff809a", text:"#f3f7ff", muted:"#a9b6d8"
+  };
+  ctx.lineWidth = 2;
+
+  function label(text, x, y, color=styles.text, size=16) {
+    ctx.fillStyle = color; ctx.font = `${size}px Inter`; ctx.fillText(text, x, y);
+  }
+
+  if (p.sim === "pythag") {
+    const a = 60 + v*1.5, b = 80 + (100-v)*1.1; const c = Math.sqrt(a*a + b*b);
+    const x = 80, y = 60;
+    ctx.strokeStyle = styles.cyan; ctx.strokeRect(x,y,a,b);
+    ctx.strokeStyle = styles.violet; ctx.strokeRect(x+a+30,y,b,a);
+    ctx.strokeStyle = styles.gold; ctx.strokeRect(x+260,y,c,c);
+    ctx.beginPath(); ctx.moveTo(x,y+b); ctx.lineTo(x+a,y+b); ctx.lineTo(x+a,y); ctx.closePath(); ctx.strokeStyle = styles.green; ctx.stroke();
+    label("Area square on a", x, y+b+24, styles.cyan);
+    label("Area square on b", x+a+30, y+a+b+24, styles.violet);
+    label("Area square on c", x+260, y+c+24, styles.gold);
+    label(`a² + b² = c²`, 80, 330, styles.text, 22);
+    $("simNote").textContent = "Slide the parameter to resize the legs. The hypotenuse square tracks the combined area of the two leg-squares.";
+  } else if (p.sim === "bayes") {
+    const prior = 0.02 + v/100*0.48, sens = 0.65 + (100-v)/100*0.3, spec = 0.75 + v/100*0.22;
+    const pB = sens*prior + (1-spec)*(1-prior);
+    const post = sens*prior/pB;
+    const bars = [
+      ["Prior P(A)", prior, styles.cyan],
+      ["Sensitivity P(B|A)", sens, styles.violet],
+      ["Specificity", spec, styles.green],
+      ["Posterior P(A|B)", post, styles.gold]
     ];
-
-    const state = {
-      theme: "dark",
-      favorites: [],
-      view: "all",
-      missionNotes: "",
-      labHistory: [],
-      lastSearch: "",
-      logs: [],
-      currentProofId: null
-    };
-
-    const difficultyRank = { Beginner: 1, Intermediate: 2, Advanced: 3, Legendary: 4 };
-
-    const els = {};
-    let filteredProofs = [...proofsDB];
-
-    function $(id) {
-      return document.getElementById(id);
+    bars.forEach((b,i) => {
+      const y = 60 + i*70; ctx.fillStyle = "rgba(255,255,255,0.06)"; ctx.fillRect(180,y,500,28);
+      ctx.fillStyle = b[2]; ctx.fillRect(180,y,500*b[1],28); label(b[0], 40, y+20); label((b[1]*100).toFixed(1)+"%", 700, y+20, b[2]);
+    });
+    label("Rare events can still create surprisingly modest posteriors.", 40, 340, styles.muted, 15);
+    $("simNote").textContent = "This shows why evidence updates belief instead of replacing it. Changing the slider alters prior and test quality so the posterior visibly shifts.";
+  } else if (p.sim === "orbit") {
+    const a = 90 + v*1.8; const b = Math.max(70, a*(0.62 + v/200));
+    const cx = 300, cy = 190;
+    ctx.strokeStyle = styles.violet; ctx.beginPath(); ctx.ellipse(cx,cy,a,b,0,0,Math.PI*2); ctx.stroke();
+    ctx.fillStyle = styles.gold; ctx.beginPath(); ctx.arc(cx-a*0.35, cy, 12, 0, Math.PI*2); ctx.fill();
+    const t = (Date.now()/800)% (Math.PI*2);
+    const px = cx + a*Math.cos(t), py = cy + b*Math.sin(t);
+    ctx.fillStyle = styles.cyan; ctx.beginPath(); ctx.arc(px,py,9,0,Math.PI*2); ctx.fill();
+    label("Sun at focus", cx-a*0.35+16, cy-16, styles.gold);
+    label(`T² ∝ a³`, 60, 60, styles.text, 24);
+    label(`semi-major axis ≈ ${a.toFixed(0)}`, 60, 90, styles.muted);
+    label(`relative period scale ≈ ${Math.pow(a/100,1.5).toFixed(2)}`, 60, 116, styles.cyan);
+    $("simNote").textContent = "Increase the axis length and the implied orbital period climbs faster than linearly. That is the punchline of Kepler's third law.";
+    requestAnimationFrame(() => state.simId === p.id && $("simModal").classList.contains("open") && drawSimulation());
+  } else if (p.sim === "euler") {
+    const r = 110, cx = 260, cy = 190, angle = (v/100)*Math.PI*2;
+    ctx.strokeStyle = "rgba(255,255,255,0.15)"; ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+    ctx.strokeStyle = styles.cyan; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx + r*Math.cos(angle), cy - r*Math.sin(angle)); ctx.stroke();
+    ctx.fillStyle = styles.violet; ctx.beginPath(); ctx.arc(cx + r*Math.cos(angle), cy - r*Math.sin(angle), 8, 0, Math.PI*2); ctx.fill();
+    label("Complex unit circle", 160, 52, styles.text);
+    label(`cos(x) = ${Math.cos(angle).toFixed(3)}`, 470, 160, styles.cyan);
+    label(`sin(x) = ${Math.sin(angle).toFixed(3)}`, 470, 192, styles.violet);
+    label(`e^(ix) = cos(x) + i sin(x)`, 470, 240, styles.text, 21);
+    $("simNote").textContent = "The rotating radius vector packages cosine into the horizontal component and sine into the vertical one. Euler's formula is motion written symbolically.";
+  } else if (p.sim === "area") {
+    const left = 100, top = 70, width = 600, baseY = 300;
+    ctx.strokeStyle = "rgba(255,255,255,0.14)";
+    ctx.beginPath(); ctx.moveTo(left, baseY); ctx.lineTo(left+width, baseY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(left+60, 40); ctx.lineTo(left+60, 330); ctx.stroke();
+    ctx.strokeStyle = styles.cyan; ctx.fillStyle = "rgba(103,239,255,0.14)";
+    ctx.beginPath();
+    for (let i=0;i<=400;i++) {
+      const x = i/400*6;
+      const y = 0.12*(x-2)*(x-5)+1.8;
+      const px = left+60 + x*90;
+      const py = baseY - y*70;
+      if (i===0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
     }
-
-    function stash() {
-      localStorage.setItem(APP.storageKey, JSON.stringify({
-        theme: state.theme,
-        favorites: state.favorites,
-        view: state.view,
-        missionNotes: state.missionNotes,
-        labHistory: state.labHistory.slice(0, 25),
-        lastSearch: state.lastSearch
-      }));
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(left+60, baseY);
+    for (let i=0;i<=260;i++) {
+      const x = i/260*4;
+      const y = 0.12*(x-2)*(x-5)+1.8;
+      ctx.lineTo(left+60 + x*90, baseY - y*70);
     }
+    ctx.lineTo(left+60+4*90, baseY); ctx.closePath(); ctx.fill();
+    label("Area accumulates; differentiation reads local slope.", 120, 52, styles.text, 22);
+    $("simNote").textContent = "The shaded region stands for accumulated quantity. The theorem says accumulation and instantaneous rate are inverse views of the same structure.";
+  } else {
+    label("This proof is tagged as simulation-ready, but its custom visual has not been forged yet.", 34, 52, styles.text, 22);
+    $("simNote").textContent = "Placeholder simulation layer. The debug validator will keep nagging us until more custom visuals are added.";
+  }
+}
 
-    function hydrate() {
-      try {
-        const raw = localStorage.getItem(APP.storageKey);
-        if (!raw) return;
-        const saved = JSON.parse(raw);
-        if (saved && typeof saved === "object") {
-          state.theme = saved.theme || "dark";
-          state.favorites = Array.isArray(saved.favorites) ? saved.favorites : [];
-          state.view = saved.view || "all";
-          state.missionNotes = saved.missionNotes || "";
-          state.labHistory = Array.isArray(saved.labHistory) ? saved.labHistory : [];
-          state.lastSearch = saved.lastSearch || "";
-        }
-      } catch (err) {
-        log("hydrate failure: " + err.message);
-      }
+function applyTheme(light) {
+  document.body.classList.toggle("light", !!light);
+  $("themeBtn").textContent = light ? "🌙 Theme" : "☀️ Theme";
+}
+
+function createStars() {
+  const canvas = $("stars"), ctx = canvas.getContext("2d");
+  function size() { canvas.width = innerWidth; canvas.height = innerHeight; }
+  size(); addEventListener("resize", size);
+  const stars = Array.from({length: 140}, () => ({
+    x: Math.random()*canvas.width, y: Math.random()*canvas.height, s: Math.random()*2+0.4, v: Math.random()*0.22+0.03
+  }));
+  function tick() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for (const st of stars) {
+      ctx.globalAlpha = Math.random()*0.6 + 0.25;
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(st.x, st.y, st.s, st.s);
+      st.y += st.v;
+      if (st.y > canvas.height) { st.y = 0; st.x = Math.random()*canvas.width; }
     }
+    requestAnimationFrame(tick);
+  }
+  tick();
+}
 
-    function log(message) {
-      const stamp = new Date().toLocaleTimeString();
-      state.logs.unshift(`[${stamp}] ${message}`);
-      state.logs = state.logs.slice(0, 120);
-      const box = $("logBox");
-      if (box) box.textContent = state.logs.join("\n");
-    }
+function runChecks(announce) {
+  const proofs = allProofs();
+  const checks = [
+    {label:"Vault has at least 25 cards", ok: proofs.length >= 25},
+    {label:"Every card has a source spine", ok: proofs.every(p => Array.isArray(p.sources))},
+    {label:"At least 4 simulations exist", ok: proofs.filter(hasSim).length >= 4},
+    {label:"At least 3 peer-reviewed tags exist", ok: proofs.filter(p => p.peer).length >= 3},
+    {label:"Mission note slot live", ok: typeof state.mission === "string"},
+    {label:"Custom-card storage available", ok: Array.isArray(state.custom)}
+  ];
+  $("dbgVersion").textContent = VERSION;
+  $("dbgCards").textContent = proofs.length;
+  $("dbgPeer").textContent = proofs.filter(p => p.peer).length;
+  $("dbgSim").textContent = proofs.filter(hasSim).length;
+  $("dbgCustom").textContent = state.custom.length;
+  $("debugStatus").innerHTML = checks.map(c => `<div class="status-row"><strong>${escapeHtml(c.label)}</strong><span class="${c.ok ? "status-ok" : "status-warn"}">${c.ok ? "OK" : "Needs work"}</span></div>`).join("");
+  const missingSources = proofs.filter(p => !p.sources || !p.sources.length).map(p => p.title);
+  const staticReady = proofs.filter(p => hasSim(p) && !["pythag","bayes","orbit","euler","area"].includes(p.sim)).map(p => p.title);
+  const lines = [
+    `Version: ${VERSION}`,
+    `Cards loaded: ${proofs.length}`,
+    `Peer-reviewed tagged: ${proofs.filter(p => p.peer).length}`,
+    `Simulation-ready cards: ${proofs.filter(hasSim).length}`,
+    `Custom cards: ${state.custom.length}`,
+    `Favorites: ${state.favorites.length}`,
+    `Missing source list count: ${missingSources.length}`,
+    `Simulation placeholders count: ${staticReady.length}`,
+    "",
+    missingSources.length ? "Cards missing sources:\n- " + missingSources.join("\n- ") : "All cards include a source array.",
+    "",
+    staticReady.length ? "Simulation-tagged cards without custom visual yet:\n- " + staticReady.join("\n- ") : "All currently active simulation types have a custom visual."
+  ];
+  $("debugLog").textContent = lines.join("\n");
+  if (announce) {
+    $("debugDrawer").classList.add("open");
+  }
+}
+function copyDebugReport() { navigator.clipboard.writeText($("debugLog").textContent); }
+function exportState() {
+  const payload = {
+    version: VERSION,
+    mission: state.mission,
+    favorites: state.favorites,
+    custom: state.custom
+  };
+  navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
+}
+function importState() {
+  const raw = prompt("Paste exported state JSON");
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    state.mission = data.mission || "";
+    state.favorites = Array.isArray(data.favorites) ? data.favorites : [];
+    state.custom = Array.isArray(data.custom) ? data.custom : [];
+    localStorage.setItem("proofspace.vault.mission", state.mission);
+    saveJSON("proofspace.vault.favorites", state.favorites);
+    saveJSON("proofspace.vault.customCards", state.custom);
+    $("missionNotes").value = state.mission;
+    updateMission();
+    populateFilters();
+    render();
+    runChecks(true);
+  } catch {
+    alert("That import was not valid JSON.");
+  }
+}
 
-    function applyTheme() {
-      document.body.classList.toggle("light", state.theme === "light");
-      $("themeBtn").textContent = state.theme === "light" ? "🌙 Theme" : "☀️ Theme";
-      stash();
-      refreshDebugSnapshot();
-    }
-
-    function toggleTheme() {
-      state.theme = state.theme === "light" ? "dark" : "light";
-      applyTheme();
-      log(`theme changed to ${state.theme}`);
-    }
-
-    function renderQuickChips() {
-      const labels = [
-        { key: "all", label: "Show all" },
-        { key: "favorites", label: "Favorites" },
-        { key: "Space", label: "Space" },
-        { key: "Physics", label: "Physics" },
-        { key: "Calculus", label: "Calculus" },
-        { key: "Advanced", label: "Advanced +" }
-      ];
-      const wrap = $("quickChips");
-      wrap.innerHTML = "";
-      labels.forEach(item => {
-        const btn = document.createElement("button");
-        btn.className = "chip" + (
-          (item.key === "favorites" && state.view === "favorites") ||
-          (item.key === "all" && state.view === "all") ? " active" : ""
-        );
-        btn.type = "button";
-        btn.textContent = item.label;
-        btn.addEventListener("click", () => {
-          if (item.key === "favorites") {
-            state.view = state.view === "favorites" ? "all" : "favorites";
-          } else if (item.key === "Advanced") {
-            $("difficultySelect").value = "Advanced";
-            state.view = "all";
-          } else if (item.key === "all") {
-            state.view = "all";
-            $("categorySelect").value = "all";
-            $("difficultySelect").value = "all";
-          } else {
-            $("categorySelect").value = item.key;
-            state.view = "all";
-          }
-          stash();
-          renderQuickChips();
-          updateFilters();
-        });
-        wrap.appendChild(btn);
-      });
-    }
-
-    function populateCategorySelect() {
-      const categories = [...new Set(proofsDB.map(p => p.category))].sort();
-      const select = $("categorySelect");
-      categories.forEach(cat => {
-        const option = document.createElement("option");
-        option.value = cat;
-        option.textContent = cat;
-        select.appendChild(option);
-      });
-    }
-
-    function timeLabel(minutes) {
-      return `${minutes} min`;
-    }
-
-    function isFavorite(id) {
-      return state.favorites.includes(id);
-    }
-
-    function toggleFavorite(id) {
-      if (isFavorite(id)) {
-        state.favorites = state.favorites.filter(x => x !== id);
-        log(`removed favorite: theorem ${id}`);
-      } else {
-        state.favorites.unshift(id);
-        state.favorites = [...new Set(state.favorites)];
-        log(`added favorite: theorem ${id}`);
-      }
-      stash();
-      renderQuickChips();
-      updateFilters();
-      updateMetrics();
-      refreshModalFavorite();
-      refreshDebugSnapshot();
-    }
-
-    function createProofCard(proof) {
-      const article = document.createElement("article");
-      article.className = "proof-card";
-      article.tabIndex = 0;
-      article.innerHTML = `
-        <div class="proof-top">
-          <div class="proof-icon">${proof.graphic}</div>
-          <div class="tag-row">
-            <div class="tag">${proof.category}</div>
-            <div class="tag">${proof.difficulty}</div>
-          </div>
-        </div>
-        <h3 class="proof-title">${proof.title}</h3>
-        <div class="proof-formula">${escapeHtml(proof.proof)}</div>
-        <div class="proof-copy">${proof.explanation}</div>
-        <div class="proof-footer">
-          <div>${timeLabel(proof.readTime)} read</div>
-          <button class="icon-btn ${isFavorite(proof.id) ? "active" : ""}" type="button" aria-label="favorite theorem">${isFavorite(proof.id) ? "❤️" : "🤍"}</button>
-        </div>
-      `;
-      article.addEventListener("click", (e) => {
-        if (e.target.closest(".icon-btn")) return;
-        openModal(proof.id);
-      });
-      article.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") openModal(proof.id);
-      });
-      article.querySelector(".icon-btn").addEventListener("click", (e) => {
-        e.stopPropagation();
-        toggleFavorite(proof.id);
-      });
-      return article;
-    }
-
-    function updateFilters() {
-      const search = $("searchInput").value.trim().toLowerCase();
-      const category = $("categorySelect").value;
-      const difficulty = $("difficultySelect").value;
-      const sort = $("sortSelect").value;
-      state.lastSearch = search;
-      stash();
-
-      filteredProofs = proofsDB.filter(proof => {
-        const haystack = [
-          proof.title,
-          proof.category,
-          proof.difficulty,
-          proof.proof,
-          proof.explanation,
-          proof.usage,
-          proof.challenge
-        ].join(" ").toLowerCase();
-
-        if (state.view === "favorites" && !isFavorite(proof.id)) return false;
-        if (category !== "all" && proof.category !== category) return false;
-        if (difficulty !== "all" && proof.difficulty !== difficulty) return false;
-        if (search && !haystack.includes(search)) return false;
-        return true;
-      });
-
-      filteredProofs.sort((a, b) => {
-        if (sort === "title") return a.title.localeCompare(b.title);
-        if (sort === "difficulty") return difficultyRank[a.difficulty] - difficultyRank[b.difficulty];
-        if (sort === "time") return a.readTime - b.readTime;
-        const score = p =>
-          (isFavorite(p.id) ? -50 : 0) +
-          (p.category === "Space" ? -10 : 0) +
-          difficultyRank[p.difficulty];
-        return score(a) - score(b) || a.title.localeCompare(b.title);
-      });
-
-      renderProofGrid();
-      renderQuickChips();
-      updateMetrics();
-      refreshDebugSnapshot();
-      log(`filters applied: ${filteredProofs.length} theorem(s) visible`);
-    }
-
-    function renderProofGrid() {
-      const grid = $("proofGrid");
-      grid.innerHTML = "";
-      filteredProofs.forEach(proof => grid.appendChild(createProofCard(proof)));
-      $("emptyState").style.display = filteredProofs.length ? "none" : "block";
-    }
-
-    function updateMetrics() {
-      $("metricProofs").textContent = proofsDB.length;
-      $("metricFavorites").textContent = state.favorites.length;
-      $("metricHistory").textContent = state.labHistory.length;
-      $("metricStatus").textContent = runChecks({silent:true}).every(x => x.ok) ? "READY" : "CHECK";
-      $("favoritesCount").textContent = state.favorites.length;
-    }
-
-    function openModal(id) {
-      const proof = proofsDB.find(p => p.id === id);
-      if (!proof) return;
-      state.currentProofId = id;
-      $("modalBadge").textContent = `${proof.category} • ${proof.difficulty}`;
-      $("modalTitle").textContent = proof.title;
-      $("modalGraphic").textContent = proof.graphic;
-      $("modalFormula").textContent = proof.proof;
-      $("modalExplanation").textContent = proof.explanation;
-      $("modalUsage").textContent = proof.usage;
-      $("modalChallenge").textContent = proof.challenge;
-      refreshModalFavorite();
-      $("proofModal").classList.add("open");
-      log(`opened modal: ${proof.title}`);
-    }
-
-    function closeModal() {
-      $("proofModal").classList.remove("open");
-    }
-
-    function refreshModalFavorite() {
-      const proof = proofsDB.find(p => p.id === state.currentProofId);
-      if (!proof) return;
-      const btn = $("favoriteModalBtn");
-      const active = isFavorite(proof.id);
-      btn.textContent = active ? "❤️ Favorited" : "❤️ Favorite";
-    }
-
-    function randomTheorem() {
-      const source = state.view === "favorites"
-        ? proofsDB.filter(p => isFavorite(p.id))
-        : proofsDB;
-      const pool = source.length ? source : proofsDB;
-      const pick = pool[Math.floor(Math.random() * pool.length)];
-      openModal(pick.id);
-      log(`random theorem selected: ${pick.title}`);
-    }
-
-    function showFavoritesOnly() {
-      state.view = state.view === "favorites" ? "all" : "favorites";
-      renderQuickChips();
-      updateFilters();
-    }
-
-    function syncMission() {
-      state.missionNotes = $("missionNotes").value.trim();
-      $("missionMirror").textContent = state.missionNotes || "No mission note yet. Drop a next-step idea above and it will live here.";
-      stash();
-      refreshDebugSnapshot();
-    }
-
-    function sanitizeExpression(expr) {
-      return expr
-        .replace(/\s+/g, "")
-        .replace(/\^/g, "**")
-        .replace(/\bpi\b/gi, "Math.PI")
-        .replace(/\be\b/g, "Math.E")
-        .replace(/\bsin\b/gi, "Math.sin")
-        .replace(/\bcos\b/gi, "Math.cos")
-        .replace(/\btan\b/gi, "Math.tan")
-        .replace(/\basin\b/gi, "Math.asin")
-        .replace(/\bacos\b/gi, "Math.acos")
-        .replace(/\batan\b/gi, "Math.atan")
-        .replace(/\bsqrt\b/gi, "Math.sqrt")
-        .replace(/\babs\b/gi, "Math.abs")
-        .replace(/\blog10\b/gi, "Math.log10")
-        .replace(/\blog\b/gi, "Math.log")
-        .replace(/\bexp\b/gi, "Math.exp")
-        .replace(/\bpow\b/gi, "Math.pow")
-        .replace(/\bmin\b/gi, "Math.min")
-        .replace(/\bmax\b/gi, "Math.max");
-    }
-
-    function buildEvaluator(expr) {
-      const cleaned = sanitizeExpression(expr);
-      if (!/^[0-9xX+\-*/().,**MathPIEasincoqrtanlgexpwminmaxabs]+$/i.test(cleaned.replace(/Math\./g, "Math"))) {
-        throw new Error("Expression contains unsupported characters.");
-      }
-      return new Function("x", `"use strict"; return (${cleaned});`);
-    }
-
-    function addHistory(kind, input, output) {
-      state.labHistory.unshift({
-        kind,
-        input,
-        output,
-        stamp: new Date().toLocaleString()
-      });
-      state.labHistory = state.labHistory.slice(0, 12);
-      stash();
-      renderHistory();
-      updateMetrics();
-      refreshDebugSnapshot();
-    }
-
-    function renderHistory() {
-      const wrap = $("labHistory");
-      wrap.innerHTML = "";
-      if (!state.labHistory.length) {
-        wrap.innerHTML = `<div class="history-item"><div class="history-body">No lab history yet.</div></div>`;
-        return;
-      }
-      state.labHistory.forEach(entry => {
-        const div = document.createElement("div");
-        div.className = "history-item";
-        div.innerHTML = `
-          <div class="history-top">
-            <span>${entry.kind}</span>
-            <span>${entry.stamp}</span>
-          </div>
-          <div class="history-body">${escapeHtml(entry.input)}\n→ ${escapeHtml(entry.output)}</div>
-        `;
-        wrap.appendChild(div);
-      });
-    }
-
-    function setLabResult(text) {
-      $("labResult").textContent = text;
-    }
-
-    function evaluateFormula() {
-      const expr = $("formulaInput").value.trim();
-      if (!expr) {
-        setLabResult("Type an expression first.");
-        return;
-      }
-      try {
-        const f = buildEvaluator(expr);
-        const result = f(0);
-        const out = `eval(${expr}) = ${formatNumber(result)}`;
-        setLabResult(out);
-        addHistory("evaluate", expr, out);
-        log(`lab evaluate ok: ${expr}`);
-      } catch (err) {
-        const out = `Evaluation failed: ${err.message}`;
-        setLabResult(out);
-        log(out);
-      }
-    }
-
-    function derivativeAtPoint() {
-      const expr = $("formulaInput").value.trim();
-      if (!expr) {
-        setLabResult("Type a function of x first, like x^3 - 2*x + 1");
-        return;
-      }
-      const raw = prompt("Estimate derivative at what x value?", "1");
-      if (raw === null) return;
-      const x = Number(raw);
-      if (!Number.isFinite(x)) {
-        setLabResult("That x value is not valid.");
-        return;
-      }
-      try {
-        const f = buildEvaluator(expr);
-        const h = 1e-5;
-        const result = (f(x + h) - f(x - h)) / (2 * h);
-        const out = `d/dx[${expr}] at x=${formatNumber(x)} ≈ ${formatNumber(result)}`;
-        setLabResult(out);
-        addHistory("derivative", `${expr} @ x=${x}`, out);
-        log(`lab derivative ok: ${expr} @ ${x}`);
-      } catch (err) {
-        const out = `Derivative failed: ${err.message}`;
-        setLabResult(out);
-        log(out);
-      }
-    }
-
-    function integrateExpression() {
-      const expr = $("formulaInput").value.trim();
-      if (!expr) {
-        setLabResult("Type a function of x first.");
-        return;
-      }
-      const aRaw = prompt("Lower bound a?", "0");
-      if (aRaw === null) return;
-      const bRaw = prompt("Upper bound b?", "1");
-      if (bRaw === null) return;
-      const a = Number(aRaw);
-      const b = Number(bRaw);
-      if (!Number.isFinite(a) || !Number.isFinite(b)) {
-        setLabResult("Bounds must be valid numbers.");
-        return;
-      }
-      try {
-        const f = buildEvaluator(expr);
-        const n = 2000;
-        const width = (b - a) / n;
-        let sum = 0;
-        for (let i = 0; i < n; i++) {
-          const x = a + (i + 0.5) * width;
-          sum += f(x);
-        }
-        const result = sum * width;
-        const out = `∫[${formatNumber(a)}→${formatNumber(b)}] ${expr} dx ≈ ${formatNumber(result)}`;
-        setLabResult(out);
-        addHistory("integral", `${expr} from ${a} to ${b}`, out);
-        log(`lab integral ok: ${expr} from ${a} to ${b}`);
-      } catch (err) {
-        const out = `Integral failed: ${err.message}`;
-        setLabResult(out);
-        log(out);
-      }
-    }
-
-    function sumSequence() {
-      const expr = $("formulaInput").value.trim();
-      if (!expr) {
-        setLabResult("Type a sequence expression in x, like x^2 or 1/x");
-        return;
-      }
-      const nRaw = prompt("Sum from x=1 to what n?", "10");
-      if (nRaw === null) return;
-      const n = Number(nRaw);
-      if (!Number.isInteger(n) || n < 1 || n > 100000) {
-        setLabResult("n must be an integer between 1 and 100000.");
-        return;
-      }
-      try {
-        const f = buildEvaluator(expr);
-        let sum = 0;
-        for (let x = 1; x <= n; x++) sum += f(x);
-        const out = `Σ[x=1→${n}] ${expr} ≈ ${formatNumber(sum)}`;
-        setLabResult(out);
-        addHistory("sum", `${expr} to n=${n}`, out);
-        log(`lab sum ok: ${expr} to ${n}`);
-      } catch (err) {
-        const out = `Sequence sum failed: ${err.message}`;
-        setLabResult(out);
-        log(out);
-      }
-    }
-
-    function clearLabHistory() {
-      state.labHistory = [];
-      stash();
-      renderHistory();
-      updateMetrics();
-      refreshDebugSnapshot();
-      setLabResult("Lab history cleared.");
-      log("lab history cleared");
-    }
-
-    function formatNumber(value) {
-      if (typeof value !== "number" || !Number.isFinite(value)) return String(value);
-      const abs = Math.abs(value);
-      if ((abs >= 1e6 || (abs > 0 && abs < 1e-4))) return value.toExponential(6);
-      return Number(value.toFixed(10)).toString();
-    }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-    }
-
-    function runChecks(opts = {}) {
-      const results = [
-        { label: "Theorem vault loaded", ok: Array.isArray(proofsDB) && proofsDB.length >= 12 },
-        { label: "Favorites state usable", ok: Array.isArray(state.favorites) },
-        { label: "Formula input present", ok: !!$("formulaInput") },
-        { label: "Debug drawer present", ok: !!$("debugDrawer") },
-        { label: "Modal present", ok: !!$("proofModal") },
-        { label: "Mission notes wired", ok: typeof $("missionNotes")?.value === "string" }
-      ];
-
-      const checksWrap = $("debugChecks");
-      if (checksWrap) {
-        checksWrap.innerHTML = "";
-        results.forEach(item => {
-          const row = document.createElement("div");
-          row.className = "status-row";
-          row.innerHTML = `<strong>${item.label}</strong><span class="${item.ok ? "status-ok" : "status-warn"}">${item.ok ? "ok" : "issue"}</span>`;
-          checksWrap.appendChild(row);
-        });
-      }
-
-      if (!opts.silent) {
-        const failed = results.filter(x => !x.ok).length;
-        log(failed ? `self-checks completed with ${failed} issue(s)` : "self-checks all green");
-      }
-      refreshDebugSnapshot();
-      return results;
-    }
-
-    function refreshDebugSnapshot() {
-      $("dbgVersion").textContent = `${APP.version} • ${APP.codename}`;
-      $("dbgDate").textContent = APP.buildDate;
-      $("dbgTheme").textContent = state.theme;
-      $("dbgViewport").textContent = `${window.innerWidth} × ${window.innerHeight}`;
-      $("dbgTheorems").textContent = proofsDB.length;
-      $("dbgFavorites").textContent = state.favorites.length;
-      $("dbgHistory").textContent = state.labHistory.length;
-      $("logBox").textContent = state.logs.join("\n");
-    }
-
-    function openDebug() {
-      $("debugDrawer").classList.add("open");
-      refreshDebugSnapshot();
-      runChecks({silent:true});
-      log("debug drawer opened");
-    }
-
-    function closeDebug() {
-      $("debugDrawer").classList.remove("open");
-    }
-
-    function buildReport() {
-      const checks = runChecks({silent:true});
-      const visible = filteredProofs.length;
-      return [
-        "ProofSpace Forge Report",
-        `Version: ${APP.version} • ${APP.codename}`,
-        `Build date: ${APP.buildDate}`,
-        `Theme: ${state.theme}`,
-        `Viewport: ${window.innerWidth} x ${window.innerHeight}`,
-        `Theorems loaded: ${proofsDB.length}`,
-        `Visible theorems: ${visible}`,
-        `Favorites: ${state.favorites.length}`,
-        `Lab history: ${state.labHistory.length}`,
-        `Mission notes length: ${state.missionNotes.length}`,
-        "",
-        "Checks:",
-        ...checks.map(c => `- ${c.label}: ${c.ok ? "OK" : "ISSUE"}`),
-        "",
-        "Recent log:",
-        ...state.logs.slice(0, 16)
-      ].join("\n");
-    }
-
-    async function copyText(text, successLabel) {
-      try {
-        await navigator.clipboard.writeText(text);
-        log(successLabel);
-      } catch (err) {
-        log("clipboard copy failed");
-        alert("Copy failed in this browser context.");
-      }
-    }
-
-    function exportState() {
-      const payload = JSON.stringify({
-        app: APP.version,
-        exportedAt: new Date().toISOString(),
-        state: {
-          theme: state.theme,
-          favorites: state.favorites,
-          view: state.view,
-          missionNotes: state.missionNotes,
-          labHistory: state.labHistory,
-          lastSearch: state.lastSearch
-        }
-      }, null, 2);
-      $("stateBox").value = payload;
-      log("state exported to debug box");
-    }
-
-    function importState() {
-      const raw = $("stateBox").value.trim();
-      if (!raw) {
-        alert("Paste exported state into the box first.");
-        return;
-      }
-      try {
-        const parsed = JSON.parse(raw);
-        const incoming = parsed.state || parsed;
-        state.theme = incoming.theme || state.theme;
-        state.favorites = Array.isArray(incoming.favorites) ? incoming.favorites : state.favorites;
-        state.view = incoming.view || state.view;
-        state.missionNotes = incoming.missionNotes || "";
-        state.labHistory = Array.isArray(incoming.labHistory) ? incoming.labHistory.slice(0, 12) : [];
-        state.lastSearch = incoming.lastSearch || "";
-        $("searchInput").value = state.lastSearch;
-        $("missionNotes").value = state.missionNotes;
-        syncMission();
-        applyTheme();
-        renderHistory();
-        updateFilters();
-        stash();
-        log("state imported");
-      } catch (err) {
-        log("state import failed");
-        alert("Import failed: invalid JSON state payload.");
-      }
-    }
-
-    function resetState() {
-      if (!confirm("Reset local ProofSpace state? Favorites, notes, and lab history will be cleared.")) return;
-      localStorage.removeItem(APP.storageKey);
-      state.theme = "dark";
-      state.favorites = [];
-      state.view = "all";
-      state.missionNotes = "";
-      state.labHistory = [];
-      state.lastSearch = "";
-      $("searchInput").value = "";
-      $("missionNotes").value = "";
-      $("categorySelect").value = "all";
-      $("difficultySelect").value = "all";
-      $("sortSelect").value = "featured";
-      syncMission();
-      applyTheme();
-      renderHistory();
-      renderQuickChips();
-      updateFilters();
-      log("local state reset");
-    }
-
-    function createParticles() {
-      const canvas = $("particles");
-      const ctx = canvas.getContext("2d");
-      let stars = [];
-
-      function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        stars = Array.from({length: Math.min(180, Math.floor((canvas.width * canvas.height) / 12000))}, () => ({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          size: Math.random() * 1.8 + 0.4,
-          speed: Math.random() * 0.22 + 0.04
-        }));
-        refreshDebugSnapshot();
-      }
-
-      function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = document.body.classList.contains("light") ? "rgba(24, 34, 57, 0.45)" : "rgba(255,255,255,0.9)";
-        stars.forEach(s => {
-          ctx.globalAlpha = Math.random() * 0.5 + 0.25;
-          ctx.fillRect(s.x, s.y, s.size, s.size);
-          s.y += s.speed;
-          if (s.y > canvas.height) {
-            s.y = 0;
-            s.x = Math.random() * canvas.width;
-          }
-        });
-        requestAnimationFrame(draw);
-      }
-
-      resize();
-      draw();
-      window.addEventListener("resize", resize);
-    }
-
-    function bindEvents() {
-      $("themeBtn").addEventListener("click", toggleTheme);
-      $("surpriseBtn").addEventListener("click", randomTheorem);
-      $("favoritesBtn").addEventListener("click", showFavoritesOnly);
-      $("debugBtnTop").addEventListener("click", openDebug);
-      $("debugFab").addEventListener("click", openDebug);
-      $("closeDebugBtn").addEventListener("click", closeDebug);
-      $("closeDebugBtn2").addEventListener("click", closeDebug);
-
-      $("searchInput").addEventListener("input", updateFilters);
-      $("categorySelect").addEventListener("change", updateFilters);
-      $("difficultySelect").addEventListener("change", updateFilters);
-      $("sortSelect").addEventListener("change", updateFilters);
-
-      $("missionNotes").addEventListener("input", syncMission);
-
-      $("evalBtn").addEventListener("click", evaluateFormula);
-      $("deriveBtn").addEventListener("click", derivativeAtPoint);
-      $("integrateBtn").addEventListener("click", integrateExpression);
-      $("sumBtn").addEventListener("click", sumSequence);
-      $("clearLabBtn").addEventListener("click", clearLabHistory);
-      $("formulaInput").addEventListener("keydown", (e) => {
-        if (e.key === "Enter") evaluateFormula();
-      });
-
-      $("proofModal").addEventListener("click", (e) => {
-        if (e.target === $("proofModal")) closeModal();
-      });
-      $("closeModalBtn").addEventListener("click", closeModal);
-      $("closeModalBtn2").addEventListener("click", closeModal);
-
-      $("copyFormulaBtn").addEventListener("click", () => {
-        const proof = proofsDB.find(p => p.id === state.currentProofId);
-        if (!proof) return;
-        copyText(proof.proof, `copied formula: ${proof.title}`);
-      });
-
-      $("favoriteModalBtn").addEventListener("click", () => {
-        if (state.currentProofId != null) toggleFavorite(state.currentProofId);
-      });
-
-      $("runChecksBtn").addEventListener("click", () => runChecks());
-      $("copyReportBtn").addEventListener("click", () => copyText(buildReport(), "debug report copied"));
-      $("exportStateBtn").addEventListener("click", exportState);
-      $("importStateBtn").addEventListener("click", importState);
-      $("resetStateBtn").addEventListener("click", resetState);
-
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          closeModal();
-          closeDebug();
-        }
-        if (e.key === "/" && document.activeElement !== $("searchInput")) {
-          e.preventDefault();
-          $("searchInput").focus();
-        }
-        if (e.key.toLowerCase() === "d" && e.shiftKey) {
-          openDebug();
-        }
-      });
-    }
-
-    function boot() {
-      hydrate();
-      $("versionBadge").textContent = `${APP.version} • ${APP.codename} • ${APP.buildDate}`;
-      populateCategorySelect();
-      $("searchInput").value = state.lastSearch;
-      $("missionNotes").value = state.missionNotes;
-      syncMission();
-      applyTheme();
-      renderQuickChips();
-      renderHistory();
-      bindEvents();
-      updateFilters();
-      updateMetrics();
-      createParticles();
-      runChecks({silent:true});
-      refreshDebugSnapshot();
-      log("forge boot complete");
-    }
-
-    boot();
-  </script>
+init();
+</script>
 </body>
 </html>
