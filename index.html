@@ -18,6 +18,43 @@ main{max-width:1320px;margin:0 auto;padding:18px 16px 120px}.hero{display:grid;g
 .modal{display:none;position:fixed;inset:0;background:rgba(5,7,12,.86);z-index:120;padding:14px;align-items:center;justify-content:center}.modal.show{display:flex}.modal-content{width:min(1120px,100%);max-height:94vh;overflow:auto;background:linear-gradient(180deg,#121826,#0d1320);border:1px solid rgba(125,211,252,.18);border-radius:30px;box-shadow:0 30px 60px rgba(0,0,0,.45),0 0 44px rgba(125,211,252,.08)}.modal-head{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:center;position:sticky;top:0;background:rgba(18,24,38,.96);backdrop-filter:blur(12px)}.modal-grid{padding:20px 22px 24px;display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.section{padding:16px;border:1px solid var(--line);border-radius:20px;background:#0d1320}.section h3{margin:0 0 10px 0;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#8fdcff}.section p,.section li{line-height:1.62;color:#e2e9fb}.sim-wrap{height:280px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,rgba(125,211,252,.13),transparent 46%),#081018;border-radius:20px;border:1px solid var(--line);position:relative;overflow:hidden}.sim-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .debug-btn{position:fixed;right:14px;bottom:14px;z-index:130}.drawer{position:fixed;right:14px;bottom:72px;width:min(420px,calc(100vw - 28px));max-height:70vh;overflow:auto;display:none;z-index:140}.drawer.show{display:block}pre{white-space:pre-wrap;word-break:break-word;background:#0a101a;padding:14px;border-radius:16px;border:1px solid var(--line);font-size:12px;color:#dce8ff}.workbench-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.footer-note{margin-top:16px;color:#9bb0d6;font-size:13px}
 @media (max-width:960px){.hero,.modal-grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar{grid-template-columns:1fr 1fr}}@media (max-width:560px){h1{font-size:24px}.stats{grid-template-columns:1fr 1fr}.toolbar{grid-template-columns:1fr}}
+
+.forge-shell{margin:0 0 18px 0;display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+.forge-panel{position:relative;overflow:hidden}
+.forge-panel::before{content:"";position:absolute;inset:0;background:
+radial-gradient(circle at 18% 22%, rgba(125,211,252,.15), transparent 24%),
+radial-gradient(circle at 80% 20%, rgba(167,139,250,.16), transparent 26%),
+radial-gradient(circle at 50% 100%, rgba(255,209,102,.10), transparent 34%);
+pointer-events:none}
+.forge-title{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.forge-core{position:relative;border-radius:24px;border:1px solid rgba(125,211,252,.18);background:
+linear-gradient(180deg, rgba(12,18,30,.96), rgba(8,13,22,.96));padding:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+.forge-inputs{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:12px}
+.forge-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{padding:8px 12px;border-radius:999px;border:1px solid rgba(125,211,252,.24);background:rgba(125,211,252,.08);color:#dff6ff;font-size:12px;font-weight:700;cursor:pointer}
+.chip:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(125,211,252,.18)}
+.forge-result{margin-top:14px;min-height:220px;border:1px solid rgba(125,211,252,.14);border-radius:22px;background:linear-gradient(180deg, rgba(9,14,24,.95), rgba(7,10,18,.98));padding:16px}
+.result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.result-stat{padding:12px;border-radius:18px;border:1px solid #283247;background:#0c1320}
+.result-stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.9px}
+.result-stat .v{font-size:20px;font-weight:800;margin-top:4px}
+.quest-list,.theorem-picks{display:grid;gap:10px;margin-top:12px}
+.quest{padding:12px;border-radius:18px;border:1px solid rgba(167,139,250,.24);background:rgba(167,139,250,.08)}
+.meme-banner{margin-top:10px;padding:12px 14px;border-radius:16px;background:linear-gradient(90deg, rgba(255,209,102,.18), rgba(125,211,252,.12));border:1px solid rgba(255,209,102,.22);font-weight:800;color:#fff2c2}
+.forge-canvas-wrap{position:relative;min-height:420px}
+#forgeCanvas{width:100%;height:420px;border-radius:24px;border:1px solid rgba(125,211,252,.18);background:
+radial-gradient(circle at 50% 50%, rgba(125,211,252,.08), transparent 45%),#081018}
+.shards-badge{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,209,102,.24);background:rgba(255,209,102,.08);color:#ffe8a6;font-weight:800}
+.spark{position:absolute;width:8px;height:8px;border-radius:999px;pointer-events:none;z-index:9;opacity:.95;animation:sparkFly 1100ms ease-out forwards}
+@keyframes sparkFly{to{transform:translate(var(--dx),var(--dy)) scale(.1);opacity:0}}
+.confetti{position:fixed;top:-10px;width:10px;height:18px;border-radius:3px;pointer-events:none;z-index:400;animation:confettiDrop 1600ms ease-in forwards}
+@keyframes confettiDrop{to{transform:translateY(110vh) rotate(560deg);opacity:0}}
+.forge-mini-note{font-size:13px;color:#a8b9da;margin-top:8px}
+.crew-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.crew-pill{padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:#101827;color:#dcebff;font-size:12px}
+@media (max-width:960px){.forge-shell,.result-grid{grid-template-columns:1fr}.forge-inputs{grid-template-columns:1fr}}
+
 </style></head><body>
 <canvas id="stars"></canvas>
 <header class="header"><div class="header-inner"><div class="brand"><div class="orb">∞</div><div><h1>ProofSpace Vault</h1><div class="sub" id="versionLine">v10.0 • Celestial Crown Edition • Apr 12 2026</div></div></div><div class="actions"><button onclick="randomCard()">🎲 Random</button><button onclick="showOnlyFavorites()">❤️ Favorites <span id="favCount">0</span></button><button class="primary" onclick="scrollToWorkbench()">✍️ Add Proof Card</button></div></div></header>
@@ -26,6 +63,48 @@ main{max-width:1320px;margin:0 auto;padding:18px 16px 120px}.hero{display:grid;g
 <section class="featured-strip"><div class="featured-card"><div class="mini">Legendary flight math</div><h3>Tsiolkovsky, Vis-viva, Hohmann</h3><p>Moon-mission cards now lead with mission meaning, not just symbolic elegance.</p></div><div class="featured-card"><div class="mini">Frontier fire</div><h3>Open and impossible results</h3><p>Riemann, P vs NP, Gödel, Halting, and classical impossibilities sit in the same vault as the proven giants.</p></div><div class="featured-card"><div class="mini">Chosen elite</div><h3>Deep cards feel rarer</h3><p>The most important theorems get premium presentation and stronger narrative weight.</p></div><div class="featured-card"><div class="mini">Curator control</div><h3>Debug stays useful</h3><p>The engine room still tracks growth, thin sections, source slots, and custom card expansion.</p></div></section>
 <section class="toolbar"><input id="search" placeholder="Search the vault..." oninput="applyFilters()"><select id="cat" onchange="applyFilters()"><option value="all">All categories</option></select><select id="status" onchange="applyFilters()"><option value="all">All status</option><option value="Proven">Proven</option><option value="Open">Open</option><option value="Impossible in general">Impossible in general</option><option value="Impossible with straightedge and compass">Impossible with straightedge and compass</option></select><select id="sort" onchange="applyFilters()"><option value="title">Sort: title</option><option value="category">Sort: category</option><option value="difficulty">Sort: difficulty</option></select><button onclick="resetFilters()">Reset</button></section>
 <section id="grid"></section>
+
+<section class="forge-shell">
+  <div class="panel forge-panel">
+    <div class="forge-title">
+      <div>
+        <div class="eyebrow">Astral Forge • live event reactor</div>
+        <h2 style="margin:10px 0 0 0">Type a theorem, a mission, or a wild prompt and make the vault come alive</h2>
+      </div>
+      <div class="shards-badge">✦ Astral Shards <span id="shardCount">0</span></div>
+    </div>
+    <div class="forge-core" id="forgeCore">
+      <div class="forge-mini-note">Examples: <strong>Artemis II</strong>, <strong>Apollo 13 vs Artemis II</strong>, <strong>what if they went to Mars instead</strong>, <strong>Kepler’s Third Law</strong>, or a plain numeric expression like <strong>(252756-248655)</strong>.</div>
+      <div class="forge-inputs">
+        <input id="forgeInput" placeholder="Summon a theorem, mission, or question..." onkeydown="if(event.key==='Enter') runForge()">
+        <button class="primary" onclick="runForge()">⚡ Run Forge</button>
+      </div>
+      <div class="chip-row">
+        <button class="chip" onclick="setForgePrompt('Artemis II')">Artemis II</button>
+        <button class="chip" onclick="setForgePrompt('Apollo 13 vs Artemis II')">Apollo 13 vs Artemis II</button>
+        <button class="chip" onclick="setForgePrompt('moon flyby')">moon flyby</button>
+        <button class="chip" onclick="setForgePrompt('what if they went to Mars instead')">what if they went to Mars instead</button>
+        <button class="chip" onclick="setForgePrompt('Tsiolkovsky Rocket Equation')">Tsiolkovsky</button>
+      </div>
+      <div class="forge-actions">
+        <button onclick="igniteRandomCelebration()">🎆 Surprise me</button>
+        <button onclick="setForgePrompt('Kepler’s Third Law');runForge()">🪐 Orbital magic</button>
+        <button onclick="setForgePrompt('Riemann Hypothesis');runForge()">🧠 Frontier fire</button>
+      </div>
+      <div class="forge-result" id="forgeResult">
+        <div class="eyebrow">Forge standing by</div>
+        <p style="margin:12px 0 0 0">The reactor is hungry. Feed it a mission, theorem, or expression and it will answer with math, spectacle, and a little bit of cosmic nonsense.</p>
+      </div>
+    </div>
+  </div>
+  <div class="panel forge-panel">
+    <div class="forge-canvas-wrap">
+      <canvas id="forgeCanvas" width="720" height="420"></canvas>
+    </div>
+    <div class="forge-mini-note">When <strong>Artemis II</strong> is recognized, the reactor switches into mission mode and draws a stylized Earth–Moon flyby with linked orbital ideas.</div>
+  </div>
+</section>
+
 <section class="panel" id="workbench" style="margin-top:18px"><h2 style="margin-top:0">Curator Workbench</h2><p class="muted">Add your own proof card directly into local storage. This does not verify the source automatically; it gives you a fast way to keep building the vault while the debug drawer tells you what still needs refinement.</p><div class="workbench-grid"><input id="wbTitle" placeholder="Title"><input id="wbCategory" placeholder="Category"><input id="wbDifficulty" placeholder="Difficulty"><input id="wbStatus" placeholder="Status"><input id="wbBadge" placeholder="Badge: peer / textbook / authoritative / historical"><input id="wbStatement" placeholder="Statement"></div><textarea id="wbPlain" placeholder="Plain-English explanation" style="margin-top:10px;min-height:92px"></textarea><textarea id="wbWhy" placeholder="Why it matters / why it works" style="margin-top:10px;min-height:92px"></textarea><div class="actions" style="margin-top:10px"><button class="primary" onclick="addWorkbenchCard()">Add card</button><button onclick="exportVault()">Export local vault JSON</button><button onclick="copyDebugReport()">Copy curator report</button></div><div class="footer-note">Tip: the strongest next additions are more deep space cards, impossible constructions, and legendary open problems with source links tightened up.</div></section>
 </main>
 <div class="modal" id="modal" onclick="if(event.target.id==='modal') closeModal()"><div class="modal-content"><div class="modal-head"><div><div class="badges" id="mBadges"></div><h2 id="mTitle" style="margin:4px 0 0 0"></h2></div><div class="actions"><button onclick="toggleFavorite(currentCard.id)">❤️ Favorite</button><button onclick="closeModal()">Close</button></div></div><div class="modal-grid"><div><div class="section"><h3>Statement</h3><div id="mStatement" class="statement"></div></div><div class="section" style="margin-top:12px"><h3>Plain English</h3><p id="mPlain"></p></div><div class="section" style="margin-top:12px"><h3>Proof sketch</h3><p id="mProof"></p></div><div class="section" style="margin-top:12px"><h3>Why it works</h3><p id="mWhy"></p></div><div class="section" style="margin-top:12px"><h3>Why it matters</h3><p id="mMatters"></p></div><div class="section" style="margin-top:12px"><h3>Historical note</h3><p id="mHistory"></p></div><div class="section" style="margin-top:12px"><h3>Modern use</h3><p id="mModern"></p></div></div><div><div class="section"><h3>Simulation / demonstration</h3><div class="sim-wrap"><canvas id="simCanvas" width="460" height="280"></canvas></div><div class="sim-toolbar" id="simTools"></div></div><div class="section" style="margin-top:12px"><h3>Source spine</h3><ul id="mSources"></ul></div><div class="section" style="margin-top:12px"><h3>Related</h3><ul id="mRelated"></ul></div></div></div></div></div>
@@ -56,7 +135,7 @@ function toggleDrawer(){document.getElementById('drawer').classList.toggle('show
 function clearCustom(){if(!confirm('Clear local custom cards?')) return; customCards=[]; localStorage.setItem('proofspace_custom_cards','[]'); buildCategoryOptions(); applyFilters(); buildDebugReport(); log('local custom cards cleared')}
 async function copyDebugReport(){const text=document.getElementById('debugOut').textContent; try{await navigator.clipboard.writeText(text); log('curator report copied')}catch(e){log('curator report copy failed')}}
 function updateStats(){const items=allCards(); document.getElementById('favCount').textContent=favorites.length; document.getElementById('statCards').textContent=items.length; document.getElementById('statSpace').textContent=items.filter(c=>c.category==='Space').length; document.getElementById('statFrontier').textContent=items.filter(c=>(c.status||'').includes('Open')||(c.status||'').includes('Impossible')).length; document.getElementById('statSims').textContent=items.filter(c=>c.simulation && c.simulation!=='none').length}
-function buildDebugReport(){const items=allCards(); const sourced=items.filter(c=>(c.sources||[]).length>0); const placeholders=items.filter(c=>(c.sources||[]).some(s=>(s.tier||'').includes('placeholder'))); const sims=items.filter(c=>c.simulation && c.simulation!=='none'); const deepSpace=items.filter(c=>c.category==='Space'); const frontier=items.filter(c=>(c.status||'').includes('Open')||(c.status||'').includes('Impossible')); const missingModern=items.filter(c=>!c.modern||c.modern.length<60); const report=['ProofSpace Celestial Crown Report',`Version: ${VERSION}`,`Build date: ${BUILD_DATE}`,`Viewport: ${window.innerWidth} x ${window.innerHeight}`,`Cards loaded: ${items.length}`,`Visible cards: ${currentView.length}`,`Favorites: ${favorites.length}`,`Custom cards: ${customCards.length}`,'','Counts:',`- Space cards: ${deepSpace.length}`,`- Frontier / impossible cards: ${frontier.length}`,`- Simulation-enabled cards: ${sims.length}`,`- Cards with source slots: ${sourced.length}`,`- Cards with placeholder sources: ${placeholders.length}`,`- Cards with thin modern-use sections: ${missingModern.length}`,'','Checks:',`- Vault loaded: ${items.length>0?'OK':'FAIL'}`,`- Debug drawer present: OK`,`- Modal present: OK`,`- Workbench present: OK`,`- Space section depth increased: ${deepSpace.length>=10?'OK':'NEEDS MORE'}`,`- Frontier cards present: ${frontier.length>0?'OK':'NEEDS MORE'}`,'','Recent log:',...logLines].join('\n'); document.getElementById('debugOut').textContent=report}
+function buildDebugReport(){const items=allCards(); const sourced=items.filter(c=>(c.sources||[]).length>0); const placeholders=items.filter(c=>(c.sources||[]).some(s=>(s.tier||'').includes('placeholder'))); const sims=items.filter(c=>c.simulation && c.simulation!=='none'); const deepSpace=items.filter(c=>c.category==='Space'); const frontier=items.filter(c=>(c.status||'').includes('Open')||(c.status||'').includes('Impossible')); const missingModern=items.filter(c=>!c.modern||c.modern.length<60); const report=['ProofSpace Celestial Crown Report',`Version: ${VERSION}`,`Build date: ${BUILD_DATE}`,`Viewport: ${window.innerWidth} x ${window.innerHeight}`,`Cards loaded: ${items.length}`,`Visible cards: ${currentView.length}`,`Favorites: ${favorites.length}`,`Custom cards: ${customCards.length}`,'','Counts:',`- Space cards: ${deepSpace.length}`,`- Frontier / impossible cards: ${frontier.length}`,`- Simulation-enabled cards: ${sims.length}`,`- Cards with source slots: ${sourced.length}`,`- Cards with placeholder sources: ${placeholders.length}`,`- Cards with thin modern-use sections: ${missingModern.length}`,'','Forge telemetry:',`- Forge mode: ${CosmicCore.lastForgeMode}`,`- Astral shards: ${CosmicCore.shards}`,`- Event hits: ${CosmicCore.eventHits}`,`- Audio: ${CosmicCore.audioUnlocked?'online':(CosmicCore.audioBlocked?'blocked':'standby')}`,`- Particle bursts: ${CosmicCore.particleBursts}`,`- Confetti bursts: ${CosmicCore.confettiBursts}`,'','Checks:',`- Vault loaded: ${items.length>0?'OK':'FAIL'}`,`- Debug drawer present: OK`,`- Modal present: OK`,`- Workbench present: OK`,`- Forge canvas present: ${document.getElementById('forgeCanvas')?'OK':'FAIL'}`,`- Space section depth increased: ${deepSpace.length>=10?'OK':'NEEDS MORE'}`,`- Frontier cards present: ${frontier.length>0?'OK':'NEEDS MORE'}`,'','Recent log:',...logLines].join('\\n'); document.getElementById('debugOut').textContent=report}
 function buildSimulation(card){const cv=document.getElementById('simCanvas'); const ctx=cv.getContext('2d'); const tools=document.getElementById('simTools'); cancelAnimationFrame(simAnim); tools.innerHTML=''; simState={t:0,slider:0.5}; function clearBG(){ctx.clearRect(0,0,cv.width,cv.height); const g=ctx.createLinearGradient(0,0,0,cv.height); g.addColorStop(0,'#08101b'); g.addColorStop(1,'#0a1320'); ctx.fillStyle=g; ctx.fillRect(0,0,cv.width,cv.height)} function slider(label,value=.5){const wrap=document.createElement('div'); wrap.style.display='flex'; wrap.style.alignItems='center'; wrap.style.gap='8px'; const span=document.createElement('span'); span.textContent=label; span.style.fontSize='12px'; span.style.color='#cfe0ff'; const input=document.createElement('input'); input.type='range'; input.min='0'; input.max='1'; input.step='0.01'; input.value=value; input.oninput=()=>{simState.slider=+input.value; log(`simulation slider set: ${card.title}`)}; wrap.append(span,input); tools.append(wrap)} function note(text){const d=document.createElement('div'); d.className='muted'; d.style.fontSize='13px'; d.textContent=text; tools.append(d)} function anim(draw){function frame(){simState.t+=0.016; clearBG(); draw(); simAnim=requestAnimationFrame(frame)} frame()}
 if(!card.simulation || card.simulation==='none'){clearBG(); ctx.fillStyle='#cfe0ff'; ctx.font='16px sans-serif'; ctx.fillText('No live simulation on this card yet.',24,42); ctx.fillStyle='#97a8c7'; ctx.fillText('This entry is meant for deep reading, frontier context, or future expansion.',24,74); note('This card currently prioritizes explanation over animation.'); return}
 if(card.simulation==='pythag'){slider('rearrangement',.32); anim(()=>{const s=120,x=40,y=70; ctx.strokeStyle='#7dd3fc'; ctx.lineWidth=2; ctx.strokeRect(x,y,s,s); ctx.strokeRect(x+240,y,s,s); const a=48+simState.slider*28,b=82; ctx.fillStyle='rgba(125,211,252,.35)'; ctx.fillRect(x,y,a,a); ctx.fillStyle='rgba(167,139,250,.35)'; ctx.fillRect(x+a+8,y,b,b); ctx.fillStyle='rgba(255,209,102,.28)'; const c=Math.sqrt(a*a+b*b); ctx.fillRect(x+240,y,c,c); ctx.fillStyle='#dfe8ff'; ctx.font='14px sans-serif'; ctx.fillText('a² + b²',x+25,y+s+28); ctx.fillText('c²',x+272,y+s+28)}); return}
@@ -73,5 +152,315 @@ if(card.simulation==='entropy'){slider('uncertainty',.5); anim(()=>{const p=0.01
 if(card.simulation==='gaussian'){slider('spread',.45); anim(()=>{const sigma=0.3+simState.slider*1.7, mu=0; ctx.strokeStyle='#7dd3fc'; ctx.beginPath(); for(let i=0;i<360;i++){const x=-4+8*(i/359); const y=Math.exp(-((x-mu)*(x-mu))/(2*sigma*sigma))/(sigma*Math.sqrt(2*Math.PI)); const px=40+i, py=240-y*120; i===0?ctx.moveTo(px,py):ctx.lineTo(px,py)} ctx.stroke(); ctx.fillStyle='#dfe8ff'; ctx.fillText('larger σ spreads the bell curve and lowers the peak',24,28); ctx.fillText('σ ≈ '+sigma.toFixed(2),24,50)}); return}}
 function animateHeroSat(){ const sat=document.getElementById("heroSat"); if(!sat) return; function tick(){ const t=Date.now()/1400; const x=150 + Math.cos(t)*98; const y=112 + Math.sin(t*1.15)*74; sat.style.transform=`translate(${x}px, ${y}px)`; requestAnimationFrame(tick);} tick(); }
 function createStars(){const cv=document.getElementById('stars'); const ctx=cv.getContext('2d'); function resize(){cv.width=innerWidth; cv.height=innerHeight} resize(); addEventListener('resize',resize); const pts=Array.from({length:120},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.8+.4,s:Math.random()*.18+.03})); function frame(){ctx.clearRect(0,0,cv.width,cv.height); for(const p of pts){p.y+=p.s; if(p.y>cv.height) p.y=0; ctx.globalAlpha=.35+Math.random()*.5; ctx.fillStyle='#fff'; ctx.fillRect(p.x,p.y,p.r,p.r)} requestAnimationFrame(frame)} frame()}
-window.onload=()=>{document.getElementById('versionLine').textContent=`${VERSION} • ${BUILD_DATE}`; createStars(); animateHeroSat(); buildCategoryOptions(); currentView=allCards(); applyFilters(); buildDebugReport(); log('celestial crown vault boot complete'); log('space cards and frontier cards loaded with restored wow')}
+
+const CosmicCore={
+  shards:+(localStorage.getItem('proofspace_shards')||0),
+  theme:'celestial-reactor',
+  audioUnlocked:false,
+  audioBlocked:false,
+  lastForgeMode:'idle',
+  particleBursts:0,
+  confettiBursts:0,
+  eventHits:0,
+  forgeCanvas:null,
+  forgeCtx:null,
+  forgeAnim:null,
+  artemisPhase:0,
+  init(){
+    this.forgeCanvas=document.getElementById('forgeCanvas');
+    this.forgeCtx=this.forgeCanvas?this.forgeCanvas.getContext('2d'):null;
+    this.paintIdleForge();
+    this.updateShardUI();
+  },
+  updateShardUI(){
+    const el=document.getElementById('shardCount');
+    if(el) el.textContent=this.shards;
+  },
+  awardShards(n){
+    this.shards+=n;
+    localStorage.setItem('proofspace_shards', String(this.shards));
+    this.updateShardUI();
+  },
+  unlockAudio(){
+    if(this.audioUnlocked||this.audioBlocked) return;
+    try{
+      const Ctx=window.AudioContext||window.webkitAudioContext;
+      if(!Ctx) {this.audioBlocked=true; return;}
+      this.audioCtx=new Ctx();
+      this.audioUnlocked=true;
+      log('forge audio online');
+    }catch(e){this.audioBlocked=true; log('forge audio blocked')}
+  },
+  tone(freq=440,dur=0.12,type='sine',when=0){
+    if(!this.audioUnlocked||!this.audioCtx) return;
+    const t=this.audioCtx.currentTime + when;
+    const osc=this.audioCtx.createOscillator();
+    const gain=this.audioCtx.createGain();
+    osc.type=type; osc.frequency.value=freq;
+    gain.gain.setValueAtTime(0.0001,t);
+    gain.gain.exponentialRampToValueAtTime(0.06,t+0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    osc.connect(gain).connect(this.audioCtx.destination);
+    osc.start(t); osc.stop(t+dur+0.02);
+  },
+  fanfare(){
+    this.unlockAudio();
+    this.tone(392,0.12,'triangle',0);
+    this.tone(523.25,0.16,'triangle',0.08);
+    this.tone(659.25,0.18,'triangle',0.18);
+  },
+  forgeWhoosh(){
+    this.unlockAudio();
+    this.tone(220,0.14,'sawtooth',0);
+    this.tone(330,0.12,'triangle',0.06);
+  },
+  paintIdleForge(){
+    if(!this.forgeCtx) return;
+    cancelAnimationFrame(this.forgeAnim);
+    const ctx=this.forgeCtx, cv=this.forgeCanvas;
+    const frame=()=>{
+      this.artemisPhase += 0.006;
+      ctx.clearRect(0,0,cv.width,cv.height);
+      const grad=ctx.createRadialGradient(cv.width*0.5,cv.height*0.42,20,cv.width*0.5,cv.height*0.42,320);
+      grad.addColorStop(0,'rgba(125,211,252,.18)');
+      grad.addColorStop(0.4,'rgba(167,139,250,.10)');
+      grad.addColorStop(1,'rgba(8,16,24,1)');
+      ctx.fillStyle=grad; ctx.fillRect(0,0,cv.width,cv.height);
+      for(let i=0;i<70;i++){
+        const x=(i*97)%cv.width, y=((i*57)+Date.now()*0.01)%cv.height;
+        ctx.globalAlpha=0.25+((i%5)/10);
+        ctx.fillStyle='#e7f1ff';
+        ctx.fillRect(x,y,2,2);
+      }
+      ctx.globalAlpha=1;
+      ctx.strokeStyle='rgba(125,211,252,.18)';
+      for(let i=0;i<5;i++){ ctx.beginPath(); ctx.arc(cv.width/2, cv.height/2, 44+i*36+Math.sin(this.artemisPhase+i)*6, 0, Math.PI*2); ctx.stroke(); }
+      ctx.fillStyle='#ffd166'; ctx.beginPath(); ctx.arc(cv.width/2, cv.height/2, 18, 0, Math.PI*2); ctx.fill();
+      const px=cv.width/2 + Math.cos(this.artemisPhase*3)*148;
+      const py=cv.height/2 + Math.sin(this.artemisPhase*2.2)*92;
+      ctx.fillStyle='#a78bfa'; ctx.beginPath(); ctx.arc(px,py,8,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#dfe8ff'; ctx.font='16px sans-serif';
+      ctx.fillText('Astral Forge idle — waiting for a theorem or mission to ignite', 28, 34);
+      this.forgeAnim=requestAnimationFrame(frame);
+    };
+    frame();
+  },
+  drawArtemisMission(){
+    if(!this.forgeCtx) return;
+    cancelAnimationFrame(this.forgeAnim);
+    const ctx=this.forgeCtx, cv=this.forgeCanvas;
+    const frame=()=>{
+      this.artemisPhase += 0.01;
+      ctx.clearRect(0,0,cv.width,cv.height);
+      const bg=ctx.createLinearGradient(0,0,0,cv.height);
+      bg.addColorStop(0,'#081018'); bg.addColorStop(1,'#060b12');
+      ctx.fillStyle=bg; ctx.fillRect(0,0,cv.width,cv.height);
+      for(let i=0;i<90;i++){
+        const x=(i*73)%cv.width, y=(i*41 + Date.now()*0.02)%cv.height;
+        ctx.globalAlpha=.35; ctx.fillStyle='#fff'; ctx.fillRect(x,y,2,2);
+      }
+      ctx.globalAlpha=1;
+      const earth={x:120,y:230,r:42}, moon={x:570,y:150,r:22};
+      ctx.fillStyle='#7dd3fc'; ctx.beginPath(); ctx.arc(earth.x,earth.y,earth.r,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#0b2942'; ctx.beginPath(); ctx.arc(earth.x-8,earth.y-6,26,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#cdd8e6'; ctx.beginPath(); ctx.arc(moon.x,moon.y,moon.r,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='rgba(125,211,252,.35)'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(earth.x+earth.r, earth.y);
+      ctx.bezierCurveTo(280, 40, 460, 50, moon.x-16, moon.y+4);
+      ctx.bezierCurveTo(500, 240, 300, 330, 155, 255);
+      ctx.stroke();
+      ctx.strokeStyle='rgba(255,209,102,.28)';
+      ctx.beginPath(); ctx.arc(moon.x, moon.y, 64, 0, Math.PI*2); ctx.stroke();
+      const t=(Math.sin(this.artemisPhase)+1)/2;
+      const p1x = cubic(earth.x+earth.r,280,460,moon.x-16,t);
+      const p1y = cubic(earth.y,40,50,moon.y+4,t);
+      const p2x = cubic(moon.x-16,500,300,155,t);
+      const p2y = cubic(moon.y+4,240,330,255,t);
+      const outbound=t<0.55;
+      const px= outbound ? p1x : p2x;
+      const py= outbound ? p1y : p2y;
+      ctx.fillStyle='#ffd166'; ctx.beginPath(); ctx.arc(px,py,7,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#dfe8ff'; ctx.font='16px sans-serif';
+      ctx.fillText('Artemis II mission mode — record-setting lunar flyby', 24, 32);
+      ctx.fillText('Launch: Apr 1, 2026  •  Splashdown: Apr 10, 2026  •  Farthest distance: 252,756 mi', 24, 58);
+      ctx.fillText('Closest lunar approach: 4,067 mi above surface  •  Total distance: 694,481 mi', 24, 82);
+      ctx.fillStyle='rgba(255,209,102,.95)'; ctx.fillText('Apollo 13 record surpassed by 4,101 miles', 24, 110);
+      this.forgeAnim=requestAnimationFrame(frame);
+    };
+    frame();
+  }
+};
+const ARTEMIS_DATA={
+  mission:'Artemis II',
+  launch:'April 1, 2026',
+  splashdown:'April 10, 2026',
+  splashTime:'5:07 p.m. PDT',
+  maxDistance:252756,
+  totalDistance:694481,
+  lunarClosestApproach:4067,
+  apollo13Record:248655,
+  crew:['Reid Wiseman','Victor Glover','Christina Koch','Jeremy Hansen'],
+  description:'First crewed mission to the Moon in more than half a century; flew farther from Earth than any humans before it.'
+};
+function cubic(a,b,c,d,t){ return ((1-t)**3)*a + 3*((1-t)**2)*t*b + 3*(1-t)*(t**2)*c + (t**3)*d; }
+function setForgePrompt(v){ const input=document.getElementById('forgeInput'); if(input){ input.value=v; input.focus(); } }
+function byTitle(title){ return allCards().find(c=>c.title.toLowerCase()===title.toLowerCase()); }
+function theoremButton(title){ const card=byTitle(title); return card ? `<button class="chip" onclick="openCard('${card.id}')">${esc(title)}</button>` : `<span class="crew-pill">${esc(title)}</span>`; }
+function createSparkBurst(host,count=28){
+  if(!host) return;
+  CosmicCore.particleBursts++;
+  const colors=['#7dd3fc','#a78bfa','#ffd166','#fb7185','#9ef3b3'];
+  const rect=host.getBoundingClientRect();
+  for(let i=0;i<count;i++){
+    const s=document.createElement('div');
+    s.className='spark';
+    const x=rect.width*0.5 + (Math.random()*100-50);
+    const y=rect.height*0.38 + (Math.random()*40-20);
+    s.style.left=x+'px'; s.style.top=y+'px';
+    s.style.background=colors[i%colors.length];
+    s.style.boxShadow='0 0 16px '+colors[i%colors.length];
+    s.style.setProperty('--dx',(Math.random()*260-130)+'px');
+    s.style.setProperty('--dy',(Math.random()*-220)+'px');
+    host.appendChild(s);
+    setTimeout(()=>s.remove(),1200);
+  }
+}
+function dropConfetti(n=30){
+  CosmicCore.confettiBursts++;
+  const colors=['#7dd3fc','#a78bfa','#ffd166','#fb7185','#9ef3b3'];
+  for(let i=0;i<n;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.left=(Math.random()*100)+'vw';
+    c.style.background=colors[i%colors.length];
+    c.style.transform=`translateY(0) rotate(${Math.random()*120}deg)`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),1700);
+  }
+}
+function igniteRandomCelebration(){
+  CosmicCore.fanfare();
+  createSparkBurst(document.getElementById('forgeCore'), 38);
+  dropConfetti(24);
+  CosmicCore.awardShards(3);
+  document.getElementById('forgeResult').innerHTML=`<div class="eyebrow">Cosmic nonsense achieved</div><div class="meme-banner">The reactor approves your taste. Somewhere, a Victorian mathematician just backflipped into a nebula.</div>`;
+  log('random celebration fired');
+}
+function safeMathEval(expr){
+  if(!/^[0-9+\-*/().\s^%,]+$/.test(expr)) return null;
+  try{
+    const normalized=expr.replace(/\^/g,'**').replace(/%/g,'/100');
+    const val=Function('"use strict"; return ('+normalized+')')();
+    return Number.isFinite(val)?val:null;
+  }catch(e){ return null; }
+}
+function artemisWhatIfMars(){
+  const ratio=140000000/ARTEMIS_DATA.maxDistance;
+  return `If you naively scaled by distance alone, a Mars-class journey at roughly 140 million miles would be about ${ratio.toFixed(0)} times the farthest-distance scale of Artemis II. The real answer is messier because Mars windows, heliocentric transfer orbits, life support, radiation, and entry systems completely change the problem.`;
+}
+function renderArtemisResult(query){
+  CosmicCore.lastForgeMode='artemis';
+  CosmicCore.eventHits++;
+  CosmicCore.awardShards(12);
+  CosmicCore.fanfare();
+  createSparkBurst(document.getElementById('forgeCore'), 44);
+  dropConfetti(34);
+  CosmicCore.drawArtemisMission();
+  const delta=ARTEMIS_DATA.maxDistance-ARTEMIS_DATA.apollo13Record;
+  const html=`
+    <div class="eyebrow">Live cosmos recognized • Artemis II</div>
+    <div class="meme-banner">🚀 Humanity just flexed on Apollo 13’s distance record and the forge is absolutely losing its mind.</div>
+    <div class="crew-list">${ARTEMIS_DATA.crew.map(c=>`<span class="crew-pill">${esc(c)}</span>`).join('')}</div>
+    <div class="result-grid">
+      <div class="result-stat"><div class="k">Launch</div><div class="v">${ARTEMIS_DATA.launch}</div></div>
+      <div class="result-stat"><div class="k">Splashdown</div><div class="v">${ARTEMIS_DATA.splashdown}</div></div>
+      <div class="result-stat"><div class="k">Farthest distance</div><div class="v">${ARTEMIS_DATA.maxDistance.toLocaleString()} mi</div></div>
+      <div class="result-stat"><div class="k">Total distance</div><div class="v">${ARTEMIS_DATA.totalDistance.toLocaleString()} mi</div></div>
+      <div class="result-stat"><div class="k">Closest lunar pass</div><div class="v">${ARTEMIS_DATA.lunarClosestApproach.toLocaleString()} mi</div></div>
+      <div class="result-stat"><div class="k">Apollo 13 beaten by</div><div class="v">${delta.toLocaleString()} mi</div></div>
+    </div>
+    <p style="margin-top:14px">This was not just a sightseeing loop. It was the living mathematics of deep-space navigation: period intuition from Kepler, speed variation from vis-viva, gravity-well logic from escape velocity, and brutal Δv economics from Tsiolkovsky.</p>
+    <div class="theorem-picks">
+      <div><strong>Linked vault cards:</strong> ${[
+        'Kepler’s Third Law',
+        'Vis-viva Equation',
+        'Escape Velocity',
+        'Tsiolkovsky Rocket Equation',
+        'Newton’s Law of Gravitation',
+        'Patched Conics',
+        'Sphere of Influence',
+        'Translunar Injection',
+        'Free-Return Trajectory'
+      ].map(theoremButton).join(' ')}</div>
+    </div>
+    <div class="quest-list">
+      <div class="quest"><strong>Student-friendly explanation:</strong> Artemis II went farther than Apollo 13 because Orion followed a trajectory that carried the crew deep around the Moon before returning, so the maximum Earth distance pushed beyond the old record while still staying on a safe return path.</div>
+      <div class="quest"><strong>Quiz prompt:</strong> Why does a spacecraft speed up near periapsis and slow down near apoapsis? Which equation in the vault explains that behavior?</div>
+      <div class="quest"><strong>What if:</strong> ${esc(artemisWhatIfMars())}</div>
+    </div>
+  `;
+  document.getElementById('forgeResult').innerHTML=html;
+  log(`Artemis forge mode triggered by "${query}"`);
+}
+function renderTheoremResult(card, query){
+  CosmicCore.lastForgeMode='theorem';
+  CosmicCore.awardShards(5);
+  CosmicCore.forgeWhoosh();
+  createSparkBurst(document.getElementById('forgeCore'), 20);
+  if(card.simulation && card.simulation!=='none'){ buildSimulation(card); }
+  else { CosmicCore.paintIdleForge(); }
+  document.getElementById('forgeResult').innerHTML=`
+    <div class="eyebrow">Vault resonance found</div>
+    <h3 style="margin:12px 0 6px 0">${esc(card.title)}</h3>
+    <p>${esc(card.plain || card.statement)}</p>
+    <div class="quest-list">
+      <div class="quest"><strong>Why it matters:</strong> ${esc(card.matters || card.why || 'This theorem matters because it changes how the world can be reasoned about.')}</div>
+      <div class="quest"><strong>Next move:</strong> <button class="chip" onclick="openCard('${card.id}')">Open full card</button></div>
+    </div>
+  `;
+  log(`forge matched theorem: ${card.title}`);
+}
+function renderMathResult(expr, val){
+  CosmicCore.lastForgeMode='expression';
+  CosmicCore.awardShards(2);
+  CosmicCore.forgeWhoosh();
+  createSparkBurst(document.getElementById('forgeCore'), 16);
+  CosmicCore.paintIdleForge();
+  document.getElementById('forgeResult').innerHTML=`
+    <div class="eyebrow">Numeric ignition</div>
+    <div class="meme-banner">The reactor chewed on your expression and spat out a number like it owed you money.</div>
+    <div class="result-grid">
+      <div class="result-stat"><div class="k">Expression</div><div class="v" style="font-size:16px">${esc(expr)}</div></div>
+      <div class="result-stat"><div class="k">Result</div><div class="v">${val.toLocaleString(undefined,{maximumFractionDigits:6})}</div></div>
+    </div>
+  `;
+  log(`forge evaluated expression: ${expr}`);
+}
+function renderMiss(query){
+  CosmicCore.lastForgeMode='idle';
+  CosmicCore.paintIdleForge();
+  document.getElementById('forgeResult').innerHTML=`
+    <div class="eyebrow">Mystery static</div>
+    <p>The forge heard <strong>${esc(query)}</strong> and responded with eldritch humming. Try a theorem title, <strong>Artemis II</strong>, or a simple numeric expression.</p>
+  `;
+  log(`forge miss: ${query}`);
+}
+function runForge(){
+  const input=document.getElementById('forgeInput');
+  const raw=(input?.value||'').trim();
+  if(!raw){ renderMiss('nothing at all'); return; }
+  const q=raw.toLowerCase();
+  if(q.includes('artemis ii') || q.includes('apollo 13 vs artemis') || q.includes('moon flyby') || q.includes('mars instead')){
+    renderArtemisResult(raw); return;
+  }
+  const direct=allCards().find(c=>c.title.toLowerCase()===q);
+  if(direct){ renderTheoremResult(direct, raw); return; }
+  const fuzzy=allCards().find(c=>q.includes(c.title.toLowerCase()) || c.title.toLowerCase().includes(q));
+  if(fuzzy){ renderTheoremResult(fuzzy, raw); return; }
+  const val=safeMathEval(raw);
+  if(val!==null){ renderMathResult(raw,val); return; }
+  renderMiss(raw);
+}
+
+window.onload=()=>{document.getElementById('versionLine').textContent=`${VERSION} • ${BUILD_DATE}`; createStars(); animateHeroSat(); CosmicCore.init(); buildCategoryOptions(); currentView=allCards(); applyFilters(); buildDebugReport(); log('celestial crown vault boot complete'); log('space cards and frontier cards loaded with restored wow'); log('astral forge online with event-aware math')}
 </script></body></html>
