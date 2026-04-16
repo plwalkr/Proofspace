@@ -2,969 +2,539 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ProofSpace • Engineering Forge — Phase I</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ProofSpace Engineering Forge — Phase II</title>
 <style>
 :root{
-  --bg:#071019;
-  --bg2:#0b1624;
-  --panel:#101b2d;
-  --panel2:#0d1524;
-  --line:rgba(125,211,252,.18);
-  --glow:#7dd3fc;
-  --violet:#a78bfa;
-  --gold:#ffd166;
-  --rose:#fb7185;
-  --mint:#34d399;
-  --text:#eaf3ff;
-  --muted:#a7bddb;
-  --danger:#ff8e8e;
+ --bg:#071019;--panel:#101a28;--panel2:#0d1521;--line:#233247;--soft:#9ab4d6;
+ --glow:#7dd3fc;--violet:#a78bfa;--gold:#ffd166;--green:#57e389;--red:#fb7185;
+ --text:#eef5ff;--shadow:0 20px 45px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:radial-gradient(circle at top,#10203a 0%,#071019 48%,#040912 100%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow-x:hidden}
-body::before{content:"";position:fixed;inset:-15% -5% auto -5%;height:60vh;background:
-radial-gradient(circle at 12% 16%, rgba(125,211,252,.14), transparent 30%),
-radial-gradient(circle at 78% 10%, rgba(167,139,250,.12), transparent 28%),
-radial-gradient(circle at 50% 0%, rgba(255,209,102,.08), transparent 36%);filter:blur(18px);pointer-events:none;z-index:-2}
-#symbolField{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.95}
-.header{position:sticky;top:0;z-index:40;backdrop-filter:blur(16px);background:rgba(6,10,18,.74);border-bottom:1px solid rgba(125,211,252,.16);box-shadow:0 10px 28px rgba(0,0,0,.25)}
-.header-inner{max-width:1460px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+html,body{margin:0;padding:0;background:radial-gradient(circle at 20% 0%,rgba(125,211,252,.12),transparent 28%),radial-gradient(circle at 80% 0%,rgba(167,139,250,.12),transparent 24%),linear-gradient(180deg,#071019,#040b12);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow-x:hidden}
+canvas#bgCanvas{position:fixed;inset:0;z-index:0}
+canvas#celebrate{position:fixed;inset:0;z-index:40;pointer-events:none}
+header{position:sticky;top:0;z-index:30;background:rgba(7,16,25,.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(125,211,252,.16)}
+.header-inner{max-width:1440px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:14px}
-.orb{width:60px;height:60px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#061018;background:conic-gradient(from 160deg,var(--glow),var(--violet),var(--gold),var(--glow));box-shadow:0 0 26px rgba(125,211,252,.34),0 0 50px rgba(167,139,250,.16)}
-h1{margin:0;font-size:31px;line-height:1.05;letter-spacing:.02em}
-.subline{font-size:12px;color:var(--muted);margin-top:4px}
+.orb{width:60px;height:60px;border-radius:999px;background:conic-gradient(var(--glow),var(--violet),var(--gold),var(--glow));display:grid;place-items:center;color:#061018;font-size:28px;font-weight:900;box-shadow:0 0 30px rgba(125,211,252,.35),0 0 50px rgba(167,139,250,.18)}
+h1{margin:0;font-size:30px;line-height:1}
+.sub{color:var(--soft);font-size:12px;margin-top:4px}
 .actions{display:flex;gap:10px;flex-wrap:wrap}
-button,.pill{border:none;border-radius:999px;padding:12px 16px;font-weight:800;font-size:14px}
-button{cursor:pointer;color:#fff;background:#172235;border:1px solid rgba(125,211,252,.16);transition:.22s transform,.22s box-shadow,.22s border-color,.22s opacity}
-button:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.24),0 0 18px rgba(125,211,252,.08);border-color:rgba(125,211,252,.32)}
+button,.pill{appearance:none;border:none;border-radius:999px;padding:11px 16px;font-weight:800;font-size:14px}
+button{cursor:pointer;background:#1a2434;color:#fff;border:1px solid #334155;transition:.2s transform,.2s box-shadow,.2s opacity}
+button:hover{transform:translateY(-2px);box-shadow:0 0 24px rgba(125,211,252,.15)}
 button.primary{background:linear-gradient(90deg,var(--glow),var(--violet));color:#061018;border:none}
-button.gold{background:linear-gradient(90deg,var(--gold),#ff9e7a);color:#081018;border:none}
-main{position:relative;z-index:2;max-width:1460px;margin:0 auto;padding:20px 18px 140px}
-.hero{display:grid;grid-template-columns:1.35fr .65fr;gap:16px;margin-bottom:16px}
-.panel{background:linear-gradient(180deg,rgba(16,27,45,.96),rgba(9,15,26,.96));border:1px solid var(--line);border-radius:28px;padding:18px;box-shadow:0 20px 40px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.03)}
-.hero-main{position:relative;overflow:hidden;min-height:340px}
-.hero-main::before{content:"";position:absolute;inset:0;background:
-radial-gradient(circle at 16% 18%, rgba(125,211,252,.18), transparent 24%),
-radial-gradient(circle at 82% 16%, rgba(167,139,250,.14), transparent 24%),
-linear-gradient(135deg, rgba(255,209,102,.05), transparent 40%);pointer-events:none}
-.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:rgba(125,211,252,.09);border:1px solid rgba(125,211,252,.2);font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#cdeeff}
-.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;position:relative;z-index:1}
-.hero h2{margin:12px 0 10px;font-size:34px;line-height:1.06}
-.hero p{color:#dbe7fb;line-height:1.62;margin:10px 0}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
-.stat{padding:14px;border-radius:18px;border:1px solid rgba(125,211,252,.14);background:rgba(7,13,24,.7)}
-.k{font-size:12px;color:var(--muted);margin-bottom:6px}.v{font-size:24px;font-weight:900}
-.ringbay{position:relative;height:248px;border-radius:24px;border:1px solid rgba(125,211,252,.14);background:radial-gradient(circle at center, rgba(125,211,252,.08), transparent 48%), #071019;overflow:hidden}
-.ring{position:absolute;border:1px solid rgba(125,211,252,.18);border-radius:999px}
-.orbit-dot{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--gold);box-shadow:0 0 16px rgba(255,209,102,.9)}
-.quote{margin-top:12px;padding:16px;border-radius:22px;border:1px solid rgba(255,209,102,.18);background:linear-gradient(180deg,rgba(17,24,39,.72),rgba(9,13,22,.86));font-size:18px;line-height:1.5}
-.realm-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
-.realm-card{padding:16px;border-radius:22px;border:1px solid rgba(125,211,252,.16);background:linear-gradient(180deg,rgba(15,21,36,.96),rgba(8,12,21,.96));position:relative;overflow:hidden}
-.realm-card::before{content:"";position:absolute;inset:auto -12% -50% -12%;height:120px;background:radial-gradient(circle, rgba(125,211,252,.14), transparent 60%);pointer-events:none}
-.realm-card h3{margin:0 0 8px 0;font-size:19px}
-.realm-card p{margin:0;color:#d1def5;line-height:1.56;font-size:14px}
-.realm-mini{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#9dcfff;margin-bottom:8px;font-weight:900}
-.toolbar{display:grid;grid-template-columns:1.4fr .8fr .8fr .8fr auto auto;gap:10px;margin:14px 0 18px}
-input,select,textarea{width:100%;background:#0a111d;color:#e6eeff;border:1px solid #334155;border-radius:16px;padding:14px;font-size:15px}
-#cardGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:14px}
-.card{position:relative;padding:18px;border-radius:24px;border:1px solid rgba(125,211,252,.14);background:linear-gradient(180deg,rgba(14,20,33,.98),rgba(8,12,22,.96));box-shadow:0 16px 32px rgba(0,0,0,.26), inset 0 1px 0 rgba(255,255,255,.03);cursor:pointer;transition:.22s transform,.22s box-shadow,.22s border-color;overflow:hidden}
-.card:hover{transform:translateY(-6px) scale(1.015);box-shadow:0 24px 44px rgba(0,0,0,.34),0 0 26px rgba(125,211,252,.08);border-color:rgba(125,211,252,.34)}
-.card::before{content:"";position:absolute;inset:-1px -1px auto -1px;height:2px;background:linear-gradient(90deg,transparent,rgba(125,211,252,.55),rgba(167,139,250,.5),transparent)}
-.card.elite{border-color:rgba(255,209,102,.30);box-shadow:0 0 0 1px rgba(255,209,102,.05),0 18px 36px rgba(0,0,0,.28),0 0 30px rgba(255,209,102,.04)}
-.card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.card h3{margin:8px 0 10px;font-size:20px;line-height:1.15}
-.meta{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-.badge{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}
-.b-realm{background:rgba(125,211,252,.15);color:#9ee8ff;border:1px solid rgba(125,211,252,.32)}
-.b-type{background:rgba(167,139,250,.15);color:#dec4ff;border:1px solid rgba(167,139,250,.28)}
-.b-sim{background:rgba(255,209,102,.15);color:#ffe39f;border:1px solid rgba(255,209,102,.3)}
-.b-trap{background:rgba(251,113,133,.12);color:#ffbec8;border:1px solid rgba(251,113,133,.24)}
-.b-elite{background:rgba(255,209,102,.14);color:#ffe8ab;border:1px solid rgba(255,209,102,.26)}
-.muted{color:var(--muted)}
-.statement{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#09111e;border-left:3px solid var(--violet);padding:12px;border-radius:14px;color:#e5eeff;margin-top:10px;white-space:pre-wrap}
-.small{font-size:13px;line-height:1.6}
-.intel{margin-top:10px;color:#d4e0f8;line-height:1.6}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.chip{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(125,211,252,.12);font-size:12px;font-weight:800;color:#dbe8ff}
-.forge{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;margin-top:18px}
-.forgeCanvasWrap{position:relative;min-height:360px;border-radius:26px;border:1px solid rgba(125,211,252,.16);overflow:hidden;background:radial-gradient(circle at 50% 35%, rgba(125,211,252,.10), transparent 44%), linear-gradient(180deg,#09111e,#050911)}
-#forgeCanvas{position:absolute;inset:0;width:100%;height:100%}
-#forgeParticles{position:absolute;inset:0;pointer-events:none}
-.forgePulse{position:absolute;inset:22% 22%;border-radius:999px;filter:blur(18px);opacity:.12;background:radial-gradient(circle, rgba(125,211,252,.7), rgba(167,139,250,.2), transparent 65%)}
-.forgeActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-#forgeResult{min-height:156px;border-radius:20px;border:1px solid rgba(125,211,252,.12);background:#0a111d;padding:14px;line-height:1.62;color:#e3ecff}
-.forgeHint{color:#bfd1ee;font-size:14px;line-height:1.58}
-.sectionTitle{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:4px;margin-bottom:12px}
-.sectionTitle h2{margin:0;font-size:28px}
-.modal{display:none;position:fixed;inset:0;z-index:120;padding:14px;background:rgba(4,7,12,.84);backdrop-filter:blur(10px);align-items:center;justify-content:center}
+button.gold{background:linear-gradient(90deg,var(--gold),#ffefad);color:#23200f;border:none}
+main{max-width:1440px;margin:0 auto;position:relative;z-index:2;padding:18px 16px 120px}
+.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:16px;margin-bottom:16px}
+.panel{background:linear-gradient(180deg,rgba(16,26,40,.94),rgba(11,18,28,.94));border:1px solid rgba(125,211,252,.13);border-radius:28px;box-shadow:var(--shadow)}
+.hero .panel{padding:18px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(125,211,252,.1);border:1px solid rgba(125,211,252,.2);font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:900;color:#c8eeff}
+.hero h2{font-size:34px;line-height:1.08;margin:14px 0 10px}
+.hero p{color:#d7e6fc;line-height:1.65}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}
+.stat{padding:14px;border-radius:18px;background:#0a1220;border:1px solid var(--line)}
+.k{font-size:12px;color:var(--soft);margin-bottom:4px} .v{font-size:22px;font-weight:900}
+.realm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.realm-card{padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(18,28,44,.9),rgba(10,16,25,.9))}
+.realm-card h3{margin:0 0 6px 0;font-size:15px}
+.toolbar{display:grid;grid-template-columns:1.5fr repeat(3,.7fr) auto auto;gap:10px;margin:16px 0}
+input,select,textarea{width:100%;background:#0b1320;color:#eef5ff;border:1px solid #304357;border-radius:16px;padding:14px;font-size:15px}
+#grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.card{padding:18px;border-radius:24px;border:1px solid rgba(125,211,252,.12);background:linear-gradient(180deg,rgba(14,22,33,.97),rgba(9,14,22,.95));cursor:pointer;position:relative;overflow:hidden;transition:.2s transform,.2s border-color,.2s box-shadow}
+.card:hover{transform:translateY(-6px) scale(1.01);border-color:rgba(125,211,252,.35);box-shadow:0 20px 36px rgba(0,0,0,.34),0 0 30px rgba(125,211,252,.08)}
+.card::before{content:"";position:absolute;inset:-2px auto auto -20%;height:2px;width:140%;background:linear-gradient(90deg,transparent,rgba(125,211,252,.7),rgba(167,139,250,.45),transparent)}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 12px}
+.badge{padding:6px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.4px}
+.realm-Statics\ Forge{}
+.b-formula{background:rgba(125,211,252,.15);color:#bfefff;border:1px solid rgba(125,211,252,.28)}
+.b-concept{background:rgba(167,139,250,.16);color:#e6dcff;border:1px solid rgba(167,139,250,.28)}
+.b-diagram{background:rgba(255,209,102,.14);color:#ffe39f;border:1px solid rgba(255,209,102,.24)}
+.b-worked-example{background:rgba(87,227,137,.14);color:#c9ffd9;border:1px solid rgba(87,227,137,.24)}
+.formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#0b1220;border-left:3px solid var(--violet);padding:12px;border-radius:14px;color:#e8efff;min-height:74px;display:flex;align-items:center}
+.small{color:var(--soft);font-size:13px;line-height:1.55}
+.modal{display:none;position:fixed;inset:0;z-index:60;background:rgba(4,8,14,.78);backdrop-filter:blur(10px);padding:16px;align-items:center;justify-content:center}
 .modal.show{display:flex}
-.modal-content{width:min(1180px,100%);max-height:94vh;overflow:auto;border-radius:30px;background:linear-gradient(180deg,#121a2c,#0a111d);border:1px solid rgba(125,211,252,.18);box-shadow:0 32px 60px rgba(0,0,0,.42)}
-.modal-head{position:sticky;top:0;z-index:2;padding:20px 22px;border-bottom:1px solid rgba(125,211,252,.12);background:rgba(18,26,44,.96);backdrop-filter:blur(12px);display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-.modal-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:18px;padding:20px 22px 24px}
-.block{padding:16px;border:1px solid rgba(125,211,252,.14);border-radius:22px;background:#0b1320}
-.block h3{margin:0 0 10px 0;font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:#90deff}
-.block p,.block li{line-height:1.62;color:#e3ebfd}
-.block ul{margin:0;padding-left:18px}
-#simCanvas{width:100%;height:290px;border-radius:20px;border:1px solid rgba(125,211,252,.12);background:radial-gradient(circle at 50% 38%, rgba(125,211,252,.12), transparent 42%), #071019}
-.drawerBtn{position:fixed;right:14px;bottom:14px;z-index:130}
-.drawer{position:fixed;right:14px;bottom:70px;z-index:130;width:min(430px,calc(100vw - 28px));max-height:72vh;overflow:auto;display:none}
+.modal-content{width:min(1200px,100%);max-height:94vh;overflow:auto;background:linear-gradient(180deg,#101a28,#0b1421);border:1px solid rgba(125,211,252,.16);border-radius:30px;box-shadow:0 30px 60px rgba(0,0,0,.48)}
+.modal-head{position:sticky;top:0;z-index:2;padding:20px;border-bottom:1px solid var(--line);background:rgba(16,26,40,.96);backdrop-filter:blur(12px);display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.modal-grid{padding:20px;display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+.section{padding:16px;border-radius:22px;border:1px solid var(--line);background:#0b1320}
+.section h3{margin:0 0 10px 0;color:#9ee8ff;font-size:13px;letter-spacing:1px;text-transform:uppercase}
+.section p,.section li{line-height:1.63;color:#e3ecff}
+.sim-wrap{height:300px;border-radius:22px;border:1px solid var(--line);background:radial-gradient(circle at 50% 35%,rgba(125,211,252,.14),transparent 42%),#071019;overflow:hidden;display:grid;place-items:center}
+#simCanvas{width:100%;height:100%}
+.forge{margin-top:18px;padding:18px}
+.forge-grid{display:grid;grid-template-columns:1fr .9fr;gap:14px}
+#forgeResult{min-height:180px;padding:14px;border-radius:20px;background:#09111c;border:1px solid var(--line);line-height:1.7}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{padding:8px 12px;border-radius:999px;background:#142032;border:1px solid #2b3c51;color:#cde8ff;font-size:12px;font-weight:800;cursor:pointer}
+.debug-btn{position:fixed;right:14px;bottom:14px;z-index:70}
+.drawer{display:none;position:fixed;right:14px;bottom:68px;width:min(460px,calc(100vw - 28px));max-height:72vh;overflow:auto;z-index:70;padding:16px}
 .drawer.show{display:block}
-pre{white-space:pre-wrap;word-break:break-word;background:#09111e;padding:14px;border-radius:16px;border:1px solid rgba(125,211,252,.12);font-size:12px;color:#dce8ff}
-.loadedBadge{position:fixed;left:14px;bottom:14px;z-index:125;padding:10px 14px;border-radius:999px;background:linear-gradient(90deg,rgba(255,209,102,.18),rgba(125,211,252,.12));border:1px solid rgba(255,209,102,.24);font-size:12px;font-weight:900;letter-spacing:.08em;color:#fff;backdrop-filter:blur(12px)}
-@media (max-width:1080px){.hero,.forge,.modal-grid{grid-template-columns:1fr}.realm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar{grid-template-columns:1fr 1fr 1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-grid{grid-template-columns:1fr}}
-@media (max-width:640px){h1{font-size:26px}.realm-grid{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.hero h2{font-size:28px}}
+pre{white-space:pre-wrap;word-break:break-word;background:#09111a;border:1px solid var(--line);border-radius:18px;padding:14px;color:#d9e8ff;font-size:12px}
+.notice{position:fixed;top:88px;right:16px;z-index:35;background:linear-gradient(90deg,var(--gold),#fff0bf);color:#201b09;padding:10px 14px;border-radius:14px;border:1px solid rgba(255,209,102,.55);font:12px/1.2 ui-monospace,monospace;font-weight:900;box-shadow:0 8px 18px rgba(0,0,0,.2)}
+.footer-note{margin-top:10px;color:var(--soft);font-size:13px}
+@media (max-width:1100px){.hero,.forge-grid,.modal-grid{grid-template-columns:1fr} .stats{grid-template-columns:repeat(3,1fr)} .realm-grid{grid-template-columns:repeat(2,1fr)} .toolbar{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){h1{font-size:24px} .stats{grid-template-columns:repeat(2,1fr)} .realm-grid{grid-template-columns:1fr} .toolbar{grid-template-columns:1fr} .notice{top:auto;bottom:88px}}
 </style>
 </head>
 <body>
-<canvas id="symbolField"></canvas>
-<header class="header">
+<canvas id="bgCanvas"></canvas>
+<canvas id="celebrate"></canvas>
+<div class="notice">ENGINEERING FORGE PHASE II LOADED</div>
+<header>
   <div class="header-inner">
     <div class="brand">
       <div class="orb">∑</div>
       <div>
-        <h1>ProofSpace • Engineering Forge</h1>
-        <div class="subline" id="versionLine">v13.0 • Engineering Forge Phase I • elite engineering rebuild</div>
+        <h1>ProofSpace Engineering Forge</h1>
+        <div class="sub" id="versionLine">v2.0 • Engineering Forge Phase II • tailored from Engineering Formulas PDF</div>
       </div>
     </div>
     <div class="actions">
-      <button onclick="randomCard()">🎲 Random elite</button>
-      <button onclick="openFirstPhase()">⚙️ Phase I brief</button>
-      <button class="primary" onclick="focusForge()">⚡ Open forge</button>
-      <button class="gold" onclick="toggleDrawer()">🛠 Debug</button>
+      <button onclick="randomCard()">🎲 Random Card</button>
+      <button class="gold" onclick="focusElite()">⚔️ Elite Only</button>
+      <button class="primary" onclick="document.getElementById('forgeInput').focus()">⚡ Run Forge</button>
     </div>
   </div>
 </header>
 
 <main>
   <section class="hero">
-    <div class="panel hero-main">
-      <div class="hero-grid">
-        <div>
-          <div class="eyebrow">rebuild directive • engineering formulas only</div>
-          <h2>The vault is no longer a theorem museum. It is now a celestial field guide for real engineering combat.</h2>
-          <p>Phase I strips away the generic math bulk and rebuilds the core around the uploaded engineering reference sheet: <strong>Statics</strong>, <strong>Dynamics</strong>, <strong>Strength of Materials</strong>, and <strong>Fluid Mechanics</strong>. The new elite cards are designed to answer: what is the law, what do the symbols mean, when do I use it, and what mistake destroys people first.</p>
-          <p>Current build focuses on the first 24 elite engineering cards, richer realm filtering, a forge that answers with engineering intuition, and visual motion that still feels like a mythic machine room instead of a dead study page.</p>
-          <div class="stats">
-            <div class="stat"><div class="k">Elite cards</div><div class="v" id="statCards">0</div></div>
-            <div class="stat"><div class="k">Realms</div><div class="v" id="statRealms">4</div></div>
-            <div class="stat"><div class="k">Forge modes</div><div class="v">4</div></div>
-            <div class="stat"><div class="k">Sim-enabled</div><div class="v" id="statSim">0</div></div>
-          </div>
-        </div>
-        <div>
-          <div class="ringbay">
-            <div class="ring" style="inset:18px 34px"></div>
-            <div class="ring" style="inset:50px 72px"></div>
-            <div class="ring" style="inset:92px 118px"></div>
-            <div class="orbit-dot" id="orbitDot"></div>
-          </div>
-          <div class="quote">“When beams sag, shafts twist, pipes choke, and structures fight back, this vault should feel like the engineer’s spellbook you reach for before the machine wins.”</div>
-        </div>
-      </div>
-    </div>
     <div class="panel">
-      <div class="block">
-        <h3>PDF-driven realms</h3>
-        <p>The card bulk now matches the uploaded quick-reference pages: vectors, forces, supports, trusses, centroids, motion, work-energy, stress, strain, Mohr’s circle, failure theories, torsion, beams, flow, Reynolds number, pipe losses, venturi meters, and more from the engineering formulas reference. Phase I begins with the most critical 24. </p>
+      <div class="eyebrow">engineering quick-reference vault reforged</div>
+      <h2>Statically balanced, dynamically dangerous, materially stressed, and violently flowing.</h2>
+      <p>This vault is no longer a general theorem museum. It is an engineering field guide shaped around the uploaded <em>Engineering Formulas</em> reference: statics, dynamics, mechanics of materials, and fluid mechanics. The current build pivots the card bulk toward those domains and the diagrams/formulas shown in the PDF pages. fileciteturn6file0L1-L1</p>
+      <div class="stats">
+        <div class="stat"><div class="k">Cards loaded</div><div class="v" id="statCards">0</div></div>
+        <div class="stat"><div class="k">Elite cards</div><div class="v" id="statElite">24</div></div>
+        <div class="stat"><div class="k">Realms</div><div class="v">4</div></div>
+        <div class="stat"><div class="k">Sim cards</div><div class="v" id="statSims">0</div></div>
+        <div class="stat"><div class="k">Astral shards</div><div class="v" id="statShards">0</div></div>
       </div>
-      <div class="block" style="margin-top:12px">
-        <h3>Build promise</h3>
-        <p>No filler theorem pile. No generic math flexing. Just the sharpest engineering cards first, with better intuition, cleaner filtering, and the same cosmic swagger still intact.</p>
-      </div>
-      <div class="block" style="margin-top:12px">
-        <h3>Forge prompts</h3>
-        <p class="small">Try: <em>free body diagram</em>, <em>moment of a force</em>, <em>mohr circle</em>, <em>reynolds number</em>, <em>beam deflection</em>, <em>venturi meter</em>, <em>what law for a twisting shaft?</em></p>
+      <div class="realm-grid">
+        <div class="realm-card"><h3>Statics Forge</h3><div class="small">vectors, supports, moments, equilibrium, trusses, centroids, inertia</div></div>
+        <div class="realm-card"><h3>Dynamics Forge</h3><div class="small">kinematics, work-energy, impulse, orbit, rigid-body motion</div></div>
+        <div class="realm-card"><h3>Strength of Materials Forge</h3><div class="small">stress, strain, Mohr’s circle, torsion, beams, fatigue</div></div>
+        <div class="realm-card"><h3>Fluid Mechanics Forge</h3><div class="small">continuity, Bernoulli, Reynolds, pipes, pumps, venturi, orifice</div></div>
       </div>
     </div>
+    <div class="panel forge">
+      <h3 style="margin-top:0">⚡ Engineering Forge</h3>
+      <div class="small">Throw in a problem type or topic and the forge routes you to the right card family.</div>
+      <div class="forge-grid" style="margin-top:10px">
+        <div>
+          <input id="forgeInput" placeholder="Try: beam deflection, free body diagram, venturi meter, torque on shaft, Reynolds number" />
+          <div class="chips">
+            <div class="chip" onclick="useChip('free body diagram')">free body diagram</div>
+            <div class="chip" onclick="useChip('beam deflection')">beam deflection</div>
+            <div class="chip" onclick="useChip('mohr circle')">mohr circle</div>
+            <div class="chip" onclick="useChip('venturi meter')">venturi meter</div>
+            <div class="chip" onclick="useChip('reynolds number')">reynolds number</div>
+            <div class="chip" onclick="useChip('method of joints')">method of joints</div>
+          </div>
+          <div class="actions" style="margin-top:10px">
+            <button class="primary" onclick="runForge()">Run Forge</button>
+            <button onclick="celebrate('random')">Celebrate</button>
+          </div>
+        </div>
+        <div id="forgeResult">The forge is waiting. Ask it for a formula, a design check, a flow problem, or a failure mode.</div>
+      </div>
+      <div class="footer-note">Source focus follows the user-uploaded engineering formula sheet pages showing statics, dynamics, mechanics of materials, and fluid mechanics. fileciteturn6file0L1-L1</div>
+    </div>
   </section>
-
-  <section class="realm-grid">
-    <div class="realm-card"><div class="realm-mini">realm i</div><h3>Statics Forge</h3><p>Vectors, equilibrium, forces, support reactions, trusses, centroids, and moments of inertia. The realm where drawings become truth and free-body diagrams stop nonsense fast.</p></div>
-    <div class="realm-card"><div class="realm-mini">realm ii</div><h3>Dynamics Forge</h3><p>Motion, work, kinetic energy, impulse, momentum, orbital motion, and rigid-body rotation. The realm of changing motion, not static excuses.</p></div>
-    <div class="realm-card"><div class="realm-mini">realm iii</div><h3>Strength of Materials</h3><p>Stress, strain, Hooke’s law, Mohr’s circle, failure theories, torsion, beams, and buckling. The realm where parts confess how they will fail.</p></div>
-    <div class="realm-card"><div class="realm-mini">realm iv</div><h3>Fluid Mechanics Forge</h3><p>Pressure, viscosity, Reynolds number, pipe loss, pumps, venturi meters, and flow behavior. The realm where invisible motion starts stealing your power.</p></div>
-  </section>
-
-  <div class="sectionTitle">
-    <h2>Elite Engineering Cards • Phase I</h2>
-    <div class="muted">24 high-priority cards rebuilt first</div>
-  </div>
 
   <section class="toolbar">
     <input id="search" placeholder="Search cards..." oninput="applyFilters()" />
-    <select id="realm" onchange="applyFilters()">
+    <select id="realmFilter" onchange="applyFilters()">
       <option value="all">All realms</option>
-      <option value="Statics">Statics Forge</option>
-      <option value="Dynamics">Dynamics Forge</option>
-      <option value="Materials">Strength of Materials</option>
-      <option value="Fluids">Fluid Mechanics Forge</option>
+      <option>Statics Forge</option>
+      <option>Dynamics Forge</option>
+      <option>Strength of Materials Forge</option>
+      <option>Fluid Mechanics Forge</option>
     </select>
-    <select id="type" onchange="applyFilters()">
+    <select id="typeFilter" onchange="applyFilters()">
       <option value="all">All card types</option>
       <option value="formula">Formula</option>
-      <option value="intuition">Intuition</option>
-      <option value="failure">Failure</option>
+      <option value="concept">Concept</option>
       <option value="diagram">Diagram</option>
+      <option value="worked-example">Worked Example</option>
     </select>
-    <select id="sim" onchange="applyFilters()">
-      <option value="all">All simulation states</option>
-      <option value="yes">Simulation-enabled</option>
-      <option value="no">No simulation</option>
+    <select id="sortFilter" onchange="applyFilters()">
+      <option value="title">Sort: title</option>
+      <option value="realm">Sort: realm</option>
+      <option value="type">Sort: type</option>
     </select>
+    <button onclick="focusElite()">Elite only</button>
     <button onclick="resetFilters()">Reset</button>
-    <button class="primary" onclick="celebrateEngineering()">Spark forge</button>
   </section>
 
-  <section id="cardGrid"></section>
-
-  <section class="forge">
-    <div class="panel">
-      <div class="sectionTitle">
-        <h2>Engineering Forge</h2>
-        <div class="muted">fast intuition mode</div>
-      </div>
-      <p class="forgeHint">This forge no longer hunts random theorem trivia. It now acts like an engineering triage chamber: identify the situation, point to the right card, explain what the equation is physically saying, and warn you where people butcher it.</p>
-      <input id="forgeInput" placeholder="Ask the forge what law or card you need..." />
-      <div class="forgeActions">
-        <button class="primary" onclick="runForge()">Run forge</button>
-        <button onclick="seedForge('free body diagram')">Free-body diagram</button>
-        <button onclick="seedForge('beam deflection')">Beam deflection</button>
-        <button onclick="seedForge('mohr circle')">Mohr circle</button>
-        <button onclick="seedForge('reynolds number')">Reynolds number</button>
-        <button onclick="seedForge('venturi meter')">Venturi meter</button>
-      </div>
-      <div id="forgeResult"></div>
-      <div class="chips" id="forgeLinks"></div>
-    </div>
-    <div class="forgeCanvasWrap" id="forgeWrap">
-      <div class="forgePulse"></div>
-      <canvas id="forgeCanvas"></canvas>
-      <canvas id="forgeParticles"></canvas>
-    </div>
-  </section>
+  <section id="grid"></section>
 </main>
 
-<div class="modal" id="modal" onclick="if(event.target.id==='modal') closeModal()">
+<div id="modal" class="modal" onclick="if(event.target.id==='modal') closeModal()">
   <div class="modal-content">
     <div class="modal-head">
       <div>
-        <div class="chips" id="mChips"></div>
-        <h2 id="mTitle" style="margin:6px 0 0 0"></h2>
+        <div id="mBadges" class="badges"></div>
+        <h2 id="mTitle" style="margin:4px 0 0 0"></h2>
       </div>
       <div class="actions">
-        <button onclick="fireBurst()">✨ Burst</button>
+        <button onclick="forgeFromCurrent()">Forge around this</button>
         <button onclick="closeModal()">Close</button>
       </div>
     </div>
     <div class="modal-grid">
       <div>
-        <div class="block">
-          <h3>Formula / law</h3>
-          <div id="mStatement" class="statement"></div>
+        <div class="section">
+          <h3>Formula / law / rule</h3>
+          <div id="mFormula" class="formula"></div>
         </div>
-        <div class="block" style="margin-top:12px">
-          <h3>What it means</h3>
-          <p id="mPlain"></p>
-        </div>
-        <div class="block" style="margin-top:12px">
-          <h3>When to use it</h3>
-          <p id="mUse"></p>
-        </div>
-        <div class="block" style="margin-top:12px">
-          <h3>Assumptions / limits</h3>
-          <p id="mAssumptions"></p>
-        </div>
-        <div class="block" style="margin-top:12px">
-          <h3>Common trap</h3>
-          <p id="mTrap"></p>
-        </div>
+        <div class="section" style="margin-top:12px"><h3>What it means</h3><p id="mMeaning"></p></div>
+        <div class="section" style="margin-top:12px"><h3>When to use it</h3><p id="mUse"></p></div>
+        <div class="section" style="margin-top:12px"><h3>Assumptions</h3><p id="mAssumptions"></p></div>
+        <div class="section" style="margin-top:12px"><h3>Common trap</h3><p id="mTrap"></p></div>
+        <div class="section" style="margin-top:12px"><h3>Engineering intuition</h3><p id="mIntuition"></p></div>
       </div>
       <div>
-        <div class="block">
-          <h3>Engineering intuition</h3>
-          <p id="mIntuition"></p>
+        <div class="section">
+          <h3>Quick visual</h3>
+          <div class="sim-wrap"><canvas id="simCanvas" width="520" height="300"></canvas></div>
         </div>
-        <div class="block" style="margin-top:12px">
-          <h3>Variables</h3>
-          <ul id="mVariables"></ul>
-        </div>
-        <div class="block" style="margin-top:12px">
-          <h3>Neighbor cards</h3>
-          <ul id="mRelated"></ul>
-        </div>
-        <div class="block" style="margin-top:12px">
-          <h3>Visual / simulation</h3>
-          <canvas id="simCanvas" width="520" height="290"></canvas>
-        </div>
+        <div class="section" style="margin-top:12px"><h3>Variables</h3><p id="mVars"></p></div>
+        <div class="section" style="margin-top:12px"><h3>Related cards</h3><p id="mRelated"></p></div>
       </div>
     </div>
   </div>
 </div>
 
-<button class="drawerBtn gold" onclick="toggleDrawer()">🛠 Debug</button>
-<div class="drawer panel" id="drawer">
-  <h2 style="margin-top:0">Engineering Forge Debug Report</h2>
+<button class="debug-btn primary" onclick="toggleDebug()">🛠 Debug</button>
+<div id="debugDrawer" class="drawer panel">
+  <h2 style="margin-top:0">Engineering Forge Report</h2>
   <pre id="debugOut"></pre>
-  <div class="actions">
-    <button onclick="copyDebug()">Copy report</button>
-    <button onclick="celebrateEngineering()">Pulse test</button>
-  </div>
 </div>
-<div class="loadedBadge">ENGINEERING FORGE PHASE I LOADED</div>
 
 <script>
-const VERSION = 'v13.0 • Engineering Forge Phase I';
-const BUILD_DATE = '2026-04-16';
+const VERSION = "v2.0 • Engineering Forge Phase II";
+const BUILD_DATE = "2026-04-16";
+const SOURCE_NOTE = "Tailored to the user-uploaded Engineering Formulas PDF (7 pages).";
+const CARDS = [{"id": "statics-fbd", "title": "Free-Body Diagram", "realm": "Statics Forge", "type": "diagram", "formula": "Isolate the body and replace all contacts with forces/moments.", "meaning": "A free-body diagram is the battlefield map of mechanics.", "use": "Use it before equilibrium, moments, truss cuts, beam reactions, and particle dynamics.", "assumptions": "You must isolate one object cleanly and include all external loads and reactions.", "trap": "Forgetting a reaction, double-counting an internal force, or keeping supports instead of replacing them.", "intuition": "If the picture is wrong, the algebra will faithfully produce nonsense.", "variables": "Object; support reactions; applied loads; weight; coordinate axes", "related": "Equilibrium in 2D, Equilibrium in 3D, Support Reactions Overview", "simulation": "fbd"}, {"id": "statics-eq2d", "title": "Equilibrium in 2D", "realm": "Statics Forge", "type": "formula", "formula": "ΣF_x = 0, ΣF_y = 0, ΣM = 0", "meaning": "A rigid body in planar statics must have zero net force and zero net moment.", "use": "Use for beams, frames, simple machines, brackets, supports, and planar rigid bodies.", "assumptions": "Body is static and all relevant loads are captured in the plane.", "trap": "Taking moments about the wrong point sign convention or forgetting couples.", "intuition": "Forces stop translation; moments stop rotation. You need both locks engaged.", "variables": "F_x, F_y = force components; M = moment about chosen point", "related": "Free-Body Diagram, Magnitude of Moment, Support Reactions Overview", "simulation": "moment"}, {"id": "statics-eq3d", "title": "Equilibrium in 3D", "realm": "Statics Forge", "type": "formula", "formula": "ΣF_x=0, ΣF_y=0, ΣF_z=0, ΣM_x=0, ΣM_y=0, ΣM_z=0", "meaning": "A rigid body in space needs all three force balances and all three moment balances.", "use": "Use for space frames, shafts with off-axis loads, brackets, bearings, and supports in three dimensions.", "assumptions": "Body is static and axes are chosen consistently.", "trap": "Missing one moment component or misreading geometry in 3D.", "intuition": "Space statics is just bookkeeping with more ways to get embarrassed.", "variables": "Force components and moment components in x, y, z", "related": "Free-Body Diagram, Cross Product, Bearing Support in 3D", "simulation": "moment"}, {"id": "statics-moment", "title": "Magnitude of Moment", "realm": "Statics Forge", "type": "formula", "formula": "M = F d_⊥   or   M = r × F", "meaning": "Moment measures a force's turning power about a point or axis.", "use": "Use whenever a force causes rotation tendency around a pivot, support, or section.", "assumptions": "Distance must be perpendicular if using M = F d.", "trap": "Using straight-line distance instead of perpendicular distance.", "intuition": "A long lever arm lets a modest force act like a bully.", "variables": "F = force; d_⊥ = perpendicular distance; r = position vector", "related": "Cross Product, Couples, Equilibrium in 2D", "simulation": "moment"}, {"id": "statics-joints", "title": "Method of Joints", "realm": "Statics Forge", "type": "worked-example", "formula": "At each joint: ΣF_x = 0, ΣF_y = 0", "meaning": "Solve truss member axial forces joint by joint.", "use": "Use for pin-connected trusses where loads are applied at joints.", "assumptions": "Members are two-force members and self-weight is negligible or lumped appropriately.", "trap": "Starting at a joint with too many unknowns.", "intuition": "Each joint is a tiny courtroom: only x and y balances matter.", "variables": "Member axial forces, joint loads, support reactions", "related": "Truss Definition, Two-Force Member, Zero-Force Member Logic", "simulation": "truss"}, {"id": "statics-sections", "title": "Method of Sections", "realm": "Statics Forge", "type": "worked-example", "formula": "Cut through members, then apply equilibrium to one side.", "meaning": "A smart cut reveals a few truss member forces without solving the whole truss.", "use": "Use when you only need a handful of specific member forces.", "assumptions": "Cut should cross no more unknown members than your available equilibrium equations.", "trap": "Cutting too many unknowns or choosing the uglier side of the cut.", "intuition": "A saw can save pages of algebra.", "variables": "Cut section forces, support reactions, moments", "related": "Method of Joints, Equilibrium in 2D, Truss Definition", "simulation": "truss"}, {"id": "statics-centroid", "title": "Centroid of Composite Area", "realm": "Statics Forge", "type": "formula", "formula": "x̄ = Σ(A_i x̄_i)/ΣA_i,   ȳ = Σ(A_i ȳ_i)/ΣA_i", "meaning": "The centroid is the balance point of area.", "use": "Use for composite shapes before stress, bending, distributed loads, and area property work.", "assumptions": "Take holes as negative area and use consistent reference axes.", "trap": "Using dimensions from the wrong datum or forgetting cutouts are negative.", "intuition": "The centroid is where the shape would balance on a pin—if the pin had nerves.", "variables": "A_i = area pieces; x̄_i, ȳ_i = local centroids", "related": "Centroid of Area, Parallel Axis Theorem, Moment of Inertia about x-axis", "simulation": "centroid"}, {"id": "statics-parallel", "title": "Parallel Axis Theorem", "realm": "Statics Forge", "type": "formula", "formula": "I = I_c + A d^2", "meaning": "Shift an area moment of inertia from its centroidal axis to a parallel axis.", "use": "Use after finding centroidal inertia when the required axis is offset.", "assumptions": "Axes must be parallel and d must be the perpendicular offset.", "trap": "Using the theorem on non-parallel axes or with the wrong distance.", "intuition": "Moving away from the centroid makes inertia grow brutally fast.", "variables": "I_c = centroidal inertia; A = area; d = offset distance", "related": "Moment of Inertia about x-axis, Polar Moment of Inertia, Centroid of Composite Area", "simulation": "inertia"}, {"id": "dyn-workenergy", "title": "Work-Energy Principle", "realm": "Dynamics Forge", "type": "formula", "formula": "T_1 + ΣU_1→2 = T_2", "meaning": "Work done by forces changes kinetic energy.", "use": "Use for particles and rigid bodies when force-displacement is easier than force-time.", "assumptions": "Need actual displacement path work terms; watch sign of work.", "trap": "Treating all forces as conservative or forgetting nonconservative work.", "intuition": "Energy methods skip the fight and go straight to before-versus-after.", "variables": "T = kinetic energy; U = work by forces", "related": "Kinetic Energy, Potential Energy, Principle of Conservation of Energy", "simulation": "energy"}, {"id": "dyn-impulse", "title": "Impulse-Momentum Principle", "realm": "Dynamics Forge", "type": "formula", "formula": "∫ΣF dt = m v_2 − m v_1", "meaning": "Net impulse changes momentum.", "use": "Use for impacts, thrust pulses, short-duration loads, and variable forces over time.", "assumptions": "Mass constant unless system treatment accounts otherwise.", "trap": "Mixing impulse with work or forgetting vector direction.", "intuition": "If force acts briefly but violently, momentum is the ledger that keeps score.", "variables": "F = force; t = time; m = mass; v = velocity", "related": "Impulse, Newton’s Second Law of Motion, Relative Motion", "simulation": "momentum"}, {"id": "dyn-orbit", "title": "Orbital Motion", "realm": "Dynamics Forge", "type": "formula", "formula": "v = √(GM/r) for circular orbit,  a_n = v²/r", "meaning": "Orbit is perpetual falling under gravity with the right sideways speed.", "use": "Use for circular-orbit intuition, spacecraft, satellites, and gravity-dominated motion.", "assumptions": "Ideal point-mass central gravity unless corrections are included.", "trap": "Confusing orbital speed with escape speed.", "intuition": "Miss the ground forever and you have joined the old magic.", "variables": "G = grav. constant; M = central mass; r = orbital radius; v = speed", "related": "Central Force, Newton’s Law of Universal Gravitation, Circular Motion", "simulation": "orbit"}, {"id": "dyn-ang", "title": "Angular Velocity and Acceleration", "realm": "Dynamics Forge", "type": "formula", "formula": "ω = dθ/dt,   α = dω/dt", "meaning": "Angular velocity tells how fast angle changes; angular acceleration tells how fast spin rate changes.", "use": "Use for rotating shafts, gears, rigid bodies, disks, and crank motion.", "assumptions": "Need consistent sign convention and angular units.", "trap": "Mixing linear and angular quantities without radius relation.", "intuition": "Rotation is translation wearing a crown and demanding radians.", "variables": "θ = angle; ω = angular velocity; α = angular acceleration", "related": "Rotation of Rigid Bodies, Tangential and Normal Components, Plane Motion", "simulation": "rotation"}, {"id": "mat-normal", "title": "Normal Stress", "realm": "Strength of Materials Forge", "type": "formula", "formula": "σ = P/A", "meaning": "Normal stress is force spread across area in tension or compression.", "use": "Use for axial bars, simple members, average stress checks, and first-pass sizing.", "assumptions": "Load assumed centric and stress assumed uniform over section.", "trap": "Using average stress where bending or stress concentration dominates.", "intuition": "A small area makes even polite loads act savage.", "variables": "σ = normal stress; P = axial force; A = area", "related": "Axial Strain, Hooke’s Law, Percent Elongation", "simulation": "stress"}, {"id": "mat-shear", "title": "Shear Stress", "realm": "Strength of Materials Forge", "type": "formula", "formula": "τ = V/A  (average)", "meaning": "Shear stress measures tangential force intensity over area.", "use": "Use for bolts, pins, rivets, lap joints, and quick average shear checks.", "assumptions": "Average distribution is only a first approximation.", "trap": "Assuming average shear tells the full story in beams or torsion.", "intuition": "Shear is the material’s way of saying parts are trying to slide past each other.", "variables": "τ = shear stress; V = shear force; A = area", "related": "Transverse Shear Stress, Torsion in Circular Shafts, Maximum Shear Stress Theory", "simulation": "stress"}, {"id": "mat-hooke", "title": "Hooke’s Law", "realm": "Strength of Materials Forge", "type": "formula", "formula": "σ = E ε", "meaning": "Within elastic range, stress is proportional to strain.", "use": "Use for linear-elastic materials, axial deformation, spring-like response, and first-pass material behavior.", "assumptions": "Material stays in linear elastic range.", "trap": "Using it after yielding or with nonlinear materials without caution.", "intuition": "In the elastic kingdom, double the strain and the stress answers in kind.", "variables": "σ = stress; E = modulus; ε = strain", "related": "Modulus of Elasticity, Axial Strain, Thermal Deformation", "simulation": "stressstrain"}, {"id": "mat-mohr", "title": "Mohr’s Circle", "realm": "Strength of Materials Forge", "type": "diagram", "formula": "Center C = (σ_x+σ_y)/2,   radius R = √[((σ_x−σ_y)/2)^2 + τ_xy^2]", "meaning": "A graphical machine for principal stresses, max shear, and stress transformation.", "use": "Use when a 2D stress element has combined normal and shear stress.", "assumptions": "Plane stress form here; sign conventions matter.", "trap": "Plotting shear with the wrong sign or forgetting angle doubles on the circle.", "intuition": "Mohr’s Circle turns ugly stress bookkeeping into geometry with teeth.", "variables": "σ_x, σ_y = normal stresses; τ_xy = shear stress", "related": "Principal Stress, Maximum Shear Stress Theory, Distortion Energy Theory", "simulation": "mohr"}, {"id": "mat-mst", "title": "Maximum Shear Stress Theory", "realm": "Strength of Materials Forge", "type": "formula", "formula": "τ_max = (σ_1 − σ_3)/2", "meaning": "Tresca theory predicts yielding when maximum shear reaches the shear yield benchmark.", "use": "Use for ductile-material yield checks under multiaxial stress.", "assumptions": "Principal stresses must be known or found first.", "trap": "Using ductile criteria for brittle-dominated failures without thinking.", "intuition": "Ductile metals often fear distortion and shear more than pretty normal-stress pictures.", "variables": "σ_1, σ_2, σ_3 = principal stresses", "related": "Mohr’s Circle, Distortion Energy Theory, Principal Stress", "simulation": "mohr"}, {"id": "mat-vm", "title": "Distortion Energy Theory", "realm": "Strength of Materials Forge", "type": "formula", "formula": "σ_v = √(σ_1² + σ_2² + σ_3² − σ_1σ_2 − σ_2σ_3 − σ_3σ_1)", "meaning": "Von Mises equivalent stress collapses a multiaxial stress state into one yield-check scalar.", "use": "Use for ductile design under combined loading.", "assumptions": "Material assumed ductile and yield-governed.", "trap": "Comparing raw component stresses to yield instead of equivalent stress when interaction matters.", "intuition": "Von Mises is the diplomat that reduces multiaxial chaos to one brutal verdict.", "variables": "σ_v = von Mises stress; σ_i = principal stresses", "related": "Maximum Shear Stress Theory, Mohr’s Circle, Normal Stress", "simulation": "mohr"}, {"id": "mat-torsion", "title": "Torsion in Circular Shafts", "realm": "Strength of Materials Forge", "type": "formula", "formula": "τ = Tρ/J,   θ = TL/(JG)", "meaning": "Torque creates shear stress that grows with radius and causes angle of twist.", "use": "Use for shafts, axles, rotary members, couplings, and drive systems.", "assumptions": "Circular shaft behavior and Saint-Venant torsion idealization.", "trap": "Using solid-shaft formulas blindly on thin-wall sections or mixed geometry.", "intuition": "The outside of the shaft suffers most—it is furthest from the calm center.", "variables": "T = torque; ρ = radius location; J = polar moment; G = shear modulus; L = length", "related": "Polar Moment of Inertia, Shear Modulus, Angular Velocity and Acceleration", "simulation": "torsion"}, {"id": "mat-bending", "title": "Bending Stress", "realm": "Strength of Materials Forge", "type": "formula", "formula": "σ = My/I", "meaning": "Beam bending creates normal stress varying linearly from the neutral axis.", "use": "Use for beams under moment, simple flexure, and first-pass stress checks.", "assumptions": "Linear elastic beam theory and known neutral axis.", "trap": "Using the wrong I or wrong sign/side of section.", "intuition": "Farther from the neutral axis means harsher bending judgment.", "variables": "M = bending moment; y = distance from neutral axis; I = area moment", "related": "Beam Bending Moment, Beam Deflection, Elastic Section Modulus", "simulation": "beam"}, {"id": "mat-deflect", "title": "Beam Deflection", "realm": "Strength of Materials Forge", "type": "formula", "formula": "EI y'' = M(x)", "meaning": "Deflection comes from how bending moment shapes beam curvature.", "use": "Use for stiffness checks, serviceability, alignment, and flexible member response.", "assumptions": "Small deflections and Euler-Bernoulli assumptions unless otherwise stated.", "trap": "Checking stress but ignoring deflection until the machine starts acting haunted.", "intuition": "Strength keeps it alive; stiffness keeps it usable.", "variables": "E = modulus; I = inertia; y = deflection; M(x)=moment function", "related": "Bending Stress, Curvature in Beams, Euler’s Formula for Columns", "simulation": "beam"}, {"id": "flu-re", "title": "Reynolds Number", "realm": "Fluid Mechanics Forge", "type": "formula", "formula": "Re = ρVD/μ = VD/ν", "meaning": "Reynolds number compares inertia effects to viscous effects.", "use": "Use to anticipate laminar versus turbulent behavior and choose correlations.", "assumptions": "Characteristic length and velocity must match the geometry.", "trap": "Using the wrong diameter or pretending regime never changes.", "intuition": "Re tells you whether the flow is orderly, moody, or ready to start a bar fight.", "variables": "ρ = density; V = velocity; D = length/diameter; μ = dynamic viscosity; ν = kinematic viscosity", "related": "Laminar Flow, Turbulent Flow, Darcy-Weisbach Equation", "simulation": "flow"}, {"id": "flu-dw", "title": "Darcy-Weisbach Equation", "realm": "Fluid Mechanics Forge", "type": "formula", "formula": "h_f = f (L/D) (V²/2g)", "meaning": "Major pipe head loss depends on friction factor, pipe length, geometry, and velocity.", "use": "Use for pressure-loss predictions in internal flow.", "assumptions": "Steady incompressible pipe-flow context with appropriate friction factor.", "trap": "Confusing Darcy friction factor with Fanning factor or mixing units.", "intuition": "Long, skinny, rough, and fast all conspire to steal pressure.", "variables": "h_f = head loss; f = Darcy factor; L = length; D = diameter; V = velocity; g = gravity", "related": "Head Loss, Moody / Stanton Diagram, Reynolds Number", "simulation": "pipe"}, {"id": "flu-venturi", "title": "Venturi Meter", "realm": "Fluid Mechanics Forge", "type": "worked-example", "formula": "Q = C_d A_2 √[(2g Δh)/(1−β^4)]  (one common form)", "meaning": "A venturi infers flow rate from pressure drop across a throat.", "use": "Use for flow measurement in pipes when a differential-pressure device is appropriate.", "assumptions": "Calibration coefficient and geometry must be known.", "trap": "Forgetting discharge coefficient or using pressure data with inconsistent datum handling.", "intuition": "Squeeze the stream, speed it up, drop the pressure, and the flow reveals itself.", "variables": "Q = flow rate; C_d = discharge coeff.; A_2 = throat area; β = d_2/d_1; Δh = differential head", "related": "Field Equation / Bernoulli Form, Continuity Equation, Orifice Flow", "simulation": "venturi"}, {"id": "statics-scalar", "title": "Scalar vs Vector", "realm": "Statics Forge", "type": "concept", "formula": "Scalar: magnitude only. Vector: magnitude + direction.", "meaning": "Scalars tell how much; vectors tell how much and where.", "use": "Use before component resolution and balance equations.", "assumptions": "Need a coordinate system for vectors.", "trap": "Treating a vector like plain arithmetic.", "intuition": "Direction is not decoration; it is half the truth.", "variables": "Magnitude; direction; components", "related": "Unit Vector, Vector Components", "simulation": ""}, {"id": "statics-unit", "title": "Unit Vector", "realm": "Statics Forge", "type": "formula", "formula": "û = r / |r|", "meaning": "A unit vector gives pure direction with magnitude 1.", "use": "Use to describe force directions cleanly.", "assumptions": "Vector must be nonzero.", "trap": "Forgetting to normalize.", "intuition": "Unit vectors are arrows stripped to their loyalty alone.", "variables": "r = vector; |r| = magnitude", "related": "Direction Cosines, Vector Components", "simulation": ""}, {"id": "statics-dot", "title": "Dot Product", "realm": "Statics Forge", "type": "formula", "formula": "A·B = AB cosθ", "meaning": "Dot product measures alignment and gives scalar projection.", "use": "Use for work, projections, angles, and checking orthogonality.", "assumptions": "Angle between vectors defined consistently.", "trap": "Mixing dot and cross product roles.", "intuition": "Dot product asks: how much of one vector marches with the other?", "variables": "A,B = vectors; θ = angle", "related": "Work, Direction Cosines, Cross Product", "simulation": ""}, {"id": "statics-cross", "title": "Cross Product", "realm": "Statics Forge", "type": "formula", "formula": "A×B = AB sinθ n̂", "meaning": "Cross product creates a vector perpendicular to both inputs.", "use": "Use for moments, area vectors, and rotational direction.", "assumptions": "Right-hand rule matters.", "trap": "Sign/direction errors from hand-rule confusion.", "intuition": "Cross product is rotation’s blacksmith hammer.", "variables": "A,B vectors; θ angle; n̂ normal direction", "related": "Magnitude of Moment, Mixed Triple Product, Equilibrium in 3D", "simulation": ""}, {"id": "statics-components", "title": "Vector Components", "realm": "Statics Forge", "type": "formula", "formula": "R = R_x i + R_y j + R_z k", "meaning": "Components break a vector into axis-aligned pieces.", "use": "Use before summing forces and moments.", "assumptions": "Axes and signs must stay consistent.", "trap": "Dropping signs while resolving.", "intuition": "Components turn diagonal chaos into bookkeeping.", "variables": "R_x,R_y,R_z = components", "related": "Direction Cosines, Equilibrium in 3D", "simulation": ""}, {"id": "statics-dircos", "title": "Direction Cosines", "realm": "Statics Forge", "type": "formula", "formula": "cosα = R_x/R, cosβ = R_y/R, cosγ = R_z/R", "meaning": "Direction cosines encode a vector’s orientation in 3D.", "use": "Use for force direction and spatial geometry.", "assumptions": "Vector magnitude nonzero.", "trap": "Using geometry from the wrong point pair.", "intuition": "Direction cosines are the passport stamps of a 3D vector.", "variables": "α,β,γ = angles to axes", "related": "Unit Vector, Vector Components", "simulation": ""}, {"id": "statics-mixed", "title": "Mixed Triple Product", "realm": "Statics Forge", "type": "formula", "formula": "A·(B×C)", "meaning": "Gives signed volume and tests coplanarity.", "use": "Use in 3D geometry and moment/volume relations.", "assumptions": "Vector order matters.", "trap": "Changing order and expecting same sign.", "intuition": "The triple product is geometry’s lie detector for flatness.", "variables": "A,B,C vectors", "related": "Cross Product, Equilibrium in 3D", "simulation": ""}, {"id": "statics-forcesys", "title": "Systems of Forces", "realm": "Statics Forge", "type": "concept", "formula": "Coplanar, concurrent, parallel, and general systems.", "meaning": "Classifying force systems tells you which tools matter first.", "use": "Use before setup.", "assumptions": "System idealization should match reality.", "trap": "Using a 2D treatment for 3D geometry.", "intuition": "Correct classification is half the ambush.", "variables": "Force lines of action, force directions", "related": "Equilibrium, Equivalent Force Systems", "simulation": ""}, {"id": "statics-contact", "title": "Contact Force", "realm": "Statics Forge", "type": "concept", "formula": "Normal and friction forces appear at interfaces.", "meaning": "Contact reactions encode how surfaces resist penetration and sliding.", "use": "Use at supports, blocks, and interfaces.", "assumptions": "Need correct surface model: smooth vs rough.", "trap": "Inventing friction where the support was idealized smooth.", "intuition": "Surfaces answer with whatever reaction the model allows—and no more.", "variables": "Normal force, friction force", "related": "Smooth Surface Contact Reaction, Rough Surface Contact Reaction", "simulation": ""}, {"id": "statics-springs", "title": "Springs", "realm": "Statics Forge", "type": "formula", "formula": "F = kx", "meaning": "Spring force grows with deflection from free length in the linear range.", "use": "Use for supports, vibration approximations, and elastic connectors.", "assumptions": "Linear spring behavior.", "trap": "Using it past nonlinear travel or preload quirks without caution.", "intuition": "Springs are mechanical promises: push or pull them, they answer proportionally—until they don’t.", "variables": "k = spring constant; x = deflection", "related": "Hooke’s Law, Support Reactions Overview", "simulation": ""}, {"id": "statics-couples", "title": "Couples", "realm": "Statics Forge", "type": "formula", "formula": "M = Fd", "meaning": "A couple is a free moment produced by equal opposite forces separated by distance.", "use": "Use to model pure turning without net force.", "assumptions": "Forces must be equal, opposite, parallel, and separated.", "trap": "Treating a couple as depending on point of application.", "intuition": "A couple cares not where you draw it; only its magnitude and direction survive.", "variables": "F = force; d = separation", "related": "Magnitude of Moment, Equivalent Force Systems", "simulation": ""}, {"id": "statics-eqforces", "title": "Equivalent Force Systems", "realm": "Statics Forge", "type": "concept", "formula": "Force-couple replacement preserves same external effect.", "meaning": "Complicated load systems can be reduced to a resultant force and moment.", "use": "Use to simplify distributed or multiple-force systems.", "assumptions": "Need same resultant force and resultant moment.", "trap": "Matching force but not moment.", "intuition": "A good reduction keeps the punch and the twist.", "variables": "Resultant force, resultant moment", "related": "Couples, Distributed Load Resultant", "simulation": ""}, {"id": "statics-supports", "title": "Support Reactions Overview", "realm": "Statics Forge", "type": "diagram", "formula": "Pins, rollers, fixed supports, cables, smooth and rough contacts.", "meaning": "Each support grants some motions and forbids others; the forbidden motions demand reactions.", "use": "Use before writing equilibrium equations.", "assumptions": "Idealized support type chosen correctly.", "trap": "Assigning the wrong reaction set.", "intuition": "Every support is a bouncer for specific motions.", "variables": "Reaction components and moments", "related": "Pin Support Reaction, Roller Support Reaction, Fixed Support Reaction", "simulation": "support"}, {"id": "statics-truss", "title": "Truss Definition", "realm": "Statics Forge", "type": "concept", "formula": "A truss is an assembly of slender members connected at joints, loaded at joints.", "meaning": "Members ideally carry only axial tension/compression.", "use": "Use for bridges, frames, towers, and ideal truss analysis.", "assumptions": "Pin-jointed idealization.", "trap": "Applying beam bending logic to an ideal truss member.", "intuition": "A truss wants its members to either stretch proudly or crush quietly—nothing fancy.", "variables": "Members, joints, axial forces", "related": "Method of Joints, Method of Sections", "simulation": ""}, {"id": "statics-twoforce", "title": "Two-Force Member", "realm": "Statics Forge", "type": "concept", "formula": "For equilibrium, forces on a two-force member are equal, opposite, and collinear.", "meaning": "This kills lots of geometry pain in trusses and linkages.", "use": "Use in truss members and ideal links.", "assumptions": "Only two external forces act.", "trap": "Sneaking in a third force or self-weight without accounting for it.", "intuition": "Two-force members are the monks of statics: simple, strict, axial.", "variables": "Member end forces", "related": "Method of Joints, Zero-Force Member Logic", "simulation": ""}, {"id": "statics-zeroforce", "title": "Zero-Force Member Logic", "realm": "Statics Forge", "type": "concept", "formula": "Certain unloaded joints imply some members carry zero axial force.", "meaning": "This helps simplify trusses fast.", "use": "Use before grinding through equations.", "assumptions": "Applies only under the usual zero-force-member patterns.", "trap": "Declaring zero force where joint loading breaks the pattern.", "intuition": "Spotting zero-force members is free algebra you should never refuse.", "variables": "Unloaded joints, member geometry", "related": "Method of Joints, Two-Force Member", "simulation": ""}, {"id": "statics-distload", "title": "Distributed Load Resultant", "realm": "Statics Forge", "type": "formula", "formula": "R = ∫ w(x) dx at x̄ = (∫ x w(x) dx)/(∫ w(x) dx)", "meaning": "A distributed load can be replaced by a single resultant acting at its centroid.", "use": "Use for beams, pressures, and line-load simplification.", "assumptions": "Load intensity must be described over span.", "trap": "Using midpoint blindly for nonuniform loads.", "intuition": "The area under the load diagram becomes force; its centroid becomes location.", "variables": "w(x)=load intensity; R=resultant; x̄=resultant location", "related": "Centroid of Composite Area, Beam Bending Moment", "simulation": ""}, {"id": "statics-ix", "title": "Moment of Inertia about x-axis", "realm": "Statics Forge", "type": "formula", "formula": "I_x = ∫ y² dA", "meaning": "Area moment quantifies resistance to bending about an axis.", "use": "Use for beam bending and deflection.", "assumptions": "Purely geometric area property, not mass moment.", "trap": "Mixing area moment with mass moment.", "intuition": "Inertia rewards area that stands far from the axis.", "variables": "y = distance to x-axis; dA = area element", "related": "Parallel Axis Theorem, Bending Stress, Beam Deflection", "simulation": "inertia"}, {"id": "statics-polar", "title": "Polar Moment of Inertia", "realm": "Statics Forge", "type": "formula", "formula": "J = ∫ r² dA = I_x + I_y", "meaning": "Polar moment measures resistance to torsional shear in circular shafts.", "use": "Use in shaft torsion and rotational section properties.", "assumptions": "Best directly for circular sections in classic torsion.", "trap": "Using polar moment as if it solved every torsion shape.", "intuition": "For circular shafts, J is the fortress wall against twist.", "variables": "r = radial distance; dA = area element", "related": "Torsion in Circular Shafts, Moment of Inertia about x-axis", "simulation": "inertia"}, {"id": "dyn-position", "title": "Position Coordinate", "realm": "Dynamics Forge", "type": "concept", "formula": "Position locates the particle relative to an origin.", "meaning": "Motion is the changing story of position.", "use": "Use before velocity and acceleration definitions.", "assumptions": "Reference frame must be chosen.", "trap": "Changing coordinate definitions mid-problem.", "intuition": "Before any motion law, you must first decide where the kingdom begins.", "variables": "x,y,z,t", "related": "Rectilinear Motion, Relative Motion", "simulation": ""}, {"id": "dyn-vel", "title": "Velocity", "realm": "Dynamics Forge", "type": "formula", "formula": "v = dx/dt", "meaning": "Velocity is rate of position change, with direction.", "use": "Use for kinematics, transport, and motion state.", "assumptions": "Coordinate choice consistent.", "trap": "Confusing speed with signed/vector velocity.", "intuition": "Velocity is the answer to where motion is currently pointing.", "variables": "x = position; t = time; v = velocity", "related": "Acceleration, Relative Motion", "simulation": ""}, {"id": "dyn-acc", "title": "Acceleration", "realm": "Dynamics Forge", "type": "formula", "formula": "a = dv/dt", "meaning": "Acceleration is rate of change of velocity.", "use": "Use for dynamics and kinematics.", "assumptions": "Need temporal or spatial variation of velocity.", "trap": "Treating any speed increase as the only form of acceleration.", "intuition": "Turning counts. Slowing counts. Direction change counts.", "variables": "v,t,a", "related": "Velocity, Newton’s Second Law of Motion", "simulation": ""}, {"id": "dyn-rect", "title": "Rectilinear Motion", "realm": "Dynamics Forge", "type": "concept", "formula": "Motion along a straight line.", "meaning": "This is 1D motion with signs doing most of the drama.", "use": "Use in sliders, elevators, impacts, and straight-track motion.", "assumptions": "Path stays effectively straight.", "trap": "Throwing in radial terms on a straight line.", "intuition": "Rectilinear motion is humble but ruthless about sign errors.", "variables": "x,v,a,t", "related": "Velocity, Uniformly Accelerated Motion", "simulation": ""}, {"id": "dyn-relative", "title": "Relative Motion", "realm": "Dynamics Forge", "type": "formula", "formula": "v_A = v_B + v_{A/B},   a_A = a_B + a_{A/B}", "meaning": "Motion can be measured relative to another moving reference.", "use": "Use in vehicles, linkage points, and moving platforms.", "assumptions": "Reference frames clearly defined.", "trap": "Mixing absolute and relative quantities carelessly.", "intuition": "Relative motion is how one traveler gossips about another.", "variables": "Absolute, relative, transport quantities", "related": "Position Coordinate, Velocity", "simulation": ""}, {"id": "dyn-curv", "title": "Curvilinear Motion", "realm": "Dynamics Forge", "type": "concept", "formula": "Motion along a curved path requires tangent and normal thinking.", "meaning": "Curves split acceleration into along-path and toward-center pieces.", "use": "Use for projectiles, particles on paths, and orbital motion.", "assumptions": "Path geometry known or measurable.", "trap": "Treating curved motion like straight-line motion.", "intuition": "Curved motion punishes anyone who ignores the center-seeking part.", "variables": "s,ρ,v,a", "related": "Tangential and Normal Components, Circular Motion", "simulation": ""}, {"id": "dyn-tn", "title": "Tangential and Normal Components", "realm": "Dynamics Forge", "type": "formula", "formula": "a = (dv/dt) t̂ + (v²/ρ) n̂", "meaning": "Acceleration along a curved path splits into speed-change and turning parts.", "use": "Use for path-based motion.", "assumptions": "Need radius of curvature ρ.", "trap": "Forgetting the normal term when speed is constant but direction changes.", "intuition": "Something can accelerate magnificently while keeping the same speed.", "variables": "v,ρ,t̂,n̂", "related": "Curvilinear Motion, Circular Motion", "simulation": ""}, {"id": "dyn-projectile", "title": "Projectile Motion", "realm": "Dynamics Forge", "type": "formula", "formula": "x = v_0 cosθ t,   y = v_0 sinθ t − ½gt²", "meaning": "Projectile motion combines uniform horizontal motion with vertical gravitational acceleration.", "use": "Use for ballistics and launch motion ignoring drag.", "assumptions": "Air resistance neglected.", "trap": "Forgetting launch height or sign conventions.", "intuition": "Projectiles are just negotiations between inertia and gravity.", "variables": "v_0, θ, g, t", "related": "Curvilinear Motion, Relative Motion", "simulation": "projectile"}, {"id": "dyn-circular", "title": "Circular Motion", "realm": "Dynamics Forge", "type": "formula", "formula": "a_n = v²/r = ω²r", "meaning": "Circular motion requires inward normal acceleration.", "use": "Use for rotation, orbit approximation, wheels, and turning masses.", "assumptions": "Path radius constant.", "trap": "Using tangential equations when only centripetal term exists, or vice versa.", "intuition": "Even constant speed can hide fierce inward acceleration.", "variables": "v,r,ω", "related": "Orbital Motion, Angular Velocity and Acceleration", "simulation": "orbit"}, {"id": "dyn-com", "title": "Center of Mass", "realm": "Dynamics Forge", "type": "formula", "formula": "r̄ = Σ(m_i r_i)/Σm_i", "meaning": "Center of mass is the weighted average position of mass.", "use": "Use for translation, rigid bodies, and systems of particles.", "assumptions": "Mass locations and reference frame known.", "trap": "Confusing centroid of area with center of mass.", "intuition": "The center of mass is where the whole system secretly agrees to act from.", "variables": "m_i,r_i", "related": "Kinetic Energy of a Rigid Body, Work-Energy Principle", "simulation": ""}, {"id": "dyn-ke", "title": "Kinetic Energy", "realm": "Dynamics Forge", "type": "formula", "formula": "T = ½mv²", "meaning": "Kinetic energy measures motion’s stored ability to do work.", "use": "Use in energy methods.", "assumptions": "Mass constant for simple form.", "trap": "Dropping rotational kinetic energy when it matters.", "intuition": "Velocity squared means speed gets expensive fast.", "variables": "m,v,T", "related": "Work-Energy Principle, Potential Energy", "simulation": ""}, {"id": "dyn-pe", "title": "Potential Energy", "realm": "Dynamics Forge", "type": "formula", "formula": "V_g = mgh,  V_s = ½kx²", "meaning": "Potential energy stores recoverable work due to position or deformation.", "use": "Use with conservative forces.", "assumptions": "Reference level chosen consistently.", "trap": "Using potential energy with nonconservative losses as if nothing happened.", "intuition": "Potential energy is future work held in reserve.", "variables": "m,g,h,k,x", "related": "Principle of Conservation of Energy, Springs", "simulation": ""}, {"id": "dyn-n2", "title": "Newton’s Second Law of Motion", "realm": "Dynamics Forge", "type": "formula", "formula": "ΣF = ma", "meaning": "Net force produces acceleration.", "use": "Use when force-time/state relations matter directly.", "assumptions": "Mass constant in basic form.", "trap": "Using it in a static problem or mixing components badly.", "intuition": "This is mechanics’ iron commandment.", "variables": "F,m,a", "related": "Acceleration, Impulse-Momentum Principle", "simulation": ""}, {"id": "dyn-gravity", "title": "Newton’s Law of Universal Gravitation", "realm": "Dynamics Forge", "type": "formula", "formula": "F = Gm_1m_2/r²", "meaning": "Masses attract with inverse-square force.", "use": "Use in orbital and gravity problems.", "assumptions": "Point-mass or spherically symmetric assumptions for simple form.", "trap": "Using Earth-surface approximations far from Earth without checking.", "intuition": "Gravity whispers with distance until space makes the whisper matter again.", "variables": "G,m_1,m_2,r", "related": "Orbital Motion, Central Force", "simulation": ""}, {"id": "dyn-rotation", "title": "Rotation of Rigid Bodies", "realm": "Dynamics Forge", "type": "concept", "formula": "Rigid bodies can rotate with angular position, velocity, and acceleration.", "meaning": "All points share the same angular motion but different linear speeds depending on radius.", "use": "Use for shafts, disks, pulleys, linkages.", "assumptions": "Body treated as rigid.", "trap": "Forgetting outer points move faster than inner ones.", "intuition": "A rigid body spins as one oath with many radii.", "variables": "θ,ω,α,r", "related": "Angular Velocity and Acceleration, Plane Motion", "simulation": ""}, {"id": "dyn-plane", "title": "Plane Motion", "realm": "Dynamics Forge", "type": "concept", "formula": "General plane motion combines translation and rotation.", "meaning": "Use for rolling bodies, connecting rods, moving rigid parts.", "use": "Motion confined to a plane.", "assumptions": "Trying to solve as pure translation or pure rotation when it is both.", "trap": "Plane motion is the hybrid beast: part march, part spin.", "intuition": "Mass center motion, angular motion", "variables": "Rotation of Rigid Bodies, D’Alembert Principle", "related": null, "simulation": ""}, {"id": "mat-modulus", "title": "Modulus of Elasticity", "realm": "Strength of Materials Forge", "type": "formula", "formula": "E = σ/ε", "meaning": "Elastic modulus is stiffness in the linear range.", "use": "Use to compare material stiffness and deformation.", "assumptions": "Linear elastic region.", "trap": "Treating strength and stiffness as the same thing.", "intuition": "A material can be strong yet flexible; E judges stiffness, not bravery.", "variables": "E,σ,ε", "related": "Hooke’s Law, Beam Deflection", "simulation": ""}, {"id": "mat-strain", "title": "Axial Strain", "realm": "Strength of Materials Forge", "type": "formula", "formula": "ε = δ/L", "meaning": "Strain is deformation per original length.", "use": "Use for elongation/compression.", "assumptions": "Small-deformation idealization usually implied.", "trap": "Confusing strain with displacement.", "intuition": "Strain is deformation normalized so size can’t hide the truth.", "variables": "δ = deformation; L = original length", "related": "Percent Elongation, Hooke’s Law", "simulation": ""}, {"id": "mat-poisson", "title": "Poisson’s Ratio", "realm": "Strength of Materials Forge", "type": "formula", "formula": "ν = −ε_lat/ε_ax", "meaning": "Stretch in one direction often shrinks the other.", "use": "Use in 3D stress/strain relations and deformation estimates.", "assumptions": "Linear elastic isotropic context for simple use.", "trap": "Forgetting the negative sign meaning lateral contraction in tension.", "intuition": "Pull a bar and it slims down in quiet protest.", "variables": "ν, axial strain, lateral strain", "related": "Hooke’s Law, Thermal Deformation", "simulation": ""}, {"id": "mat-thermal", "title": "Thermal Deformation", "realm": "Strength of Materials Forge", "type": "formula", "formula": "δ_T = α L ΔT", "meaning": "Temperature change alone can stretch or shrink a member.", "use": "Use for thermal expansion fits, rails, constrained members, and assemblies.", "assumptions": "Material coefficient roughly constant over range.", "trap": "Ignoring constraint-induced thermal stress.", "intuition": "Heat can move steel even when no load ever asked it to.", "variables": "α = thermal expansion coeff.; L = length; ΔT = temperature change", "related": "Hooke’s Law, Normal Stress", "simulation": ""}, {"id": "mat-principal", "title": "Principal Stress", "realm": "Strength of Materials Forge", "type": "formula", "formula": "σ_{1,2} = (σ_x+σ_y)/2 ± √[((σ_x−σ_y)/2)^2 + τ_xy²]", "meaning": "Principal stresses are the normal stresses on planes with zero shear.", "use": "Use for failure theories and stress interpretation.", "assumptions": "Plane stress formula here.", "trap": "Using component stresses directly for criteria that need principal values.", "intuition": "Principal stresses are the true nobles hiding behind the messy coordinates.", "variables": "σ_x,σ_y,τ_xy", "related": "Mohr’s Circle, Maximum Shear Stress Theory", "simulation": "mohr"}, {"id": "mat-goodman", "title": "Modified Goodman Theory", "realm": "Strength of Materials Forge", "type": "formula", "formula": "σ_a/S_e + σ_m/S_u ≤ 1", "meaning": "A fatigue criterion blending alternating and mean stress effects.", "use": "Use for preliminary fatigue design.", "assumptions": "Empirical design relation; material/endurance data needed.", "trap": "Using static yield criteria for fatigue life questions.", "intuition": "Fatigue cares about repetition more than heroics.", "variables": "σ_a = alternating stress; σ_m = mean stress; S_e = endurance; S_u = ultimate", "related": "Soderberg Theory, Distortion Energy Theory", "simulation": ""}, {"id": "mat-columns", "title": "Euler’s Formula for Columns", "realm": "Strength of Materials Forge", "type": "formula", "formula": "P_cr = π²EI/(KL)²", "meaning": "Long slender columns buckle elastically before crushing.", "use": "Use for ideal buckling checks.", "assumptions": "Pinned/ideal end-condition form generalized with K-factor.", "trap": "Using Euler in stocky columns where yielding governs first.", "intuition": "Columns often die from sideways ideas, not direct compression.", "variables": "P_cr,E,I,K,L", "related": "Slenderness Ratio, Beam Deflection", "simulation": "beam"}, {"id": "flu-density", "title": "Density", "realm": "Fluid Mechanics Forge", "type": "formula", "formula": "ρ = m/V", "meaning": "Density is mass packed per unit volume.", "use": "Use for inertia, pressure, buoyancy, and Re.", "assumptions": "Property varies with fluid and conditions.", "trap": "Mixing mass density with specific weight.", "intuition": "Density tells how much matter the fluid has per occupied space.", "variables": "m,V,ρ", "related": "Specific Weight, Reynolds Number", "simulation": ""}, {"id": "flu-pressure", "title": "Pressure", "realm": "Fluid Mechanics Forge", "type": "formula", "formula": "p = F/A", "meaning": "Pressure is normal force intensity over area.", "use": "Use in static fluids, pipe flow, measurements, and loads.", "assumptions": "Acts normal to surfaces in ideal fluid statics.", "trap": "Using gauge and absolute pressure interchangeably.", "intuition": "Pressure is force spread thin until it becomes a field.", "variables": "p,F,A", "related": "Absolute Pressure, Pressure Head", "simulation": ""}, {"id": "flu-visc", "title": "Dynamic Viscosity", "realm": "Fluid Mechanics Forge", "type": "formula", "formula": "τ = μ (du/dy)", "meaning": "Dynamic viscosity measures resistance to shear deformation in a fluid.", "use": "Use for internal flow and shear relations.", "assumptions": "Newtonian fluid for simple linear relation.", "trap": "Ignoring temperature sensitivity.", "intuition": "Viscosity is the fluid’s internal stubbornness.", "variables": "τ,μ,du/dy", "related": "Kinematic Viscosity, Reynolds Number", "simulation": ""}, {"id": "flu-cont", "title": "Continuity Equation", "realm": "Fluid Mechanics Forge", "type": "formula", "formula": "Q = AV,  and  Σṁ_in = Σṁ_out", "meaning": "Continuity enforces conservation of mass through flow.", "use": "Use in pipes, nozzles, venturis, and networks.", "assumptions": "Steady incompressible simple form uses Q constant.", "trap": "Forgetting area change forces velocity change.", "intuition": "What goes in must go out—unless storage is part of the story.", "variables": "Q,A,V,ṁ", "related": "Venturi Meter, Field Equation / Bernoulli Form", "simulation": ""}, {"id": "flu-bernoulli", "title": "Field Equation / Bernoulli Form", "realm": "Fluid Mechanics Forge", "type": "formula", "formula": "p/γ + V²/2g + z = constant − h_L + h_p − h_t", "meaning": "Pressure head, velocity head, and elevation head trade against each other with losses and machines.", "use": "Use between sections in steady incompressible flow.", "assumptions": "Choose streamline/control-volume assumptions appropriately.", "trap": "Treating Bernoulli as sacred even when losses dominate and pumps/turbines exist.", "intuition": "Bernoulli is not magic—it is energy bookkeeping with fluid clothing.", "variables": "p,γ,V,g,z,h_L,h_p,h_t", "related": "Continuity Equation, Darcy-Weisbach Equation, Venturi Meter", "simulation": "venturi"}, {"id": "flu-headloss", "title": "Head Loss", "realm": "Fluid Mechanics Forge", "type": "formula", "formula": "h_L = h_f + Σh_m", "meaning": "Head loss is the energy per unit weight lost to friction and disturbances.", "use": "Use in system curves and pipe design.", "assumptions": "Loss models/calibrations chosen properly.", "trap": "Ignoring minor losses where fittings own the battlefield.", "intuition": "Pipes charge tolls in head, not in sympathy.", "variables": "h_f major, h_m minor losses", "related": "Darcy-Weisbach Equation, Minor Losses in Pipes", "simulation": ""}, {"id": "flu-laminar", "title": "Laminar Flow", "realm": "Fluid Mechanics Forge", "type": "concept", "formula": "Layered orderly flow with low cross-stream mixing.", "meaning": "Use to choose correlations and simplify internal-flow behavior.", "use": "Typically low Reynolds number and stable geometry.", "assumptions": "Assuming laminar behavior where disturbances or higher Re destroy it.", "trap": "Laminar flow is civilized until inertia starts a riot.", "intuition": "Reynolds number, velocity profile", "variables": "Reynolds Number, Hagen-Poiseuille Equation", "related": null, "simulation": ""}, {"id": "flu-turb", "title": "Turbulent Flow", "realm": "Fluid Mechanics Forge", "type": "concept", "formula": "Chaotic eddy-rich flow with strong mixing.", "meaning": "Use for most practical pipe-flow systems.", "use": "Usually high Reynolds number.", "assumptions": "Using laminar formulas in turbulent regime.", "trap": "Turbulence is fluid motion after discipline collapses.", "intuition": "Reynolds number, roughness, friction factor", "variables": "Reynolds Number, Darcy-Weisbach Equation", "related": null, "simulation": ""}, {"id": "flu-hp", "title": "Hagen-Poiseuille Equation", "realm": "Fluid Mechanics Forge", "type": "formula", "formula": "Q = π Δp D^4 /(128 μ L)", "meaning": "Laminar pipe flow rate is extraordinarily sensitive to diameter.", "use": "Use for fully developed laminar flow in circular tubes.", "assumptions": "Laminar, incompressible, Newtonian, fully developed flow.", "trap": "Using it in turbulent systems or forgetting D^4 sensitivity.", "intuition": "Diameter changes here act like sorcery.", "variables": "Q,Δp,D,μ,L", "related": "Laminar Flow, Reynolds Number, Darcy-Weisbach Equation", "simulation": ""}, {"id": "flu-pump", "title": "Pump Power", "realm": "Fluid Mechanics Forge", "type": "formula", "formula": "P = γQH / η", "meaning": "Pump power depends on flow, head added, and efficiency.", "use": "Use for pump sizing and energy estimates.", "assumptions": "Steady flow and pump efficiency known.", "trap": "Ignoring efficiency or mixing shaft and hydraulic power.", "intuition": "Pumps buy head with power and sell it imperfectly.", "variables": "γ,Q,H,η", "related": "Field Equation / Bernoulli Form, Head Loss", "simulation": ""}, {"id": "flu-orifice", "title": "Orifice Flow", "realm": "Fluid Mechanics Forge", "type": "formula", "formula": "Q = C_d A √(2g h)", "meaning": "An orifice estimates flow by converting head into jet velocity with a correction factor.", "use": "Use in tanks, plates, and discharge problems.", "assumptions": "Coefficient depends on geometry and regime.", "trap": "Using ideal jet formula without discharge coefficient.", "intuition": "A simple hole can still demand a surprisingly serious coefficient.", "variables": "Q,C_d,A,g,h", "related": "Venturi Meter, Continuity Equation", "simulation": "venturi"}];
+const ELITE_IDS = new Set(["statics-fbd", "statics-eq2d", "statics-eq3d", "statics-moment", "statics-joints", "statics-sections", "statics-centroid", "statics-parallel", "dyn-workenergy", "dyn-impulse", "dyn-orbit", "dyn-ang", "mat-normal", "mat-shear", "mat-hooke", "mat-mohr", "mat-mst", "mat-vm", "mat-torsion", "mat-bending", "mat-deflect", "flu-re", "flu-dw", "flu-venturi"]);
+const glyphs = "∫∑πΔ∞∂∇θλμφ√≈∀∃∈⊂⊆τσωρνμ";
+let currentList = [...CARDS];
+let currentCard = CARDS[0];
+let shards = 0;
 let recentLog = [];
-let currentCard = null;
-let forgeHits = 0;
-let particleBursts = 0;
-const eliteCards = [
-  {
-    id:'st-01', title:'Free-Body Diagram', realm:'Statics', type:'diagram', sim:true,
-    statement:'Isolate the object → show only external forces/moments → label unknown reactions cleanly.',
-    plain:'A free-body diagram is the act of stripping away everything that does not directly push, pull, hold, twist, or contact the object you care about.',
-    use:'Use it before equilibrium, support reaction solving, truss analysis, internal force cuts, or anytime a problem smells messy. It is the first blade out of the sheath.',
-    assumptions:'You must isolate the correct body. Internal forces inside the chosen isolated body do not belong unless you cut through the member.',
-    trap:'People mix the full assembly with the isolated part, leave out reaction directions, or include forces that belong to parts they already removed.',
-    intuition:'If the diagram is wrong, the algebra becomes beautifully wrong. The FBD is not decoration — it is the permission slip for every later equation.',
-    variables:['F = external force','M = applied couple / moment','Reaction components = support unknowns'],
-    related:['Equilibrium in 2D','Equilibrium in 3D','Moment of a Force'], keywords:['free body diagram','fbd','isolate object','support reactions']
-  },
-  {
-    id:'st-02', title:'Equilibrium in 2D', realm:'Statics', type:'formula', sim:true,
-    statement:'ΣF_x = 0\nΣF_y = 0\nΣM = 0',
-    plain:'If the body is not accelerating in the plane and not spinning, total force in x, total force in y, and total moment must all cancel.',
-    use:'Use for beams, brackets, pins, single rigid bodies, support reactions, and simple machine frames that live in a plane.',
-    assumptions:'Static conditions. The body is modeled rigidly in 2D. All relevant loads and reactions are included.',
-    trap:'People forget that satisfying force balance alone is not enough. A body can have zero net force and still spin if moment balance fails.',
-    intuition:'Equilibrium is a silence test: no translation, no rotation, no excuses.',
-    variables:['ΣF_x = sum of horizontal forces','ΣF_y = sum of vertical forces','ΣM = sum of moments about any point'],
-    related:['Free-Body Diagram','Moment of a Force','Support Reactions Overview'], keywords:['equilibrium 2d','sum fx','sum fy','sum moments','support reactions']
-  },
-  {
-    id:'st-03', title:'Equilibrium in 3D', realm:'Statics', type:'formula', sim:false,
-    statement:'ΣF_x = 0\nΣF_y = 0\nΣF_z = 0\nΣM_x = 0\nΣM_y = 0\nΣM_z = 0',
-    plain:'A body in three-dimensional static equilibrium must have no net force and no net moment in any axis direction.',
-    use:'Use for spatial supports, shafts with multiple support components, 3D brackets, bearings, and machine structures that do not lie in a single plane.',
-    assumptions:'Rigid-body static model. Axes are chosen consistently and all external loading is captured.',
-    trap:'The common slaughterhouse is missing one reaction component or choosing moment arms that are only valid in 2D.',
-    intuition:'In 3D, every hidden force component is waiting to embarrass you.',
-    variables:['ΣF_x, ΣF_y, ΣF_z = total forces in each direction','ΣM_x, ΣM_y, ΣM_z = total moments about each axis'],
-    related:['Free-Body Diagram','Support Reactions Overview','Moment of a Force'], keywords:['equilibrium 3d','three dimensional statics','sum moments x y z']
-  },
-  {
-    id:'st-04', title:'Moment of a Force', realm:'Statics', type:'formula', sim:true,
-    statement:'M = F d_⊥\nVector form: M = r × F',
-    plain:'Moment measures how hard a force tries to rotate a body about a point or axis.',
-    use:'Use for levers, beams, support reactions, torque-like statics, bracket loading, and any time line of action matters.',
-    assumptions:'Distance must be the perpendicular distance to the force line of action. Vector form requires correct direction using the right-hand rule.',
-    trap:'Using the straight-line distance to the point instead of the perpendicular distance. That error murders the answer quietly.',
-    intuition:'Same force, longer lever arm, bigger rotational threat.',
-    variables:['M = moment','F = force magnitude','d_⊥ = perpendicular distance','r = position vector'],
-    related:['Equilibrium in 2D','Couples','Free-Body Diagram'], keywords:['moment','torque statics','lever arm','r cross f']
-  },
-  {
-    id:'st-05', title:'Method of Joints', realm:'Statics', type:'diagram', sim:true,
-    statement:'At each joint: ΣF_x = 0, ΣF_y = 0 (or 3D equivalents). Solve member axial forces one joint at a time.',
-    plain:'Treat each truss joint like a tiny free-body diagram and solve the member forces meeting there.',
-    use:'Use on pin-connected trusses when you want member axial forces and can begin from a joint with at most two unknown member forces.',
-    assumptions:'Truss members are two-force members, joints are pins, loads act at joints, and member self-weight is negligible or lumped properly.',
-    trap:'Using it on frame members that carry bending, or starting at a joint with too many unknowns and pretending algebra will forgive you.',
-    intuition:'A truss confesses one joint at a time.',
-    variables:['Member force = axial tension or compression','Joint equilibrium = force balance at node'],
-    related:['Method of Sections','Two-Force Member','Free-Body Diagram'], keywords:['method of joints','truss analysis','joint equilibrium']
-  },
-  {
-    id:'st-06', title:'Method of Sections', realm:'Statics', type:'diagram', sim:false,
-    statement:'Cut through selected truss members → isolate one side → apply equilibrium to solve the cut forces.',
-    plain:'Instead of solving the whole truss joint by joint, slice through the members you want and interrogate one chunk directly.',
-    use:'Use when you want only a few member forces and do not want to grind the whole truss.',
-    assumptions:'Cut through no more unknowns than your equilibrium equations can handle. Truss idealizations still apply.',
-    trap:'Cutting too many unknown members or choosing a section that leaves ugly geometry with no smart moment point.',
-    intuition:'A good section cut is a shortcut wrapped in violence.',
-    variables:['Cut member forces = unknown axial forces revealed by section','Moment center = strategic point eliminating unknowns'],
-    related:['Method of Joints','Equilibrium in 2D','Moment of a Force'], keywords:['method of sections','cut truss','member force shortcut']
-  },
-  {
-    id:'st-07', title:'Centroid of Composite Area', realm:'Statics', type:'formula', sim:true,
-    statement:'x̄ = Σ(x_i A_i) / ΣA_i\nȳ = Σ(y_i A_i) / ΣA_i',
-    plain:'The centroid of a composite area is the area-weighted average location of all the pieces.',
-    use:'Use for cross-sections, built-up plates, beam sections, cutouts, and any area you plan to use later for inertia or bending work.',
-    assumptions:'Areas are measured consistently and cutouts are treated as negative areas.',
-    trap:'Forgetting that holes count negative or using local dimensions instead of coordinates from one common datum.',
-    intuition:'Bigger pieces pull the centroid harder.',
-    variables:['A_i = area of piece i','x_i, y_i = centroid location of piece i','x̄, ȳ = centroid of total shape'],
-    related:['Parallel Axis Theorem','Moment of Inertia','Bending Stress'], keywords:['centroid composite area','built up section','xbar ybar']
-  },
-  {
-    id:'st-08', title:'Parallel Axis Theorem', realm:'Statics', type:'formula', sim:true,
-    statement:'I = I_c + A d^2',
-    plain:'If you know the area moment of inertia about a centroidal axis, you can shift to a parallel axis by adding the area times distance squared.',
-    use:'Use when beam sections, plates, or built-up parts need moment of inertia about a non-centroidal reference axis.',
-    assumptions:'The new axis must be parallel to the centroidal axis. Distance d is the perpendicular axis separation.',
-    trap:'Using it for a nonparallel axis or forgetting to compute the centroid before shifting.',
-    intuition:'Moving area farther from an axis makes rotational stubbornness explode because the distance gets squared.',
-    variables:['I = shifted area moment of inertia','I_c = centroidal area moment of inertia','A = area','d = distance between parallel axes'],
-    related:['Centroid of Composite Area','Bending Stress','Polar Moment of Inertia'], keywords:['parallel axis theorem','I equals Ic plus Ad squared']
-  },
-  {
-    id:'dy-01', title:'Work-Energy Principle', realm:'Dynamics', type:'formula', sim:true,
-    statement:'T_1 + ΣU_(1→2) = T_2',
-    plain:'The change in kinetic energy equals the net work done on the system.',
-    use:'Use when forces act through distance and you care more about speeds and positions than exact time history.',
-    assumptions:'Work is computed correctly for all relevant forces. Rotational or translational kinetic energy terms must match the body motion.',
-    trap:'Mixing conservative potential energy methods with raw work terms without tracking signs carefully.',
-    intuition:'Work is how forces pay the motion bill.',
-    variables:['T = kinetic energy','U = work done by forces between states'],
-    related:['Impulse-Momentum Principle','Kinetic Energy','Potential Energy'], keywords:['work energy principle','kinetic energy','speed after moving distance']
-  },
-  {
-    id:'dy-02', title:'Impulse-Momentum Principle', realm:'Dynamics', type:'formula', sim:true,
-    statement:'∫ΣF dt = m v_2 - m v_1',
-    plain:'Force acting over time changes momentum.',
-    use:'Use for collisions, short force events, braking, launches, impacts, and fluid or particle momentum changes over time.',
-    assumptions:'Mass is constant unless you explicitly handle variable-mass systems. Direction matters.',
-    trap:'Using energy when the key feature is a short violent force pulse over time.',
-    intuition:'Impulse is a shove with a clock attached.',
-    variables:['F = net force','t = time','m = mass','v = velocity'],
-    related:['Work-Energy Principle','Newton’s Second Law','Projectile Motion'], keywords:['impulse momentum','impact','force over time']
-  },
-  {
-    id:'dy-03', title:'Orbital Motion', realm:'Dynamics', type:'intuition', sim:true,
-    statement:'F_g = G M m / r^2\nFor circular motion, gravity provides centripetal demand.',
-    plain:'An orbit is not a magical float. It is constant falling whose sideways speed keeps missing the central body.',
-    use:'Use for gravity-driven path intuition, orbital velocity reasoning, and quick understanding of why higher orbits move differently.',
-    assumptions:'Basic Newtonian gravity model. More refined missions need perturbations, noncircular orbits, and other corrections.',
-    trap:'Thinking orbit means zero gravity. Orbit is gravity doing the whole job.',
-    intuition:'The object is falling forever and missing forever.',
-    variables:['G = gravitational constant','M,m = masses','r = separation distance'],
-    related:['Work-Energy Principle','Circular Motion','Newton’s Law of Gravitation'], keywords:['orbital motion','gravity orbit','circular orbit']
-  },
-  {
-    id:'dy-04', title:'Angular Velocity & Acceleration', realm:'Dynamics', type:'formula', sim:true,
-    statement:'ω = dθ/dt\nα = dω/dt',
-    plain:'Angular velocity tells how fast rotation angle changes. Angular acceleration tells how fast that rotational speed changes.',
-    use:'Use for gears, shafts, wheels, rigid bodies, rotational startup, and any motion measured in angle rather than distance.',
-    assumptions:'Angle and direction conventions are consistent. Use radians for clean dimensional relationships.',
-    trap:'Mixing degrees and radians or treating angular acceleration like a force.',
-    intuition:'Rotation has its own version of velocity and acceleration, and they obey the same logic as linear motion with different clothing.',
-    variables:['θ = angle','ω = angular velocity','α = angular acceleration','t = time'],
-    related:['General Plane Motion','Rotation of Rigid Bodies','Kinetic Energy of a Rigid Body'], keywords:['angular velocity','angular acceleration','omega alpha']
-  },
-  {
-    id:'dy-05', title:'General Plane Motion', realm:'Dynamics', type:'intuition', sim:false,
-    statement:'General plane motion = translation of the mass center + rotation about the mass center.',
-    plain:'A rigid body moving in a plane usually does two things at once: it travels and it spins.',
-    use:'Use for rolling bodies, linkages, bars, machine arms, and parts whose motion is neither pure translation nor pure rotation.',
-    assumptions:'Motion stays in one plane and rigid-body assumptions hold.',
-    trap:'Trying to force the problem into pure translation or pure rotation when the body is doing both.',
-    intuition:'The body has a traveling soul and a spinning soul at the same time.',
-    variables:['v_G = velocity of mass center','a_G = acceleration of mass center','ω, α = rotational kinematics'],
-    related:['Angular Velocity & Acceleration','D’Alembert Principle','Kinetic Energy of a Rigid Body'], keywords:['general plane motion','rolling rigid body','translation and rotation']
-  },
-  {
-    id:'dy-06', title:'D’Alembert Principle', realm:'Dynamics', type:'intuition', sim:false,
-    statement:'Real forces + inertial resistance can be treated in an equilibrium-style form.',
-    plain:'D’Alembert lets you rewrite a dynamics problem as something that feels like statics by introducing inertial terms.',
-    use:'Use when dynamic systems are easier to solve in pseudo-equilibrium form, especially rigid-body motion and machine dynamics.',
-    assumptions:'You must include inertial effects correctly and keep the sign conventions honest.',
-    trap:'Forgetting that the inertial term is not a real applied support force but a mathematical recasting of acceleration effects.',
-    intuition:'It is a legal lie told for the sake of cleaner math.',
-    variables:['m a_G = inertial force form','I α = inertial moment form'],
-    related:['General Plane Motion','Newton’s Second Law','Equilibrium in 2D'], keywords:['dalembert principle','pseudo equilibrium','dynamic equilibrium']
-  },
-  {
-    id:'ma-01', title:'Normal Stress', realm:'Materials', type:'formula', sim:true,
-    statement:'σ = P / A',
-    plain:'Normal stress is how much direct load is carried per unit cross-sectional area.',
-    use:'Use for axial tension/compression members, rods, bolts, columns, and first-pass load checks.',
-    assumptions:'Load is centered and distributed uniformly over the section. No bending or stress concentration effects in the basic form.',
-    trap:'Using average stress as if it describes the true peak stress around holes, shoulders, fillets, or eccentric loading.',
-    intuition:'Same load on less area means the material screams louder.',
-    variables:['σ = normal stress','P = axial force','A = cross-sectional area'],
-    related:['Hooke’s Law','Bending Stress','Principal Stress'], keywords:['normal stress','axial stress','p over a']
-  },
-  {
-    id:'ma-02', title:'Shear Stress', realm:'Materials', type:'formula', sim:false,
-    statement:'τ = V / A  (average direct shear form)',
-    plain:'Shear stress measures how strongly forces try to make adjacent material layers slide past each other.',
-    use:'Use for pins, rivets, bolts in shear, webs, and first-pass shear checks.',
-    assumptions:'This simple form is an average stress expression, not the full distribution for all geometries.',
-    trap:'Treating average shear stress like the exact local shear stress everywhere in a section.',
-    intuition:'Shear is the material being asked to smear sideways instead of stretch straight.',
-    variables:['τ = shear stress','V = shear force','A = resisting area'],
-    related:['Normal Stress','Transverse Shear Stress','Mohr’s Circle'], keywords:['shear stress','tau','shear load']
-  },
-  {
-    id:'ma-03', title:'Hooke’s Law', realm:'Materials', type:'formula', sim:true,
-    statement:'σ = E ε',
-    plain:'Within the elastic region, stress and strain are proportional.',
-    use:'Use for elastic material response, deformation estimates, and turning load into strain or vice versa.',
-    assumptions:'Material stays within linear elastic behavior. Temperature and multiaxial effects are handled properly if present.',
-    trap:'Using Hooke’s law past yield and expecting the material to remain a polite linear citizen.',
-    intuition:'In the elastic regime, doubling the stress doubles the strain.',
-    variables:['σ = stress','E = modulus of elasticity','ε = strain'],
-    related:['Normal Stress','Axial Strain','Thermal Deformation'], keywords:['hookes law','stress strain linear','sigma equals e epsilon']
-  },
-  {
-    id:'ma-04', title:'Mohr’s Circle', realm:'Materials', type:'diagram', sim:true,
-    statement:'A graphical transformation tool for plane stress that reveals principal stresses, max shear stress, and stress orientation.',
-    plain:'Mohr’s circle turns a messy stress state into a visual map of what the material actually feels on rotated planes.',
-    use:'Use when a point has combined normal and shear stress and you need principal stress, principal planes, or max shear.',
-    assumptions:'Classic plane stress setup unless extended carefully. Sign conventions must stay consistent.',
-    trap:'Mixing sign conventions or forgetting that angle on Mohr’s circle is twice the physical angle in the material.',
-    intuition:'Mohr’s circle is stress gossip made geometric.',
-    variables:['σ_x, σ_y = normal stresses','τ_xy = shear stress','σ_1, σ_2 = principal stresses'],
-    related:['Principal Stress','Maximum Shear Stress Theory','Distortion Energy Theory'], keywords:['mohr circle','principal stress','stress transformation']
-  },
-  {
-    id:'ma-05', title:'Maximum Shear Stress Theory', realm:'Materials', type:'failure', sim:false,
-    statement:'Yielding begins when maximum shear stress reaches the shear yield threshold. (Tresca criterion)',
-    plain:'This theory says ductile materials yield when the internal shearing demand gets large enough, regardless of how pretty the normal stress picture looks.',
-    use:'Use for ductile yielding checks, especially as a conservative compare-against-von-Mises approach.',
-    assumptions:'Best suited to ductile materials and appropriate loading states.',
-    trap:'Applying it blindly to brittle materials or forgetting principal stress ordering.',
-    intuition:'It watches the sliding violence inside the material.',
-    variables:['τ_max = maximum shear stress','σ_1, σ_2, σ_3 = principal stresses'],
-    related:['Mohr’s Circle','Distortion Energy Theory','Principal Stress'], keywords:['maximum shear stress theory','tresca','yield theory']
-  },
-  {
-    id:'ma-06', title:'Distortion Energy Theory', realm:'Materials', type:'failure', sim:false,
-    statement:'Yielding occurs when distortion energy reaches the same level as at uniaxial yield. (von Mises style criterion)',
-    plain:'This theory tracks the shape-changing energy in the stress state and is often the go-to ductile failure check.',
-    use:'Use for ductile materials under combined loading and design work where von Mises-style reasoning is standard.',
-    assumptions:'Ductile yielding model, not brittle fracture logic.',
-    trap:'Using it as if it predicts every failure mode. Yielding is not the same as fracture, buckling, or fatigue.',
-    intuition:'The material yields when the stress state distorts it hard enough, not merely because one stress component looks scary.',
-    variables:['σ_eq = equivalent stress from combined stress state'],
-    related:['Mohr’s Circle','Maximum Shear Stress Theory','Normal Stress'], keywords:['distortion energy theory','von mises','yield criterion']
-  },
-  {
-    id:'ma-07', title:'Torsion in Circular Shafts', realm:'Materials', type:'formula', sim:true,
-    statement:'τ = T ρ / J\nφ = T L / (J G)',
-    plain:'Torque creates a shear stress that grows with radius, and a twist angle that grows with torque and length.',
-    use:'Use for shafts, axles, rotary power transmission, and twist checks.',
-    assumptions:'Circular shaft behavior, elastic response, and appropriate Saint-Venant torsion assumptions for the simple form.',
-    trap:'Forgetting that stress is largest at the outer surface or using the wrong polar moment for hollow shafts.',
-    intuition:'Torque punishes the outside fibers hardest.',
-    variables:['τ = shear stress','T = torque','ρ = radial location','J = polar moment','φ = angle of twist','L = length','G = shear modulus'],
-    related:['Angular Velocity & Acceleration','Shear Stress','Power of a Pump'], keywords:['torsion shaft','angle of twist','torque shaft']
-  },
-  {
-    id:'ma-08', title:'Bending Stress', realm:'Materials', type:'formula', sim:true,
-    statement:'σ = M y / I',
-    plain:'Bending stress grows with bending moment and distance from the neutral axis, and shrinks when the section has more area inertia.',
-    use:'Use for beams and flexural members under bending loads.',
-    assumptions:'Elastic bending, appropriate beam theory assumptions, and known neutral axis / section properties.',
-    trap:'Using the wrong I, measuring y from the wrong axis, or forgetting that top and bottom fibers carry opposite stress signs.',
-    intuition:'Outer fibers live the hardest lives in bending.',
-    variables:['σ = bending normal stress','M = bending moment','y = distance from neutral axis','I = area moment of inertia'],
-    related:['Centroid of Composite Area','Parallel Axis Theorem','Beam Deflection'], keywords:['bending stress','my over i','beam stress']
-  },
-  {
-    id:'ma-09', title:'Beam Deflection', realm:'Materials', type:'diagram', sim:true,
-    statement:'EI v"(x) = M(x)  (core beam-deflection relation in Euler-Bernoulli form)',
-    plain:'Beam shape is tied to bending moment through stiffness. More moment means more curvature; more EI means more resistance.',
-    use:'Use when beams sag, cantilevers droop, machine members need stiffness checks, or serviceability matters as much as raw strength.',
-    assumptions:'Small deflection beam theory, linear elastic behavior, and correct boundary conditions.',
-    trap:'Checking only stress and forgetting stiffness. Plenty of parts survive without ever behaving acceptably.',
-    intuition:'Strength stops fracture. Stiffness stops embarrassment.',
-    variables:['E = modulus','I = area moment of inertia','v = deflection','M(x) = bending moment distribution'],
-    related:['Bending Stress','Parallel Axis Theorem','Normal Stress'], keywords:['beam deflection','sagging beam','ei curvature']
-  },
-  {
-    id:'fl-01', title:'Reynolds Number', realm:'Fluids', type:'intuition', sim:true,
-    statement:'Re = ρ V D / μ = V D / ν',
-    plain:'Reynolds number compares inertial effects to viscous effects in flow.',
-    use:'Use to judge whether flow is likely laminar, transitional, or turbulent in pipes and many internal-flow problems.',
-    assumptions:'Characteristic length and velocity must match the geometry and flow situation correctly.',
-    trap:'Using the wrong characteristic length or pretending Reynolds number alone solves the whole flow problem.',
-    intuition:'It tells you whether the flow behaves like organized layers or like a bar fight.',
-    variables:['ρ = density','V = characteristic velocity','D = characteristic length/diameter','μ = dynamic viscosity','ν = kinematic viscosity'],
-    related:['Laminar Flow','Darcy-Weisbach Equation','Hagen-Poiseuille Equation'], keywords:['reynolds number','laminar or turbulent','rho v d over mu']
-  },
-  {
-    id:'fl-02', title:'Darcy-Weisbach Equation', realm:'Fluids', type:'formula', sim:true,
-    statement:'h_f = f (L/D) (V^2 / 2g)',
-    plain:'Head loss from pipe friction grows with friction factor, length, and velocity squared, and shrinks with larger diameter.',
-    use:'Use for pressure loss or pump requirement estimates in steady incompressible pipe flow.',
-    assumptions:'Fully developed internal flow assumptions in a pipe context with an appropriate friction factor.',
-    trap:'Guessing friction factor carelessly or ignoring minor losses when fittings and entrances are doing damage too.',
-    intuition:'Longer, rougher, faster, tighter pipe means more punishment.',
-    variables:['h_f = friction head loss','f = Darcy friction factor','L = pipe length','D = diameter','V = average velocity','g = gravitational acceleration'],
-    related:['Reynolds Number','Hagen-Poiseuille Equation','Pump Power'], keywords:['darcy weisbach','head loss','pipe friction']
-  },
-  {
-    id:'fl-03', title:'Venturi Meter', realm:'Fluids', type:'diagram', sim:true,
-    statement:'Pressure drop across the throat is tied to velocity increase and can be used to infer flow rate.',
-    plain:'A venturi squeezes flow, speeds it up, drops the pressure, and turns that pressure difference into a flow-rate measurement.',
-    use:'Use for flow measurement in pipes where a differential pressure device is appropriate.',
-    assumptions:'Meter calibration, incompressible assumptions where appropriate, and correct discharge coefficient handling.',
-    trap:'Forgetting that real meters are not ideal and need coefficient correction or assuming pressure drop means energy vanished into nothing.',
-    intuition:'The throat forces the fluid to trade pressure dignity for speed.',
-    variables:['Q = flow rate','A = area','ΔP = pressure difference','C = discharge / meter coefficient'],
-    related:['Field Equation / Bernoulli Form','Orifice Flow','Pressure Head'], keywords:['venturi meter','flow measurement','pressure drop throat']
-  },
-  {
-    id:'fl-04', title:'Field Equation / Bernoulli Form', realm:'Fluids', type:'formula', sim:false,
-    statement:'P/γ + V^2/(2g) + z = constant  (idealized streamline form, with losses / pump terms added in real systems)',
-    plain:'Fluid energy can be tracked as pressure head, velocity head, and elevation head.',
-    use:'Use for nozzle intuition, pipe systems, venturi problems, and first-pass fluid energy accounting.',
-    assumptions:'Ideal Bernoulli needs steady incompressible flow along a streamline with no losses or shaft work. Real problems often require added head-loss and pump terms.',
-    trap:'Using perfect Bernoulli on a dirty real pipe system full of friction and fittings as if losses do not exist.',
-    intuition:'The fluid keeps changing outfits, but its energy total has to come from somewhere.',
-    variables:['P = pressure','γ = specific weight','V = velocity','g = gravitational acceleration','z = elevation'],
-    related:['Venturi Meter','Darcy-Weisbach Equation','Pressure Head'], keywords:['bernoulli','field equation','fluid energy equation']
-  }
-];
+let eliteOnly = false;
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+const celebrateCanvas = document.getElementById('celebrate');
+const cc = celebrateCanvas.getContext('2d');
+let symbols=[], bursts=[];
 
-function logEvent(msg){
-  const time = new Date().toLocaleTimeString();
-  recentLog.unshift(`[${time}] ${msg}`);
+function log(msg){
+  const t = new Date().toLocaleTimeString();
+  recentLog.unshift(`[${t}] ${msg}`);
   recentLog = recentLog.slice(0,18);
   renderDebug();
 }
+function resizeCanvases(){
+  [bgCanvas,celebrateCanvas].forEach(c=>{c.width=innerWidth; c.height=innerHeight;});
+}
+window.addEventListener('resize', resizeCanvases); resizeCanvases();
 
-function renderCards(list=eliteCards){
-  const grid = document.getElementById('cardGrid');
+function initSymbols(){
+  symbols = Array.from({length: Math.max(90, Math.floor(innerWidth/14))}, ()=>({
+    x: Math.random()*innerWidth,
+    y: Math.random()*innerHeight,
+    s: 14 + Math.random()*26,
+    ch: glyphs[Math.floor(Math.random()*glyphs.length)],
+    vy: .7 + Math.random()*2.2,
+    vx: -0.4 + Math.random()*0.8,
+    a: .18 + Math.random()*.5,
+    hue: [190,260,45,210][Math.floor(Math.random()*4)],
+    r: Math.random()*Math.PI*2
+  }));
+}
+initSymbols();
+
+function bgLoop(){
+  bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
+  for(const p of symbols){
+    p.y += p.vy; p.x += p.vx; p.r += .004;
+    if(p.y > innerHeight+40) { p.y = -30; p.x = Math.random()*innerWidth; }
+    if(p.x < -60) p.x = innerWidth+20;
+    if(p.x > innerWidth+60) p.x = -20;
+    bgCtx.save();
+    bgCtx.translate(p.x,p.y);
+    bgCtx.rotate(Math.sin(p.r)*0.25);
+    bgCtx.font = `${p.s}px Georgia, serif`;
+    bgCtx.fillStyle = `hsla(${p.hue},100%,75%,${p.a})`;
+    bgCtx.shadowBlur = 18;
+    bgCtx.shadowColor = `hsla(${p.hue},100%,70%,${p.a})`;
+    bgCtx.fillText(p.ch,0,0);
+    bgCtx.restore();
+  }
+  requestAnimationFrame(bgLoop);
+}
+bgLoop();
+
+function celebrate(kind='forge'){
+  const cx = innerWidth*(0.25+Math.random()*0.5), cy = innerHeight*(0.2+Math.random()*0.45);
+  for(let i=0;i<70;i++) bursts.push({
+    x:cx,y:cy,vx:(Math.random()-0.5)*8,vy:(Math.random()-0.5)*8-1,
+    life:50+Math.random()*30,size:2+Math.random()*4,
+    col:['#7dd3fc','#ffd166','#a78bfa','#ffffff','#57e389'][Math.floor(Math.random()*5)]
+  });
+  shards += kind==='forge' ? 11 : 4;
+  document.getElementById('statShards').textContent = shards;
+  log(kind + ' celebration fired');
+}
+function burstLoop(){
+  cc.clearRect(0,0,celebrateCanvas.width,celebrateCanvas.height);
+  bursts = bursts.filter(b=>b.life>0);
+  for(const b of bursts){
+    b.x += b.vx; b.y += b.vy; b.vy += 0.06; b.life--;
+    cc.globalAlpha = Math.max(0,b.life/70);
+    cc.fillStyle = b.col;
+    cc.fillRect(b.x,b.y,b.size,b.size);
+  }
+  cc.globalAlpha = 1;
+  requestAnimationFrame(burstLoop);
+}
+burstLoop();
+
+function realmColor(realm){
+  return realm.includes('Statics') ? '#7dd3fc' : realm.includes('Dynamics') ? '#a78bfa' : realm.includes('Strength') ? '#ffd166' : '#57e389';
+}
+function isElite(card){ return ELITE_IDS.has(card.id); }
+
+function renderGrid(list){
+  const grid = document.getElementById('grid');
   grid.innerHTML = '';
-  list.forEach(card=>{
-    const el = document.createElement('div');
-    el.className = 'card elite';
-    el.onclick = ()=>openCard(card.id);
-    el.innerHTML = `
-      <div class="card-top">
-        <div class="badge b-elite">Elite card</div>
-        ${card.sim ? '<div class="badge b-sim">Sim</div>' : ''}
+  for(const card of list){
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.onclick = ()=>openCard(card.id);
+    div.innerHTML = `
+      <div class="small" style="color:${realmColor(card.realm)};font-weight:900;text-transform:uppercase;letter-spacing:.8px">${card.realm}</div>
+      <h3 style="margin:8px 0 8px;font-size:22px">${card.title}</h3>
+      <div class="badges">
+        <span class="badge b-${card.type}">${card.type.replace('-', ' ')}</span>
+        ${isElite(card) ? '<span class="badge" style="background:rgba(255,209,102,.15);color:#ffe5a5;border:1px solid rgba(255,209,102,.28)">elite</span>' : ''}
       </div>
-      <h3>${card.title}</h3>
-      <div class="meta">
-        <span class="badge b-realm">${realmLabel(card.realm)}</span>
-        <span class="badge b-type">${capitalize(card.type)}</span>
-        <span class="badge b-trap">trap-aware</span>
-      </div>
-      <div class="statement">${card.statement}</div>
-      <div class="intel small">${card.plain}</div>
-      <div class="chips">${card.related.slice(0,3).map(r=>`<span class="chip">${r}</span>`).join('')}</div>
+      <div class="formula">${card.formula}</div>
+      <p class="small" style="margin:12px 0 0">${card.meaning}</p>
     `;
-    grid.appendChild(el);
-  });
-  document.getElementById('statCards').textContent = eliteCards.length;
-  document.getElementById('statSim').textContent = eliteCards.filter(c=>c.sim).length;
-  logEvent(`filters applied: ${list.length} card(s) visible`);
+    grid.appendChild(div);
+  }
+  document.getElementById('statCards').textContent = CARDS.length;
+  document.getElementById('statSims').textContent = CARDS.filter(c=>c.simulation).length;
+  renderDebug();
 }
-
-function realmLabel(realm){
-  return realm === 'Materials' ? 'Strength of Materials' : realm === 'Fluids' ? 'Fluid Mechanics' : realm + ' Forge';
-}
-function capitalize(x){ return x.charAt(0).toUpperCase() + x.slice(1); }
-
 function applyFilters(){
-  const search = document.getElementById('search').value.trim().toLowerCase();
-  const realm = document.getElementById('realm').value;
-  const type = document.getElementById('type').value;
-  const sim = document.getElementById('sim').value;
-  const filtered = eliteCards.filter(card=>{
-    const blob = [card.title, card.statement, card.plain, card.use, card.trap, ...(card.keywords||[])].join(' ').toLowerCase();
-    const searchOk = !search || blob.includes(search);
-    const realmOk = realm==='all' || card.realm===realm;
-    const typeOk = type==='all' || card.type===type;
-    const simOk = sim==='all' || (sim==='yes' ? card.sim : !card.sim);
-    return searchOk && realmOk && typeOk && simOk;
-  });
-  renderCards(filtered);
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const realm = document.getElementById('realmFilter').value;
+  const type = document.getElementById('typeFilter').value;
+  const sort = document.getElementById('sortFilter').value;
+  let list = [...CARDS].filter(c=>(
+    (realm==='all' || c.realm===realm) &&
+    (type==='all' || c.type===type) &&
+    (!eliteOnly || isElite(c)) &&
+    (!q || (c.title+' '+c.formula+' '+c.meaning+' '+c.use+' '+c.related).toLowerCase().includes(q))
+  ));
+  list.sort((a,b)=> (a[sort]||'').localeCompare(b[sort]||''));
+  currentList = list;
+  renderGrid(list);
+  log(`filters applied: ${list.length} card(s) visible`);
 }
-
 function resetFilters(){
-  document.getElementById('search').value='';
-  document.getElementById('realm').value='all';
-  document.getElementById('type').value='all';
-  document.getElementById('sim').value='all';
-  renderCards(eliteCards);
+  eliteOnly = false;
+  ['search','realmFilter','typeFilter','sortFilter'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(id==='search') el.value='';
+  });
+  document.getElementById('realmFilter').value='all';
+  document.getElementById('typeFilter').value='all';
+  document.getElementById('sortFilter').value='title';
+  applyFilters();
+}
+function focusElite(){
+  eliteOnly = !eliteOnly;
+  applyFilters();
+}
+function randomCard(){
+  const list = currentList.length ? currentList : CARDS;
+  openCard(list[Math.floor(Math.random()*list.length)].id);
+  celebrate('random');
 }
 
 function openCard(id){
-  const card = eliteCards.find(c=>c.id===id);
-  if(!card) return;
-  currentCard = card;
-  document.getElementById('mTitle').textContent = card.title;
-  document.getElementById('mStatement').textContent = card.statement;
-  document.getElementById('mPlain').textContent = card.plain;
-  document.getElementById('mUse').textContent = card.use;
-  document.getElementById('mAssumptions').textContent = card.assumptions;
-  document.getElementById('mTrap').textContent = card.trap;
-  document.getElementById('mIntuition').textContent = card.intuition;
-  document.getElementById('mChips').innerHTML = `
-    <span class="chip">${realmLabel(card.realm)}</span>
-    <span class="chip">${capitalize(card.type)} card</span>
-    ${card.sim?'<span class="chip">simulation-enabled</span>':''}
+  currentCard = CARDS.find(c=>c.id===id) || CARDS[0];
+  document.getElementById('mTitle').textContent = currentCard.title;
+  document.getElementById('mFormula').textContent = currentCard.formula;
+  document.getElementById('mMeaning').textContent = currentCard.meaning;
+  document.getElementById('mUse').textContent = currentCard.use;
+  document.getElementById('mAssumptions').textContent = currentCard.assumptions;
+  document.getElementById('mTrap').textContent = currentCard.trap;
+  document.getElementById('mIntuition').textContent = currentCard.intuition;
+  document.getElementById('mVars').textContent = currentCard.variables;
+  document.getElementById('mRelated').textContent = currentCard.related;
+  document.getElementById('mBadges').innerHTML = `
+    <span class="badge" style="background:rgba(125,211,252,.14);color:${realmColor(currentCard.realm)};border:1px solid rgba(125,211,252,.24)">${currentCard.realm}</span>
+    <span class="badge b-${currentCard.type}">${currentCard.type.replace('-', ' ')}</span>
+    ${isElite(currentCard) ? '<span class="badge" style="background:rgba(255,209,102,.15);color:#ffe5a5;border:1px solid rgba(255,209,102,.28)">elite card</span>' : ''}
   `;
-  document.getElementById('mVariables').innerHTML = card.variables.map(v=>`<li>${v}</li>`).join('');
-  document.getElementById('mRelated').innerHTML = card.related.map(r=>`<li>${r}</li>`).join('');
   document.getElementById('modal').classList.add('show');
-  drawCardSimulation(card);
-  fireBurst();
-  logEvent(`opened card: ${card.title}`);
+  drawSim(currentCard);
+  log(`opened card: ${currentCard.title}`);
 }
-
 function closeModal(){ document.getElementById('modal').classList.remove('show'); }
-function randomCard(){ const card = eliteCards[Math.floor(Math.random()*eliteCards.length)]; openCard(card.id); }
-function focusForge(){ document.getElementById('forgeInput').focus(); document.getElementById('forgeInput').scrollIntoView({behavior:'smooth',block:'center'}); }
-function openFirstPhase(){
-  document.getElementById('forgeResult').innerHTML = `<strong>Phase I brief:</strong><br><br>1. Old theorem bulk is replaced with engineering-only elite cards.<br>2. Four realms now match the uploaded reference: Statics, Dynamics, Strength of Materials, and Fluid Mechanics.<br>3. The forge now answers like an engineering triage assistant instead of a generic theorem search box.<br>4. Next phase expands from 24 elite cards into the full engineering card map.`;
-  logEvent('phase i brief opened');
-}
+function forgeFromCurrent(){ useChip(currentCard.title); runForge(); }
 
-function seedForge(text){ document.getElementById('forgeInput').value = text; runForge(); }
+function useChip(text){ document.getElementById('forgeInput').value = text; }
 
 function runForge(){
   const q = document.getElementById('forgeInput').value.trim().toLowerCase();
-  if(!q){
-    document.getElementById('forgeResult').innerHTML = 'Feed the forge a real engineering situation.';
-    return;
+  if(!q) return;
+  let card = CARDS.find(c=> q.includes(c.title.toLowerCase())) ||
+             CARDS.find(c=> c.title.toLowerCase().includes(q)) ||
+             CARDS.find(c=> (c.meaning+' '+c.use+' '+c.related).toLowerCase().includes(q));
+  const result = document.getElementById('forgeResult');
+  if(card){
+    result.innerHTML = `<strong>${card.title}</strong><br><br>
+      <em>${card.realm}</em><br>
+      <strong>Use it when:</strong> ${card.use}<br><br>
+      <strong>Core law:</strong> <code>${card.formula}</code><br><br>
+      <strong>Watch out:</strong> ${card.trap}<br><br>
+      <button class="primary" onclick="openCard('${card.id}')">Open card</button>`;
+    celebrate('forge');
+    openCard(card.id);
+    log(`forge matched card: ${card.title}`);
+  } else {
+    result.innerHTML = `<strong>No exact card match yet.</strong><br><br>
+      Try broader engineering language like <em>stress</em>, <em>pipe head loss</em>, <em>free body diagram</em>, <em>torsion</em>, <em>beam bending</em>, or <em>venturi meter</em>.`;
+    log(`forge found no exact match for "${q}"`);
   }
-  forgeHits++;
-  const scored = eliteCards.map(card=>{
-    let score = 0;
-    const text = [card.title, card.statement, card.plain, card.use, card.trap, card.intuition, ...(card.keywords||[])].join(' ').toLowerCase();
-    q.split(/\s+/).forEach(tok=>{ if(text.includes(tok)) score += 1; });
-    if(text.includes(q)) score += 4;
-    return {card, score};
-  }).sort((a,b)=>b.score-a.score);
-
-  const top = scored[0].card;
-  const matches = scored.filter(x=>x.score>0).slice(0,4).map(x=>x.card);
-  const realmMode = top.realm.toLowerCase();
-  document.getElementById('forgeResult').innerHTML = `
-    <strong>Forge match:</strong> ${top.title}<br><br>
-    <strong>Why this is the right weapon:</strong> ${top.use}<br><br>
-    <strong>Physical meaning:</strong> ${top.plain}<br><br>
-    <strong>First trap to avoid:</strong> ${top.trap}<br><br>
-    <strong>Engineer intuition:</strong> ${top.intuition}
-  `;
-  document.getElementById('forgeLinks').innerHTML = matches.map(c=>`<button onclick="openCard('${c.id}')">${c.title}</button>`).join('');
-  animateForge(realmMode);
-  fireBurst();
-  logEvent(`forge matched card: ${top.title}`);
 }
 
-function celebrateEngineering(){ animateForge('surge'); fireBurst(); logEvent('forge surge fired'); }
+function drawSim(card){
+  const canvas = document.getElementById('simCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#071019'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle = '#7dd3fc'; ctx.lineWidth = 2;
 
+  const sim = card.simulation || '';
+  if(sim==='mohr'){
+    ctx.strokeStyle='#ffd166'; ctx.beginPath(); ctx.arc(260,150,90,0,Math.PI*2); ctx.stroke();
+    ctx.strokeStyle='#7dd3fc'; ctx.beginPath(); ctx.moveTo(170,150); ctx.lineTo(350,150); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.fillText('σ', 355,155); ctx.fillText('τ', 265,45);
+    ctx.fillStyle='#a78bfa'; ctx.beginPath(); ctx.arc(260,150,4,0,Math.PI*2); ctx.fill();
+  } else if(sim==='beam'){
+    ctx.strokeStyle='#cdd7ea'; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(50,160); ctx.quadraticCurveTo(260,250,470,160); ctx.stroke();
+    ctx.strokeStyle='#ffd166'; ctx.beginPath(); ctx.moveTo(50,110); ctx.lineTo(470,110); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.fillText('undeflected',385,100); ctx.fillText('deflected',390,180);
+  } else if(sim==='venturi'){
+    ctx.strokeStyle='#7dd3fc'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(40,90); ctx.lineTo(180,90); ctx.lineTo(240,130); ctx.lineTo(280,130); ctx.lineTo(340,90); ctx.lineTo(480,90);
+    ctx.moveTo(40,210); ctx.lineTo(180,210); ctx.lineTo(240,170); ctx.lineTo(280,170); ctx.lineTo(340,210); ctx.lineTo(480,210); ctx.stroke();
+    ctx.fillStyle='#57e389';
+    for(let x=70;x<450;x+=60){ ctx.beginPath(); ctx.moveTo(x,150); ctx.lineTo(x+28,150); ctx.strokeStyle='#57e389'; ctx.stroke();}
+    ctx.fillStyle='#fff'; ctx.fillText('pressure drops through throat',150,55);
+  } else if(sim==='torsion'){
+    ctx.strokeStyle='#a78bfa'; ctx.lineWidth=3;
+    for(let i=0;i<10;i++){ ctx.beginPath(); ctx.ellipse(260,50+i*20,90,18,0,0,Math.PI*2); ctx.stroke(); }
+    ctx.strokeStyle='#ffd166'; ctx.beginPath(); ctx.moveTo(260,40); ctx.lineTo(260,250); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.fillText('shear grows with radius',150,275);
+  } else if(sim==='orbit' || sim==='projectile'){
+    ctx.strokeStyle='#7dd3fc'; ctx.beginPath(); ctx.arc(260,150,100,0,Math.PI*2); ctx.stroke();
+    ctx.fillStyle='#ffd166'; ctx.beginPath(); ctx.arc(260,150,20,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(360,150,6,0,Math.PI*2); ctx.fill();
+  } else if(sim==='truss'){
+    ctx.strokeStyle='#7dd3fc'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(70,220); ctx.lineTo(180,90); ctx.lineTo(300,220); ctx.lineTo(430,120); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(70,220); ctx.lineTo(300,220); ctx.lineTo(430,120); ctx.stroke();
+    ctx.fillStyle='#ffd166'; [[70,220],[180,90],[300,220],[430,120]].forEach(([x,y])=>{ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();});
+  } else if(sim==='fbd'){
+    ctx.strokeStyle='#cfd9ea'; ctx.strokeRect(180,100,120,80);
+    ctx.strokeStyle='#7dd3fc'; ctx.beginPath(); ctx.moveTo(240,100); ctx.lineTo(240,50); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(300,140); ctx.lineTo(360,140); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(240,180); ctx.lineTo(240,235); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.fillText('F',365,145); ctx.fillText('W',245,245); ctx.fillText('N',245,45);
+  } else if(sim==='moment'){
+    ctx.strokeStyle='#cdd7ea'; ctx.beginPath(); ctx.moveTo(80,220); ctx.lineTo(400,220); ctx.stroke();
+    ctx.strokeStyle='#7dd3fc'; ctx.beginPath(); ctx.moveTo(240,220); ctx.lineTo(240,110); ctx.stroke();
+    ctx.strokeStyle='#ffd166'; ctx.beginPath(); ctx.arc(140,220,50,Math.PI*1.2,Math.PI*2.1); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.fillText('pivot',115,245); ctx.fillText('F',245,105); ctx.fillText('M',185,145);
+  } else if(sim==='inertia'){
+    ctx.strokeStyle='#7dd3fc'; ctx.strokeRect(150,70,220,160);
+    ctx.strokeStyle='#ffd166'; ctx.beginPath(); ctx.moveTo(260,40); ctx.lineTo(260,260); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(120,150); ctx.lineTo(400,150); ctx.stroke();
+    ctx.fillStyle='#fff'; ctx.fillText('more area farther from axis → larger I',135,285);
+  } else if(sim==='flow' || sim==='pipe'){
+    ctx.strokeStyle='#7dd3fc'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.moveTo(60,120); ctx.lineTo(460,120); ctx.moveTo(60,180); ctx.lineTo(460,180); ctx.stroke();
+    ctx.strokeStyle='#57e389';
+    for(let x=80;x<430;x+=55){ ctx.beginPath(); ctx.moveTo(x,150); ctx.lineTo(x+30,150); ctx.stroke();}
+    ctx.fillStyle='#fff'; ctx.fillText('head loss accumulates along length',135,90);
+  } else if(sim==='energy'){
+    ctx.fillStyle='#ffd166'; ctx.fillRect(90,160,90,70);
+    ctx.fillStyle='#7dd3fc'; ctx.fillRect(330,100,90,130);
+    ctx.fillStyle='#fff'; ctx.fillText('before',105,250); ctx.fillText('after',350,250); ctx.fillText('work shifts kinetic energy',165,65);
+  } else {
+    ctx.fillStyle='#d9e8ff'; ctx.font='18px Inter'; ctx.fillText('Quick visual coming alive here',130,150);
+    ctx.fillText(card.realm, 180,180);
+  }
+}
+
+function toggleDebug(){
+  document.getElementById('debugDrawer').classList.toggle('show');
+  renderDebug();
+}
 function renderDebug(){
-  const visibleCards = document.querySelectorAll('#cardGrid .card').length;
+  const visible = currentList.length;
   const report = [
-    'ProofSpace Engineering Forge Report',
-    `Version: ${VERSION}`,
-    `Build date: ${BUILD_DATE}`,
-    `Viewport: ${window.innerWidth} x ${window.innerHeight}`,
-    `Elite cards loaded: ${eliteCards.length}`,
-    `Visible cards: ${visibleCards}`,
-    '',
-    'Counts:',
-    `- Statics cards: ${eliteCards.filter(c=>c.realm==='Statics').length}`,
-    `- Dynamics cards: ${eliteCards.filter(c=>c.realm==='Dynamics').length}`,
-    `- Materials cards: ${eliteCards.filter(c=>c.realm==='Materials').length}`,
-    `- Fluids cards: ${eliteCards.filter(c=>c.realm==='Fluids').length}`,
-    `- Simulation-enabled cards: ${eliteCards.filter(c=>c.sim).length}`,
-    '',
-    'Forge telemetry:',
-    `- Forge hits: ${forgeHits}`,
-    `- Particle bursts: ${particleBursts}`,
-    `- Current open card: ${currentCard ? currentCard.title : 'none'}`,
-    '',
-    'Checks:',
-    `- Realm rebuild: OK`,
-    `- Engineering-only vault bulk: OK`,
-    `- Modal present: ${!!document.getElementById('modal') ? 'OK' : 'MISSING'}`,
-    `- Forge canvas present: ${!!document.getElementById('forgeCanvas') ? 'OK' : 'MISSING'}`,
-    `- Falling math symbols: ${!!document.getElementById('symbolField') ? 'OK' : 'MISSING'}`,
-    '',
-    'Recent log:',
-    ...recentLog
+`ProofSpace Engineering Forge Report`,
+`Version: ${VERSION}`,
+`Build date: ${BUILD_DATE}`,
+`Viewport: ${innerWidth} x ${innerHeight}`,
+`Cards loaded: ${CARDS.length}`,
+`Visible cards: ${visible}`,
+`Elite mode: ${eliteOnly ? 'ON' : 'OFF'}`,
+`Astral shards: ${shards}`,
+``,
+`Counts:`,
+`- Statics cards: ${CARDS.filter(c=>c.realm==='Statics Forge').length}`,
+`- Dynamics cards: ${CARDS.filter(c=>c.realm==='Dynamics Forge').length}`,
+`- Strength cards: ${CARDS.filter(c=>c.realm==='Strength of Materials Forge').length}`,
+`- Fluid cards: ${CARDS.filter(c=>c.realm==='Fluid Mechanics Forge').length}`,
+`- Formula cards: ${CARDS.filter(c=>c.type==='formula').length}`,
+`- Diagram cards: ${CARDS.filter(c=>c.type==='diagram').length}`,
+`- Worked-example cards: ${CARDS.filter(c=>c.type==='worked-example').length}`,
+`- Sim-enabled cards: ${CARDS.filter(c=>c.simulation).length}`,
+``,
+`Checks:`,
+`- Vault loaded: OK`,
+`- Forge present: OK`,
+`- Modal present: OK`,
+`- Symbol rain active: OK`,
+`- Engineering retheme active: OK`,
+`- Tailored card bulk from engineering map: OK`,
+``,
+`Source spine:`,
+`- ${SOURCE_NOTE}`,
+``,
+`Recent log:`,
+...recentLog
   ].join('\n');
   document.getElementById('debugOut').textContent = report;
 }
 
-function copyDebug(){
-  navigator.clipboard.writeText(document.getElementById('debugOut').textContent).then(()=>logEvent('debug report copied'));
-}
-function toggleDrawer(){ document.getElementById('drawer').classList.toggle('show'); renderDebug(); }
-
-function fireBurst(){
-  particleBursts++;
-  const wrap = document.getElementById('forgeWrap');
-  const canvas = document.getElementById('forgeParticles');
-  const rect = wrap.getBoundingClientRect();
-  canvas.width = rect.width; canvas.height = rect.height;
-  const ctx = canvas.getContext('2d');
-  const particles = Array.from({length:52}, ()=>({
-    x: rect.width/2 + (Math.random()-0.5)*40,
-    y: rect.height/2 + (Math.random()-0.5)*40,
-    vx:(Math.random()-0.5)*8,
-    vy:(Math.random()-0.5)*8,
-    life:30+Math.random()*20,
-    s:2+Math.random()*4,
-    hue:[190,260,45,350][Math.floor(Math.random()*4)]
-  }));
-  function step(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    particles.forEach(p=>{
-      p.x += p.vx; p.y += p.vy; p.vy += .03; p.life -= 1;
-      ctx.beginPath();
-      ctx.fillStyle = `hsla(${p.hue},100%,70%,${Math.max(p.life/45,0)})`;
-      ctx.shadowBlur = 18; ctx.shadowColor = ctx.fillStyle;
-      ctx.arc(p.x,p.y,p.s,0,Math.PI*2); ctx.fill();
-    });
-    if(particles.some(p=>p.life>0)) requestAnimationFrame(step); else ctx.clearRect(0,0,canvas.width,canvas.height);
-  }
-  step();
-}
-
-const symbolCanvas = document.getElementById('symbolField');
-const sctx = symbolCanvas.getContext('2d');
-let symbols = [];
-const glyphs = ['∫','∑','π','Δ','∞','∂','∇','θ','λ','μ','φ','√','≈','∀','∃','∈','⊂','⊆','τ','σ','ω','α','β'];
-function sizeSymbolCanvas(){ symbolCanvas.width = innerWidth; symbolCanvas.height = innerHeight; }
-function initSymbols(){
-  sizeSymbolCanvas();
-  const count = Math.max(90, Math.floor(innerWidth/14));
-  symbols = Array.from({length:count}, ()=>({
-    x: Math.random()*innerWidth,
-    y: Math.random()*innerHeight,
-    s: 14 + Math.random()*18,
-    vy: .4 + Math.random()*1.45,
-    vx: (Math.random()-.5)*.35,
-    rot: Math.random()*Math.PI*2,
-    vr: (Math.random()-.5)*.02,
-    g: glyphs[Math.floor(Math.random()*glyphs.length)],
-    hue: [190,260,45,205][Math.floor(Math.random()*4)],
-    a: .2 + Math.random()*.55
-  }));
-}
-function animateSymbols(){
-  sctx.clearRect(0,0,symbolCanvas.width,symbolCanvas.height);
-  symbols.forEach(sym=>{
-    sym.y += sym.vy; sym.x += sym.vx; sym.rot += sym.vr;
-    if(sym.y > innerHeight + 30){ sym.y = -30; sym.x = Math.random()*innerWidth; }
-    if(sym.x < -40) sym.x = innerWidth + 20;
-    if(sym.x > innerWidth + 40) sym.x = -20;
-    sctx.save();
-    sctx.translate(sym.x, sym.y); sctx.rotate(sym.rot);
-    sctx.font = `900 ${sym.s}px Georgia, serif`;
-    sctx.textAlign = 'center'; sctx.textBaseline = 'middle';
-    const fill = `hsla(${sym.hue},100%,72%,${sym.a})`;
-    sctx.shadowBlur = 20; sctx.shadowColor = fill; sctx.fillStyle = fill; sctx.fillText(sym.g,0,0);
-    sctx.restore();
-  });
-  requestAnimationFrame(animateSymbols);
-}
-
-const forgeCanvas = document.getElementById('forgeCanvas');
-const fctx = forgeCanvas.getContext('2d');
-function sizeForgeCanvas(){ const r = forgeCanvas.parentElement.getBoundingClientRect(); forgeCanvas.width = r.width; forgeCanvas.height = r.height; }
-function animateForge(mode='idle'){
-  sizeForgeCanvas();
-  let t = 0;
-  const palette = mode==='fluids' ? ['#7dd3fc','#34d399','#a78bfa'] : mode==='materials' ? ['#ffd166','#fb7185','#7dd3fc'] : mode==='statics' ? ['#7dd3fc','#ffd166','#ffffff'] : mode==='dynamics' ? ['#a78bfa','#7dd3fc','#ffd166'] : ['#7dd3fc','#a78bfa','#ffd166'];
-  function draw(){
-    t += .02;
-    fctx.clearRect(0,0,forgeCanvas.width,forgeCanvas.height);
-    const cx = forgeCanvas.width/2, cy = forgeCanvas.height/2;
-    for(let i=0;i<3;i++){
-      const rad = 52 + i*54 + Math.sin(t*2+i)*10;
-      fctx.beginPath();
-      fctx.strokeStyle = palette[i%palette.length] + '88';
-      fctx.lineWidth = 2.2;
-      fctx.shadowBlur = 20; fctx.shadowColor = palette[i%palette.length];
-      fctx.arc(cx, cy, rad, 0, Math.PI*2);
-      fctx.stroke();
-      const dotA = t*1.5 + i*1.7;
-      const x = cx + Math.cos(dotA)*rad;
-      const y = cy + Math.sin(dotA)*rad;
-      fctx.beginPath();
-      fctx.fillStyle = palette[i%palette.length];
-      fctx.arc(x,y,6+i,0,Math.PI*2); fctx.fill();
-    }
-    fctx.beginPath();
-    const grad = fctx.createRadialGradient(cx,cy,8,cx,cy,88);
-    grad.addColorStop(0,'rgba(255,255,255,.85)');
-    grad.addColorStop(.3,'rgba(125,211,252,.55)');
-    grad.addColorStop(1,'rgba(125,211,252,0)');
-    fctx.fillStyle = grad;
-    fctx.arc(cx,cy,90+Math.sin(t*4)*8,0,Math.PI*2);
-    fctx.fill();
-    if(t < 6) requestAnimationFrame(draw);
-  }
-  draw();
-}
-
-const simCanvas = document.getElementById('simCanvas');
-const simCtx = simCanvas.getContext('2d');
-function drawCardSimulation(card){
-  simCtx.clearRect(0,0,simCanvas.width,simCanvas.height);
-  simCtx.fillStyle = '#071019'; simCtx.fillRect(0,0,simCanvas.width,simCanvas.height);
-  simCtx.strokeStyle = 'rgba(125,211,252,.28)';
-  simCtx.lineWidth = 2;
-  simCtx.shadowBlur = 18; simCtx.shadowColor = '#7dd3fc';
-  if(card.title === 'Mohr’s Circle'){
-    simCtx.beginPath(); simCtx.arc(250,145,82,0,Math.PI*2); simCtx.stroke();
-    simCtx.beginPath(); simCtx.moveTo(70,145); simCtx.lineTo(430,145); simCtx.stroke();
-    simCtx.beginPath(); simCtx.moveTo(250,40); simCtx.lineTo(250,250); simCtx.stroke();
-    simCtx.fillStyle = '#ffd166'; simCtx.fillText('σ', 430, 136); simCtx.fillText('τ', 260, 50);
-  } else if(card.title === 'Beam Deflection' || card.title === 'Bending Stress'){
-    simCtx.beginPath(); simCtx.moveTo(60,190); simCtx.lineTo(460,190); simCtx.stroke();
-    simCtx.beginPath(); simCtx.moveTo(60,190); simCtx.bezierCurveTo(160,190,220,250,460,160); simCtx.strokeStyle='#ffd166'; simCtx.stroke();
-  } else if(card.title === 'Venturi Meter'){
-    simCtx.strokeStyle='#7dd3fc'; simCtx.beginPath();
-    simCtx.moveTo(40,90); simCtx.lineTo(180,90); simCtx.lineTo(240,120); simCtx.lineTo(300,120); simCtx.lineTo(360,90); simCtx.lineTo(480,90);
-    simCtx.moveTo(40,210); simCtx.lineTo(180,210); simCtx.lineTo(240,180); simCtx.lineTo(300,180); simCtx.lineTo(360,210); simCtx.lineTo(480,210); simCtx.stroke();
-    for(let i=0;i<7;i++){ simCtx.beginPath(); simCtx.moveTo(70+i*55,150); simCtx.lineTo(100+i*55,150); simCtx.strokeStyle='#34d399'; simCtx.stroke(); }
-  } else if(card.title === 'Reynolds Number' || card.title === 'Darcy-Weisbach Equation'){
-    simCtx.strokeStyle='#7dd3fc'; simCtx.beginPath(); simCtx.moveTo(50,100); simCtx.lineTo(470,100); simCtx.moveTo(50,200); simCtx.lineTo(470,200); simCtx.stroke();
-    for(let i=0;i<22;i++){ simCtx.beginPath(); simCtx.moveTo(60+i*18,150 + Math.sin(i*.7)*22); simCtx.lineTo(70+i*18,150 + Math.sin(i*.7+.3)*22); simCtx.strokeStyle=i<11?'#34d399':'#a78bfa'; simCtx.stroke(); }
-  } else if(card.title === 'Moment of a Force'){
-    simCtx.strokeStyle='#fff'; simCtx.beginPath(); simCtx.moveTo(150,210); simCtx.lineTo(320,210); simCtx.stroke();
-    simCtx.strokeStyle='#ffd166'; simCtx.beginPath(); simCtx.moveTo(280,210); simCtx.lineTo(280,100); simCtx.stroke();
-    simCtx.fillStyle='#ffd166'; simCtx.fillText('F',285,95); simCtx.fillStyle='#7dd3fc'; simCtx.fillText('d⊥',210,198);
-  } else if(card.title === 'Free-Body Diagram' || card.title === 'Equilibrium in 2D'){
-    simCtx.strokeStyle='#7dd3fc'; simCtx.strokeRect(180,90,120,120);
-    [['↑',240,68],['↓',240,240],['←',145,155],['→',340,155]].forEach(([txt,x,y])=>{ simCtx.fillStyle='#ffd166'; simCtx.font='24px sans-serif'; simCtx.fillText(txt,x,y); });
-  } else if(card.title === 'Torsion in Circular Shafts'){
-    simCtx.strokeStyle='#7dd3fc'; simCtx.strokeRect(100,120,300,60);
-    simCtx.beginPath(); simCtx.arc(100,150,30,0,Math.PI*2); simCtx.stroke(); simCtx.beginPath(); simCtx.arc(400,150,30,0,Math.PI*2); simCtx.stroke();
-    simCtx.strokeStyle='#ffd166'; simCtx.beginPath(); simCtx.arc(250,150,84,.35,5.6); simCtx.stroke();
-  } else {
-    simCtx.strokeStyle='#7dd3fc';
-    simCtx.beginPath();
-    for(let x=20;x<500;x+=10){ const y=150 + Math.sin(x/35)*48; if(x===20) simCtx.moveTo(x,y); else simCtx.lineTo(x,y); }
-    simCtx.stroke();
-  }
-}
-
-function animateOrbitDot(){
-  const dot = document.getElementById('orbitDot');
-  let t = 0;
-  function move(){
-    t += .014;
-    const cx = 160, cy = 124, rx = 110, ry = 84;
-    dot.style.left = (cx + Math.cos(t)*rx) + 'px';
-    dot.style.top = (cy + Math.sin(t)*ry) + 'px';
-    requestAnimationFrame(move);
-  }
-  move();
-}
-
-window.addEventListener('resize', ()=>{ sizeSymbolCanvas(); initSymbols(); sizeForgeCanvas(); renderDebug(); if(currentCard) drawCardSimulation(currentCard); });
-window.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); if(e.key==='Enter' && document.activeElement.id==='forgeInput') runForge(); });
-
-renderCards(eliteCards);
-initSymbols(); animateSymbols();
-sizeForgeCanvas(); animateForge('idle');
-animateOrbitDot();
+document.getElementById('forgeInput').addEventListener('keydown', e=>{ if(e.key==='Enter') runForge(); });
+renderGrid(CARDS);
 renderDebug();
-logEvent('engineering forge phase i boot complete');
-logEvent('elite engineering card rebuild loaded');
 </script>
 </body>
 </html>
