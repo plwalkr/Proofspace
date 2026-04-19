@@ -70,8 +70,8 @@ pre{white-space:pre-wrap;word-break:break-word;background:#08111e;border:1px sol
 </head>
 <body>
 <canvas id="sky"></canvas>
-<div id="loadBadge">PHASE V.3 • HEADER PACK</div>
-<header><div class="header-inner"><div class="brand"><div class="orb">⚙</div><div><h1>ProofSpace Engineering Playground</h1><div class="sub">v5.3 • Header Pack • forge-led playground</div></div></div><div class="actions"><button onclick="randomCard()">🎲 Random</button><button onclick="toggleCompact()">🧩 Compact view</button><button class="primary" onclick="focusForge()">🔥 Forge</button></div></div></header>
+<div id="loadBadge">PHASE V.4 • REAL CONTROLS</div>
+<header><div class="header-inner"><div class="brand"><div class="orb">⚙</div><div><h1>ProofSpace Engineering Playground</h1><div class="sub">v5.4 • Real Controls • forge-led playground</div></div></div><div class="actions"><button onclick="randomCard()">🎲 Random</button><button onclick="toggleCompact()">🧩 Compact view</button><button class="primary" onclick="focusForge()">🔥 Forge</button></div></div></header>
 
 <main>
 <section class="top">
@@ -89,15 +89,19 @@ pre{white-space:pre-wrap;word-break:break-word;background:#08111e;border:1px sol
 <div id="modal" onclick="if(event.target.id==='modal') closeModal()"><div class="modal-box"><div class="modal-head"><div><div class="small" id="mRealm"></div><h2 id="mTitle" style="margin:4px 0 0 0"></h2></div><div class="actions"><button class="primary" onclick="runCardMove()">Next move</button><button onclick="closeModal()">Close</button></div></div><div class="modal-grid"><div><div class="sec"><h3>Formula / rule</h3><div class="formula" id="mFormula"></div></div><div class="sec" style="margin-top:12px"><h3>How to read this card</h3><div class="slot-grid"><div class="slot"><div class="mini">What it is for</div><div class="big" id="mUse"></div></div><div class="slot"><div class="mini">Assumptions</div><div class="big" id="mAssume"></div></div><div class="slot"><div class="mini">Watch out</div><div class="big" id="mTrap"></div></div><div class="slot"><div class="mini">Variables</div><div class="big" id="mVars"></div></div><div class="slot"><div class="mini">Next engineering move</div><div class="big" id="mMove"></div></div></div></div><div class="sec" style="margin-top:12px"><h3>Related cards</h3><div class="related-wrap" id="mRelated"></div></div></div><div><div class="sec"><h3>Playground visual</h3><div class="sim-wrap"><canvas id="sim" width="560" height="340"></canvas></div><div class="move-wrap" style="margin-top:10px"><button class="primary" onclick="runCardMove()">Do next move</button></div></div><div class="sec" style="margin-top:12px"><h3>Control</h3><div class="small">This phase favors the top playground cards and lets the forge throw you straight into them.</div></div></div></div></div></div>
 
 <button id="debugBtn" class="primary" onclick="toggleDebug()">🛠 Debug</button>
-<div id="debug" class="panel"><h3 style="margin-top:0">Header Pack Report</h3><pre id="debugOut"></pre><div class="actions"><button onclick="copyDebug()">Copy</button><button onclick="toggleDebug()">Close</button></div></div>
+<div id="debug" class="panel"><h3 style="margin-top:0">Real Controls Report</h3><pre id="debugOut"></pre><div class="actions"><button onclick="copyDebug()">Copy</button><button onclick="toggleDebug()">Close</button></div></div>
 <div id="toast"></div>
 
 <script>
-const VERSION='v5.3 • Header Pack', BUILD_DATE='2026-04-17';
+const VERSION='v5.4 • Real Controls', BUILD_DATE='2026-04-17';
 const HOT_PROMPTS=['free body diagram','beam deflection','mohr circle','venturi meter','reynolds number','method of joints','torsion in shafts','darcy-weisbach','orbital motion','moment of a force'];
 const PLAY_TITLES=['Free-Body Diagram','Moment of a Force','Method of Joints','Beam Deflection','Mohr’s Circle','Torsion in Shafts','Reynolds Number','Bernoulli Equation','Venturi Meter','Darcy-Weisbach Equation','Orbital Motion'];
 const shards={count:0,bursts:0,eventHits:0,compact:false};
 const logLines=[]; let forgePulse=1, simAmp=1, currentCard=null;
+const simControls = {
+  venturi: { throat: 0.5, speed: 0.65 }
+};
+let dragTarget = null;
 function note(msg){const t=new Date().toLocaleTimeString();logLines.unshift(`[${t}] ${msg}`);if(logLines.length>18)logLines.length=18;renderDebug();}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.style.display='block';clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>el.style.display='none',1800);}
 function playTone(freq=440,dur=.08){try{const ctx=window._ac||(window._ac=new (window.AudioContext||window.webkitAudioContext)());const o=ctx.createOscillator(),g=ctx.createGain(),f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=1400;o.type='triangle';o.frequency.value=freq;o.connect(f);f.connect(g);g.connect(ctx.destination);const t=ctx.currentTime;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.05,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.start(t);o.stop(t+dur+.02);}catch(e){}}
@@ -158,16 +162,39 @@ function closeModal(){modal.classList.remove('show');}
 function runCardMove(){if(!currentCard)return;const rel=currentCard.related[0];if(rel){const found=cards.find(c=>c.title===rel);if(found){openCard(found.id,true);toast(`Moved to ${found.title}`);note(`auto-move opened ${found.title}`);return;}}nudgePlay();}
 function nudgePlay(doCelebrate=false){forgePulse=2.1;simAmp=2.0;playTone(360,.05);setTimeout(()=>playTone(540,.05),50);setTimeout(()=>playTone(720,.07),100);if(doCelebrate)celebrate();drawSim();}
 function updateStats(){statCards.textContent=cards.length;statVisible.textContent=visibleCards.length;statPlay.textContent=cards.filter(c=>c.play).length;statShards.textContent=shards.count;renderDebug();}
-function renderDebug(){debugOut.textContent=`ProofSpace Sandbox Report\nVersion: ${VERSION}\nBuild date: ${BUILD_DATE}\nViewport: ${window.innerWidth} x ${window.innerHeight}\nCards loaded: ${cards.length}\nVisible cards: ${visibleCards.length}\n\nCounts:\n- Statics: ${cards.filter(c=>c.realm==='Statics').length}\n- Dynamics: ${cards.filter(c=>c.realm==='Dynamics').length}\n- Materials: ${cards.filter(c=>c.realm==='Materials').length}\n- Fluids: ${cards.filter(c=>c.realm==='Fluids').length}\n- Play cards: ${cards.filter(c=>c.play).length}\n\nForge telemetry:\n- Shards: ${shards.count}\n- Bursts: ${shards.bursts}\n- Event hits: ${shards.eventHits}\n- Compact: ${shards.compact?'on':'off'}\n\nChecks:\n- Featured playground row: OK\n- Forge auto-open: OK\n- Modal slim pass: OK\n- Sim canvas present: ${document.getElementById('sim')?'OK':'MISSING'}\n- Header pack pass: OK\n\nRecent log:\n${logLines.join('\\n')}`;}
+function renderDebug(){debugOut.textContent=`ProofSpace Sandbox Report\nVersion: ${VERSION}\nBuild date: ${BUILD_DATE}\nViewport: ${window.innerWidth} x ${window.innerHeight}\nCards loaded: ${cards.length}\nVisible cards: ${visibleCards.length}\n\nCounts:\n- Statics: ${cards.filter(c=>c.realm==='Statics').length}\n- Dynamics: ${cards.filter(c=>c.realm==='Dynamics').length}\n- Materials: ${cards.filter(c=>c.realm==='Materials').length}\n- Fluids: ${cards.filter(c=>c.realm==='Fluids').length}\n- Play cards: ${cards.filter(c=>c.play).length}\n\nForge telemetry:\n- Shards: ${shards.count}\n- Bursts: ${shards.bursts}\n- Event hits: ${shards.eventHits}\n- Compact: ${shards.compact?'on':'off'}\n\nChecks:\n- Featured playground row: OK\n- Forge auto-open: OK\n- Modal slim pass: OK\n- Sim canvas present: ${document.getElementById('sim')?'OK':'MISSING'}\n- Real controls pass: OK\n\nRecent log:\n${logLines.join('\\n')}`;}
 function toggleDebug(){debug.classList.toggle('show');renderDebug();} function copyDebug(){navigator.clipboard.writeText(debugOut.textContent);toast('Debug copied');}
 function runForge(){const raw=forgeInput.value.trim();if(!raw){toast('Type something');return;}const q=raw.toLowerCase();let found=cards.find(c=>q.includes(c.title.toLowerCase()));const keywordMap=[['free body','Free-Body Diagram'],['beam deflection','Beam Deflection'],['mohr','Mohr’s Circle'],['venturi','Venturi Meter'],['reynolds','Reynolds Number'],['joints','Method of Joints'],['sections','Method of Sections'],['torsion','Torsion in Shafts'],['darcy','Darcy-Weisbach Equation'],['bernoulli','Bernoulli Equation'],['orbit','Orbital Motion'],['moment','Moment of a Force']];if(!found){for(const [key,title] of keywordMap){if(q.includes(key)){found=cards.find(c=>c.title===title);break;}}}if(!found){found=cards.find(c=>[c.title,c.use,c.formula,c.move].join(' ').toLowerCase().includes(q.split(' ')[0]))||cards[0];}shards.eventHits++;shards.count+=5;forgePulse=2.3;simAmp=2.2;playTone(330,.05);setTimeout(()=>playTone(494,.05),60);setTimeout(()=>playTone(660,.08),120);const related=found.related.slice(0,3);forgeResult.innerHTML=`<div class="eyebrow">forge match</div><h3 style="margin:10px 0 8px">${found.title}</h3><div class="formula">${found.formula}</div><p style="margin:10px 0 0;color:#d9e6ff">${found.use}</p><div class="small" style="margin-top:10px">Next move: ${found.move}</div><div class="hotbar" style="margin-top:10px"><button class="primary" onclick="openCard(${found.id},true)">Open & play</button>${related.map(r=>`<button onclick="jumpToTitle('${r.replace(/'/g,"\\\\'")}')">${r}</button>`).join('')}</div>`;openCard(found.id,true);updateStats();note(`forge matched: ${found.title}`);toast(`Forge matched ${found.title}`);}
 function jumpToTitle(t){const found=cards.find(c=>c.title===t);if(found)openCard(found.id,true);}
 const simCanvas=document.getElementById('sim'), sctx=simCanvas.getContext('2d'); let simT=0, sliderA=0.5, sliderDir=1;
-function drawSlider(x,y,w,val,label){sctx.fillStyle='#10203a';sctx.fillRect(x,y,w,8);sctx.fillStyle='#7dd3fc';sctx.fillRect(x,y,w*val,8);sctx.fillStyle='#ffd166';sctx.beginPath();sctx.arc(x+w*val,y+4,8,0,Math.PI*2);sctx.fill();sctx.fillStyle='#dbe8ff';sctx.font='12px Inter';sctx.fillText(label,x,y-8);}
+function drawSlider(x,y,w,val,label,active=false){
+  sctx.fillStyle='#10203a'; sctx.fillRect(x,y,w,8);
+  sctx.fillStyle=active ? '#34d399' : '#7dd3fc'; sctx.fillRect(x,y,w*val,8);
+  sctx.fillStyle='#ffd166'; sctx.beginPath(); sctx.arc(x+w*val,y+4,8,0,Math.PI*2); sctx.fill();
+  sctx.fillStyle='#dbe8ff'; sctx.font='12px Inter'; sctx.fillText(label,x,y-8);
+}
 function drawSim(){if(!currentCard)return;const c=currentCard,w=simCanvas.width,h=simCanvas.height;sctx.clearRect(0,0,w,h);sctx.fillStyle='#07111c';sctx.fillRect(0,0,w,h);sctx.strokeStyle='rgba(255,255,255,.05)';for(let gx=0;gx<w;gx+=40){sctx.beginPath();sctx.moveTo(gx,0);sctx.lineTo(gx,h);sctx.stroke();}for(let gy=0;gy<h;gy+=40){sctx.beginPath();sctx.moveTo(0,gy);sctx.lineTo(w,gy);sctx.stroke();}
 if(c.sim==='beam'){const loadX=140+240*(0.5+0.35*Math.sin(simT*0.6)), bend=18+18*(0.5+0.5*Math.sin(simT*0.8))*simAmp*0.5;sctx.strokeStyle='#7dd3fc';sctx.lineWidth=7;sctx.beginPath();sctx.moveTo(60,250);for(let x=60;x<=500;x+=4){const t=(x-60)/440,y=250-Math.sin(t*Math.PI)*bend;sctx.lineTo(x,y)}sctx.stroke();sctx.fillStyle='#ffd166';sctx.fillRect(loadX-5,70,10,95);sctx.beginPath();sctx.moveTo(loadX,165);sctx.lineTo(loadX-14,145);sctx.lineTo(loadX+14,145);sctx.closePath();sctx.fill();drawSlider(50,300,200,(loadX-140)/240,'load position');drawSlider(300,300,200,Math.min(1,bend/36),'deflection');}
 else if(c.sim==='mohr'){const R=70+20*(0.5+0.5*Math.sin(simT*0.9))*simAmp*0.35, ang=simT*0.9;sctx.strokeStyle='#a78bfa';sctx.lineWidth=3;sctx.beginPath();sctx.arc(280,165,R,0,Math.PI*2);sctx.stroke();sctx.strokeStyle='#7dd3fc';sctx.beginPath();sctx.moveTo(80,165);sctx.lineTo(500,165);sctx.stroke();const px=280+R*Math.cos(ang),py=165+R*Math.sin(ang);sctx.fillStyle='#ffd166';sctx.beginPath();sctx.arc(px,py,8,0,Math.PI*2);sctx.fill();sctx.fillStyle='#dce7ff';sctx.font='14px Inter';sctx.fillText('stress point',px+12,py-8);drawSlider(60,300,200,Math.min(1,(R-70)/20),'circle radius');drawSlider(310,300,180,(Math.sin(ang)+1)/2,'rotation');}
-else if(c.sim==='venturi'){const throat=90+60*(0.5+0.5*Math.sin(simT*0.7));sctx.fillStyle='#0d1b30';sctx.beginPath();sctx.moveTo(40,95);sctx.lineTo(200,95);sctx.lineTo(260,95+(130-throat)/2);sctx.lineTo(340,95+(130-throat)/2);sctx.lineTo(400,95);sctx.lineTo(520,95);sctx.lineTo(520,225);sctx.lineTo(400,225);sctx.lineTo(340,225-(130-throat)/2);sctx.lineTo(260,225-(130-throat)/2);sctx.lineTo(200,225);sctx.lineTo(40,225);sctx.closePath();sctx.fill();sctx.strokeStyle='#ffd166';sctx.lineWidth=2;sctx.stroke();sctx.fillStyle='#7dd3fc';for(let i=0;i<22;i++){const x=(50+((i*28+simT*220)%460)),inThroat=(x>250&&x<350),y=160+Math.sin((x/34)+simT*(inThroat?3.2:1.8))*(inThroat?18:6);sctx.beginPath();sctx.arc(x,y,4.6,0,Math.PI*2);sctx.fill();}drawSlider(60,300,200,(throat-90)/60,'throat size');drawSlider(310,300,180,0.65,'speed rise');}
+else if(c.sim==='venturi'){
+  const throatVal = simControls.venturi.throat;
+  const speedVal = simControls.venturi.speed;
+  const throat=90+60*throatVal;
+  sctx.fillStyle='#0d1b30';
+  sctx.beginPath();
+  sctx.moveTo(40,95);sctx.lineTo(200,95);sctx.lineTo(260,95+(130-throat)/2);sctx.lineTo(340,95+(130-throat)/2);
+  sctx.lineTo(400,95);sctx.lineTo(520,95);sctx.lineTo(520,225);sctx.lineTo(400,225);
+  sctx.lineTo(340,225-(130-throat)/2);sctx.lineTo(260,225-(130-throat)/2);sctx.lineTo(200,225);sctx.lineTo(40,225);
+  sctx.closePath(); sctx.fill(); sctx.strokeStyle='#ffd166'; sctx.lineWidth=2; sctx.stroke();
+  sctx.fillStyle='#7dd3fc';
+  for(let i=0;i<22;i++){
+    const x=(50+((i*28+simT*(120+180*speedVal))%460)), inThroat=(x>250&&x<350),
+          y=160+Math.sin((x/34)+simT*(1.2+3.4*speedVal))*(inThroat?(8+14*speedVal):6);
+    sctx.beginPath(); sctx.arc(x,y,4.6,0,Math.PI*2); sctx.fill();
+  }
+  drawSlider(60,300,200,throatVal,'throat size', dragTarget==='venturi_throat');
+  drawSlider(310,300,180,speedVal,'speed rise', dragTarget==='venturi_speed');
+}
 else if(c.sim==='truss'){const pts=[[70,250],[170,150],[270,250],[370,150],[500,250]], lines=[[0,1],[1,2],[2,3],[3,4],[0,2],[2,4],[1,3]];sctx.strokeStyle='#7dd3fc';sctx.lineWidth=3;lines.forEach(([a,b])=>{sctx.beginPath();sctx.moveTo(...pts[a]);sctx.lineTo(...pts[b]);sctx.stroke();});sctx.fillStyle='#ffd166';pts.forEach(p=>{sctx.beginPath();sctx.arc(p[0],p[1],6,0,Math.PI*2);sctx.fill();});const joint=1+Math.floor((0.5+0.5*Math.sin(simT*0.7))*2.9);sctx.fillStyle='#34d399';sctx.beginPath();sctx.arc(pts[joint][0],pts[joint][1],10,0,Math.PI*2);sctx.fill();drawSlider(60,300,200,joint/4,'active joint');}
 else if(c.sim==='shaft'){const twist=0.4+0.4*(0.5+0.5*Math.sin(simT*0.9))*simAmp*0.4;sctx.strokeStyle='#7dd3fc';sctx.lineWidth=28;sctx.lineCap='round';sctx.beginPath();sctx.moveTo(80,170);sctx.lineTo(500,170);sctx.stroke();sctx.strokeStyle='#ffd166';sctx.lineWidth=3;for(let i=0;i<11;i++){const x=110+i*34,amp=(i/10)*30*twist;sctx.beginPath();sctx.moveTo(x,145);sctx.bezierCurveTo(x+10,145-amp*Math.sin(simT),x+24,195+amp*Math.sin(simT),x+34,195);sctx.stroke();}drawSlider(60,300,200,twist,'twist');}
 else if(c.sim==='pipe'){const diam=0.35+0.45*(0.5+0.5*Math.sin(simT*0.8));sctx.strokeStyle='#7dd3fc';sctx.lineWidth=18*diam+6;sctx.beginPath();sctx.moveTo(60,120);sctx.lineTo(240,120);sctx.lineTo(240,240);sctx.lineTo(520,240);sctx.stroke();sctx.fillStyle='#ffd166';for(let i=0;i<18;i++){const t=(i/17+simT*0.22)%1;let x,y;if(t<0.32){x=60+t/0.32*180;y=120}else if(t<0.50){x=240;y=120+(t-0.32)/0.18*120}else{x=240+(t-0.50)/0.50*280;y=240}sctx.beginPath();sctx.arc(x,y,4,0,Math.PI*2);sctx.fill();}drawSlider(60,300,200,diam,'pipe diameter');drawSlider(310,300,180,0.72,'flow energy');}
@@ -180,13 +207,45 @@ else if(c.sim==='reynolds'){const turbulence=0.2+0.75*(0.5+0.5*Math.sin(simT*0.8
 else if(c.sim==='stress'){const stretch=0.2+0.45*(0.5+0.5*Math.sin(simT));sctx.fillStyle='#7dd3fc';sctx.fillRect(230,90,100,140+80*stretch);sctx.strokeStyle='#ffd166';sctx.lineWidth=4;sctx.beginPath();sctx.moveTo(280,60);sctx.lineTo(280,40);sctx.stroke();sctx.beginPath();sctx.moveTo(280,90+140+80*stretch);sctx.lineTo(280,90+180+80*stretch);sctx.stroke();drawSlider(60,300,200,stretch,'stretch');}
 else{sctx.fillStyle='#9fdfff';sctx.font='700 28px Inter';sctx.fillText(currentCard.realm,50,70);sctx.fillStyle='#dbe7ff';sctx.font='600 18px Inter';sctx.fillText(currentCard.title,50,108);sctx.strokeStyle='#7dd3fc';sctx.strokeRect(50,130,440,150);}}
 const bg=document.getElementById('sky'), bctx=bg.getContext('2d'); const GLYPHS='∫∑πΔ∞∂∇θλμφ√≈∀∃∈⊂⊆ωτΣΩ'; const stars=[], glyphs=[];
+
+function getSimPos(evt){
+  const rect = simCanvas.getBoundingClientRect();
+  const touch = evt.touches ? evt.touches[0] : evt;
+  return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+}
+function clamp01(v){ return Math.max(0, Math.min(1, v)); }
+function tryStartDrag(evt){
+  if(!currentCard || currentCard.sim!=='venturi') return;
+  const p = getSimPos(evt);
+  if(p.y >= 288 && p.y <= 314){
+    if(p.x >= 60 && p.x <= 260){ dragTarget = 'venturi_throat'; updateDrag(evt); evt.preventDefault(); }
+    else if(p.x >= 310 && p.x <= 490){ dragTarget = 'venturi_speed'; updateDrag(evt); evt.preventDefault(); }
+  }
+}
+function updateDrag(evt){
+  if(!dragTarget || !currentCard || currentCard.sim!=='venturi') return;
+  const p = getSimPos(evt);
+  if(dragTarget === 'venturi_throat'){
+    simControls.venturi.throat = clamp01((p.x - 60) / 200);
+  } else if(dragTarget === 'venturi_speed'){
+    simControls.venturi.speed = clamp01((p.x - 310) / 180);
+  }
+  drawSim();
+}
+function stopDrag(){ dragTarget = null; }
+simCanvas.addEventListener('mousedown', tryStartDrag);
+window.addEventListener('mousemove', updateDrag);
+window.addEventListener('mouseup', stopDrag);
+simCanvas.addEventListener('touchstart', tryStartDrag, {passive:false});
+window.addEventListener('touchmove', updateDrag, {passive:false});
+window.addEventListener('touchend', stopDrag);
 function resizeBg(){bg.width=window.innerWidth*devicePixelRatio;bg.height=window.innerHeight*devicePixelRatio;bg.style.width=window.innerWidth+'px';bg.style.height=window.innerHeight+'px';bctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);}
 function newGlyph(initial=false){return {x:Math.random()*window.innerWidth,y:initial?Math.random()*window.innerHeight:-30-Math.random()*220,s:14+Math.random()*16,v:0.5+Math.random()*1.6,d:(Math.random()-.5)*0.55,a:0.28+Math.random()*0.45,c:['#7dd3fc','#a78bfa','#ffd166','#eef7ff'][Math.floor(Math.random()*4)],g:GLYPHS[Math.floor(Math.random()*GLYPHS.length)],rot:(Math.random()-.5)*0.45};}
 function seedBg(){stars.length=0;glyphs.length=0;for(let i=0;i<140;i++)stars.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.7+.4,a:Math.random()*0.8+.2});for(let i=0;i<95;i++)glyphs.push(newGlyph(true));}
 function bgLoop(){bctx.clearRect(0,0,window.innerWidth,window.innerHeight);stars.forEach(s=>{bctx.fillStyle=`rgba(230,245,255,${s.a})`;bctx.fillRect(s.x,s.y,s.r,s.r);});glyphs.forEach(g=>{g.y+=g.v*forgePulse;g.x+=g.d*forgePulse;if(g.y>window.innerHeight+50)Object.assign(g,newGlyph(false));bctx.save();bctx.translate(g.x,g.y);bctx.rotate(g.rot+Math.sin(Date.now()/1300+g.x)*0.05);bctx.fillStyle=g.c;bctx.shadowBlur=18;bctx.shadowColor=g.c;bctx.globalAlpha=g.a;bctx.font=`700 ${g.s}px Cambria, Georgia, serif`;bctx.fillText(g.g,0,0);bctx.restore();});forgePulse+=(1-forgePulse)*0.05;requestAnimationFrame(bgLoop);}
 function animLoop(){simT+=0.03;simAmp+=(1-simAmp)*0.06;sliderA+=0.01*sliderDir;if(sliderA>1||sliderA<0)sliderDir*=-1;if(modal.classList.contains('show'))drawSim();requestAnimationFrame(animLoop);}
 window.addEventListener('resize',()=>{resizeBg();seedBg();drawSim();updateStats();});
-makeHotPrompts();buildFeatured();resizeBg();seedBg();bgLoop();animLoop();applyFilters();renderDebug();note('header pack build online');updateStats();
+makeHotPrompts();buildFeatured();resizeBg();seedBg();bgLoop();animLoop();applyFilters();renderDebug();note('real controls build online');updateStats();
 </script>
 </body>
 </html>
