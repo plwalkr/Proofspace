@@ -70,8 +70,8 @@ pre{white-space:pre-wrap;word-break:break-word;background:#08111e;border:1px sol
 </head>
 <body>
 <canvas id="sky"></canvas>
-<div id="loadBadge">PHASE V.5 • VARIABLE CONTROLS</div>
-<header><div class="header-inner"><div class="brand"><div class="orb">⚙</div><div><h1>ProofSpace Engineering Playground</h1><div class="sub">v5.5 • Variable Controls • forge-led playground</div></div></div><div class="actions"><button onclick="randomCard()">🎲 Random</button><button onclick="toggleCompact()">🧩 Compact view</button><button class="primary" onclick="focusForge()">🔥 Forge</button></div></div></header>
+<div id="loadBadge">PHASE V.4 • REAL CONTROLS</div>
+<header><div class="header-inner"><div class="brand"><div class="orb">⚙</div><div><h1>ProofSpace Engineering Playground</h1><div class="sub">v5.4 • Real Controls • forge-led playground</div></div></div><div class="actions"><button onclick="randomCard()">🎲 Random</button><button onclick="toggleCompact()">🧩 Compact view</button><button class="primary" onclick="focusForge()">🔥 Forge</button></div></div></header>
 
 <main>
 <section class="top">
@@ -89,30 +89,19 @@ pre{white-space:pre-wrap;word-break:break-word;background:#08111e;border:1px sol
 <div id="modal" onclick="if(event.target.id==='modal') closeModal()"><div class="modal-box"><div class="modal-head"><div><div class="small" id="mRealm"></div><h2 id="mTitle" style="margin:4px 0 0 0"></h2></div><div class="actions"><button class="primary" onclick="runCardMove()">Next move</button><button onclick="closeModal()">Close</button></div></div><div class="modal-grid"><div><div class="sec"><h3>Formula / rule</h3><div class="formula" id="mFormula"></div></div><div class="sec" style="margin-top:12px"><h3>How to read this card</h3><div class="slot-grid"><div class="slot"><div class="mini">What it is for</div><div class="big" id="mUse"></div></div><div class="slot"><div class="mini">Assumptions</div><div class="big" id="mAssume"></div></div><div class="slot"><div class="mini">Watch out</div><div class="big" id="mTrap"></div></div><div class="slot"><div class="mini">Variables</div><div class="big" id="mVars"></div></div><div class="slot"><div class="mini">Next engineering move</div><div class="big" id="mMove"></div></div></div></div><div class="sec" style="margin-top:12px"><h3>Related cards</h3><div class="related-wrap" id="mRelated"></div></div></div><div><div class="sec"><h3>Playground visual</h3><div class="sim-wrap"><canvas id="sim" width="560" height="340"></canvas></div><div class="move-wrap" style="margin-top:10px"><button class="primary" onclick="runCardMove()">Do next move</button></div></div><div class="sec" style="margin-top:12px"><h3>Control</h3><div class="small">This phase favors the top playground cards and lets the forge throw you straight into them.</div></div></div></div></div></div>
 
 <button id="debugBtn" class="primary" onclick="toggleDebug()">🛠 Debug</button>
-<div id="debug" class="panel"><h3 style="margin-top:0">Variable Controls Report</h3><pre id="debugOut"></pre><div class="actions"><button onclick="copyDebug()">Copy</button><button onclick="toggleDebug()">Close</button></div></div>
+<div id="debug" class="panel"><h3 style="margin-top:0">Real Controls Report</h3><pre id="debugOut"></pre><div class="actions"><button onclick="copyDebug()">Copy</button><button onclick="toggleDebug()">Close</button></div></div>
 <div id="toast"></div>
 
 <script>
-const VERSION='v5.5 • Variable Controls', BUILD_DATE='2026-04-17';
+const VERSION='v5.4 • Real Controls', BUILD_DATE='2026-04-17';
 const HOT_PROMPTS=['free body diagram','beam deflection','mohr circle','venturi meter','reynolds number','method of joints','torsion in shafts','darcy-weisbach','orbital motion','moment of a force'];
 const PLAY_TITLES=['Free-Body Diagram','Moment of a Force','Method of Joints','Beam Deflection','Mohr’s Circle','Torsion in Shafts','Reynolds Number','Bernoulli Equation','Venturi Meter','Darcy-Weisbach Equation','Orbital Motion'];
 const shards={count:0,bursts:0,eventHits:0,compact:false};
 const logLines=[]; let forgePulse=1, simAmp=1, currentCard=null;
 const simControls = {
-  venturi: { throat: 0.5, speed: 0.65 },
-  beam: { loadPos: 0.5, bend: 0.55 },
-  mohr: { radius: 0.5, rotation: 0.5 },
-  shaft: { twist: 0.5 },
-  reynolds: { chaos: 0.5 },
-  orbit: { position: 0.5 },
-  fbd: { force: 0.5 },
-  pipe: { diameter: 0.5, energy: 0.72 },
-  impulse: { width: 0.5 },
-  centroid: { hole: 0.5 },
-  stress: { stretch: 0.5 }
+  venturi: { throat: 0.5, speed: 0.65 }
 };
 let dragTarget = null;
-let activeReadout = '';
 function note(msg){const t=new Date().toLocaleTimeString();logLines.unshift(`[${t}] ${msg}`);if(logLines.length>18)logLines.length=18;renderDebug();}
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.style.display='block';clearTimeout(window._toastTimer);window._toastTimer=setTimeout(()=>el.style.display='none',1800);}
 function playTone(freq=440,dur=.08){try{const ctx=window._ac||(window._ac=new (window.AudioContext||window.webkitAudioContext)());const o=ctx.createOscillator(),g=ctx.createGain(),f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=1400;o.type='triangle';o.frequency.value=freq;o.connect(f);f.connect(g);g.connect(ctx.destination);const t=ctx.currentTime;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.05,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.start(t);o.stop(t+dur+.02);}catch(e){}}
@@ -173,211 +162,51 @@ function closeModal(){modal.classList.remove('show');}
 function runCardMove(){if(!currentCard)return;const rel=currentCard.related[0];if(rel){const found=cards.find(c=>c.title===rel);if(found){openCard(found.id,true);toast(`Moved to ${found.title}`);note(`auto-move opened ${found.title}`);return;}}nudgePlay();}
 function nudgePlay(doCelebrate=false){forgePulse=2.1;simAmp=2.0;playTone(360,.05);setTimeout(()=>playTone(540,.05),50);setTimeout(()=>playTone(720,.07),100);if(doCelebrate)celebrate();drawSim();}
 function updateStats(){statCards.textContent=cards.length;statVisible.textContent=visibleCards.length;statPlay.textContent=cards.filter(c=>c.play).length;statShards.textContent=shards.count;renderDebug();}
-function renderDebug(){debugOut.textContent=`ProofSpace Sandbox Report\nVersion: ${VERSION}\nBuild date: ${BUILD_DATE}\nViewport: ${window.innerWidth} x ${window.innerHeight}\nCards loaded: ${cards.length}\nVisible cards: ${visibleCards.length}\n\nCounts:\n- Statics: ${cards.filter(c=>c.realm==='Statics').length}\n- Dynamics: ${cards.filter(c=>c.realm==='Dynamics').length}\n- Materials: ${cards.filter(c=>c.realm==='Materials').length}\n- Fluids: ${cards.filter(c=>c.realm==='Fluids').length}\n- Play cards: ${cards.filter(c=>c.play).length}\n\nForge telemetry:\n- Shards: ${shards.count}\n- Bursts: ${shards.bursts}\n- Event hits: ${shards.eventHits}\n- Compact: ${shards.compact?'on':'off'}\n\nChecks:\n- Featured playground row: OK\n- Forge auto-open: OK\n- Modal slim pass: OK\n- Sim canvas present: ${document.getElementById('sim')?'OK':'MISSING'}\n- Variable controls pass: OK\n\nRecent log:\n${logLines.join('\\n')}`;}
+function renderDebug(){debugOut.textContent=`ProofSpace Sandbox Report\nVersion: ${VERSION}\nBuild date: ${BUILD_DATE}\nViewport: ${window.innerWidth} x ${window.innerHeight}\nCards loaded: ${cards.length}\nVisible cards: ${visibleCards.length}\n\nCounts:\n- Statics: ${cards.filter(c=>c.realm==='Statics').length}\n- Dynamics: ${cards.filter(c=>c.realm==='Dynamics').length}\n- Materials: ${cards.filter(c=>c.realm==='Materials').length}\n- Fluids: ${cards.filter(c=>c.realm==='Fluids').length}\n- Play cards: ${cards.filter(c=>c.play).length}\n\nForge telemetry:\n- Shards: ${shards.count}\n- Bursts: ${shards.bursts}\n- Event hits: ${shards.eventHits}\n- Compact: ${shards.compact?'on':'off'}\n\nChecks:\n- Featured playground row: OK\n- Forge auto-open: OK\n- Modal slim pass: OK\n- Sim canvas present: ${document.getElementById('sim')?'OK':'MISSING'}\n- Real controls pass: OK\n\nRecent log:\n${logLines.join('\\n')}`;}
 function toggleDebug(){debug.classList.toggle('show');renderDebug();} function copyDebug(){navigator.clipboard.writeText(debugOut.textContent);toast('Debug copied');}
 function runForge(){const raw=forgeInput.value.trim();if(!raw){toast('Type something');return;}const q=raw.toLowerCase();let found=cards.find(c=>q.includes(c.title.toLowerCase()));const keywordMap=[['free body','Free-Body Diagram'],['beam deflection','Beam Deflection'],['mohr','Mohr’s Circle'],['venturi','Venturi Meter'],['reynolds','Reynolds Number'],['joints','Method of Joints'],['sections','Method of Sections'],['torsion','Torsion in Shafts'],['darcy','Darcy-Weisbach Equation'],['bernoulli','Bernoulli Equation'],['orbit','Orbital Motion'],['moment','Moment of a Force']];if(!found){for(const [key,title] of keywordMap){if(q.includes(key)){found=cards.find(c=>c.title===title);break;}}}if(!found){found=cards.find(c=>[c.title,c.use,c.formula,c.move].join(' ').toLowerCase().includes(q.split(' ')[0]))||cards[0];}shards.eventHits++;shards.count+=5;forgePulse=2.3;simAmp=2.2;playTone(330,.05);setTimeout(()=>playTone(494,.05),60);setTimeout(()=>playTone(660,.08),120);const related=found.related.slice(0,3);forgeResult.innerHTML=`<div class="eyebrow">forge match</div><h3 style="margin:10px 0 8px">${found.title}</h3><div class="formula">${found.formula}</div><p style="margin:10px 0 0;color:#d9e6ff">${found.use}</p><div class="small" style="margin-top:10px">Next move: ${found.move}</div><div class="hotbar" style="margin-top:10px"><button class="primary" onclick="openCard(${found.id},true)">Open & play</button>${related.map(r=>`<button onclick="jumpToTitle('${r.replace(/'/g,"\\\\'")}')">${r}</button>`).join('')}</div>`;openCard(found.id,true);updateStats();note(`forge matched: ${found.title}`);toast(`Forge matched ${found.title}`);}
 function jumpToTitle(t){const found=cards.find(c=>c.title===t);if(found)openCard(found.id,true);}
 const simCanvas=document.getElementById('sim'), sctx=simCanvas.getContext('2d'); let simT=0, sliderA=0.5, sliderDir=1;
-function drawSlider(x,y,w,val,label,active=false,readout=''){
+function drawSlider(x,y,w,val,label,active=false){
   sctx.fillStyle='#10203a'; sctx.fillRect(x,y,w,8);
   sctx.fillStyle=active ? '#34d399' : '#7dd3fc'; sctx.fillRect(x,y,w*val,8);
   sctx.fillStyle='#ffd166'; sctx.beginPath(); sctx.arc(x+w*val,y+4,8,0,Math.PI*2); sctx.fill();
   sctx.fillStyle='#dbe8ff'; sctx.font='12px Inter'; sctx.fillText(label,x,y-8);
-  if(readout){
-    sctx.fillStyle='#bfe8ff';
-    sctx.font='12px Inter';
-    sctx.fillText(readout, x+w-4, y-8);
-  }
 }
-function drawSim(){
-  if(!currentCard) return;
-  const c=currentCard,w=simCanvas.width,h=simCanvas.height;
-  sctx.clearRect(0,0,w,h);
-  sctx.fillStyle='#07111c'; sctx.fillRect(0,0,w,h);
-  sctx.strokeStyle='rgba(255,255,255,.05)';
-  for(let gx=0;gx<w;gx+=40){sctx.beginPath();sctx.moveTo(gx,0);sctx.lineTo(gx,h);sctx.stroke();}
-  for(let gy=0;gy<h;gy+=40){sctx.beginPath();sctx.moveTo(0,gy);sctx.lineTo(w,gy);sctx.stroke();}
-
-  if(c.sim==='beam'){
-    const loadVal = simControls.beam.loadPos;
-    const bendVal = simControls.beam.bend;
-    const loadX=140+240*loadVal, bend=12+26*bendVal;
-    sctx.strokeStyle='#7dd3fc'; sctx.lineWidth=7;
-    sctx.beginPath(); sctx.moveTo(60,250);
-    for(let x=60;x<=500;x+=4){
-      const t=(x-60)/440, y=250-Math.sin(t*Math.PI)*bend;
-      sctx.lineTo(x,y);
-    }
-    sctx.stroke();
-    sctx.fillStyle='#ffd166'; sctx.fillRect(loadX-5,70,10,95);
-    sctx.beginPath(); sctx.moveTo(loadX,165); sctx.lineTo(loadX-14,145); sctx.lineTo(loadX+14,145); sctx.closePath(); sctx.fill();
-    drawSlider(50,300,200,loadVal,'load position',dragTarget==='beam_loadPos',`${(0.5+3.5*loadVal).toFixed(2)} m`);
-    drawSlider(300,300,200,bendVal,'deflection',dragTarget==='beam_bend',`${bend.toFixed(1)} mm`);
-    activeReadout = `Load at x=${(0.5+3.5*loadVal).toFixed(2)} m, peak deflection≈${bend.toFixed(1)} mm`;
+function drawSim(){if(!currentCard)return;const c=currentCard,w=simCanvas.width,h=simCanvas.height;sctx.clearRect(0,0,w,h);sctx.fillStyle='#07111c';sctx.fillRect(0,0,w,h);sctx.strokeStyle='rgba(255,255,255,.05)';for(let gx=0;gx<w;gx+=40){sctx.beginPath();sctx.moveTo(gx,0);sctx.lineTo(gx,h);sctx.stroke();}for(let gy=0;gy<h;gy+=40){sctx.beginPath();sctx.moveTo(0,gy);sctx.lineTo(w,gy);sctx.stroke();}
+if(c.sim==='beam'){const loadX=140+240*(0.5+0.35*Math.sin(simT*0.6)), bend=18+18*(0.5+0.5*Math.sin(simT*0.8))*simAmp*0.5;sctx.strokeStyle='#7dd3fc';sctx.lineWidth=7;sctx.beginPath();sctx.moveTo(60,250);for(let x=60;x<=500;x+=4){const t=(x-60)/440,y=250-Math.sin(t*Math.PI)*bend;sctx.lineTo(x,y)}sctx.stroke();sctx.fillStyle='#ffd166';sctx.fillRect(loadX-5,70,10,95);sctx.beginPath();sctx.moveTo(loadX,165);sctx.lineTo(loadX-14,145);sctx.lineTo(loadX+14,145);sctx.closePath();sctx.fill();drawSlider(50,300,200,(loadX-140)/240,'load position');drawSlider(300,300,200,Math.min(1,bend/36),'deflection');}
+else if(c.sim==='mohr'){const R=70+20*(0.5+0.5*Math.sin(simT*0.9))*simAmp*0.35, ang=simT*0.9;sctx.strokeStyle='#a78bfa';sctx.lineWidth=3;sctx.beginPath();sctx.arc(280,165,R,0,Math.PI*2);sctx.stroke();sctx.strokeStyle='#7dd3fc';sctx.beginPath();sctx.moveTo(80,165);sctx.lineTo(500,165);sctx.stroke();const px=280+R*Math.cos(ang),py=165+R*Math.sin(ang);sctx.fillStyle='#ffd166';sctx.beginPath();sctx.arc(px,py,8,0,Math.PI*2);sctx.fill();sctx.fillStyle='#dce7ff';sctx.font='14px Inter';sctx.fillText('stress point',px+12,py-8);drawSlider(60,300,200,Math.min(1,(R-70)/20),'circle radius');drawSlider(310,300,180,(Math.sin(ang)+1)/2,'rotation');}
+else if(c.sim==='venturi'){
+  const throatVal = simControls.venturi.throat;
+  const speedVal = simControls.venturi.speed;
+  const throat=90+60*throatVal;
+  sctx.fillStyle='#0d1b30';
+  sctx.beginPath();
+  sctx.moveTo(40,95);sctx.lineTo(200,95);sctx.lineTo(260,95+(130-throat)/2);sctx.lineTo(340,95+(130-throat)/2);
+  sctx.lineTo(400,95);sctx.lineTo(520,95);sctx.lineTo(520,225);sctx.lineTo(400,225);
+  sctx.lineTo(340,225-(130-throat)/2);sctx.lineTo(260,225-(130-throat)/2);sctx.lineTo(200,225);sctx.lineTo(40,225);
+  sctx.closePath(); sctx.fill(); sctx.strokeStyle='#ffd166'; sctx.lineWidth=2; sctx.stroke();
+  sctx.fillStyle='#7dd3fc';
+  for(let i=0;i<22;i++){
+    const x=(50+((i*28+simT*(120+180*speedVal))%460)), inThroat=(x>250&&x<350),
+          y=160+Math.sin((x/34)+simT*(1.2+3.4*speedVal))*(inThroat?(8+14*speedVal):6);
+    sctx.beginPath(); sctx.arc(x,y,4.6,0,Math.PI*2); sctx.fill();
   }
-  else if(c.sim==='mohr'){
-    const radiusVal = simControls.mohr.radius;
-    const rotVal = simControls.mohr.rotation;
-    const R=60+35*radiusVal, ang=rotVal*Math.PI*2;
-    sctx.strokeStyle='#a78bfa'; sctx.lineWidth=3;
-    sctx.beginPath(); sctx.arc(280,165,R,0,Math.PI*2); sctx.stroke();
-    sctx.strokeStyle='#7dd3fc'; sctx.beginPath(); sctx.moveTo(80,165); sctx.lineTo(500,165); sctx.stroke();
-    const px=280+R*Math.cos(ang),py=165+R*Math.sin(ang);
-    sctx.fillStyle='#ffd166'; sctx.beginPath(); sctx.arc(px,py,8,0,Math.PI*2); sctx.fill();
-    sctx.fillStyle='#dce7ff'; sctx.font='14px Inter'; sctx.fillText('stress point',px+12,py-8);
-    drawSlider(60,300,200,radiusVal,'circle radius',dragTarget==='mohr_radius',`${R.toFixed(1)} MPa`);
-    drawSlider(310,300,180,rotVal,'rotation',dragTarget==='mohr_rotation',`${(rotVal*180).toFixed(0)}°`);
-    activeReadout = `Circle radius≈${R.toFixed(1)} MPa, transformed angle≈${(rotVal*180).toFixed(0)}°`;
-  }
-  else if(c.sim==='venturi'){
-    const throatVal = simControls.venturi.throat;
-    const speedVal = simControls.venturi.speed;
-    const throat=90+60*throatVal;
-    sctx.fillStyle='#0d1b30';
-    sctx.beginPath();
-    sctx.moveTo(40,95);sctx.lineTo(200,95);sctx.lineTo(260,95+(130-throat)/2);sctx.lineTo(340,95+(130-throat)/2);
-    sctx.lineTo(400,95);sctx.lineTo(520,95);sctx.lineTo(520,225);sctx.lineTo(400,225);
-    sctx.lineTo(340,225-(130-throat)/2);sctx.lineTo(260,225-(130-throat)/2);sctx.lineTo(200,225);sctx.lineTo(40,225);
-    sctx.closePath(); sctx.fill(); sctx.strokeStyle='#ffd166'; sctx.lineWidth=2; sctx.stroke();
-    sctx.fillStyle='#7dd3fc';
-    for(let i=0;i<22;i++){
-      const x=(50+((i*28+simT*(120+180*speedVal))%460)), inThroat=(x>250&&x<350),
-            y=160+Math.sin((x/34)+simT*(1.2+3.4*speedVal))*(inThroat?(8+14*speedVal):6);
-      sctx.beginPath(); sctx.arc(x,y,4.6,0,Math.PI*2); sctx.fill();
-    }
-    drawSlider(60,300,200,throatVal,'throat size',dragTarget==='venturi_throat',`${(0.09+0.06*throatVal).toFixed(3)} m`);
-    drawSlider(310,300,180,speedVal,'speed rise',dragTarget==='venturi_speed',`${(1+4*speedVal).toFixed(2)}x`);
-    activeReadout = `Smaller throat drives higher local speed; rise≈${(1+4*speedVal).toFixed(2)}x`;
-  }
-  else if(c.sim==='truss'){
-    const pts=[[70,250],[170,150],[270,250],[370,150],[500,250]], lines=[[0,1],[1,2],[2,3],[3,4],[0,2],[2,4],[1,3]];
-    sctx.strokeStyle='#7dd3fc'; sctx.lineWidth=3;
-    lines.forEach(([a,b])=>{sctx.beginPath();sctx.moveTo(...pts[a]);sctx.lineTo(...pts[b]);sctx.stroke();});
-    sctx.fillStyle='#ffd166'; pts.forEach(p=>{sctx.beginPath();sctx.arc(p[0],p[1],6,0,Math.PI*2);sctx.fill();});
-    const joint=1+Math.floor((0.5+0.5*Math.sin(simT*0.7))*2.9);
-    sctx.fillStyle='#34d399'; sctx.beginPath(); sctx.arc(pts[joint][0],pts[joint][1],10,0,Math.PI*2); sctx.fill();
-    drawSlider(60,300,200,joint/4,'active joint',false,`J${joint+1}`);
-    activeReadout = `Highlighted joint changes where you would write ΣFx=0 and ΣFy=0`;
-  }
-  else if(c.sim==='shaft'){
-    const twistVal = simControls.shaft.twist;
-    const twist=0.2+0.9*twistVal;
-    sctx.strokeStyle='#7dd3fc'; sctx.lineWidth=28; sctx.lineCap='round';
-    sctx.beginPath(); sctx.moveTo(80,170); sctx.lineTo(500,170); sctx.stroke();
-    sctx.strokeStyle='#ffd166'; sctx.lineWidth=3;
-    for(let i=0;i<11;i++){
-      const x=110+i*34,amp=(i/10)*30*twist;
-      sctx.beginPath(); sctx.moveTo(x,145);
-      sctx.bezierCurveTo(x+10,145-amp*Math.sin(simT),x+24,195+amp*Math.sin(simT),x+34,195);
-      sctx.stroke();
-    }
-    drawSlider(60,300,200,twistVal,'twist',dragTarget==='shaft_twist',`${(2+28*twistVal).toFixed(1)}°`);
-    activeReadout = `As twist grows, φ increases and shear stress climbs with radius`;
-  }
-  else if(c.sim==='pipe'){
-    const diamVal = simControls.pipe.diameter;
-    const energyVal = simControls.pipe.energy;
-    const diam=0.25+0.65*diamVal;
-    sctx.strokeStyle='#7dd3fc'; sctx.lineWidth=18*diam+6;
-    sctx.beginPath(); sctx.moveTo(60,120); sctx.lineTo(240,120); sctx.lineTo(240,240); sctx.lineTo(520,240); sctx.stroke();
-    sctx.fillStyle='#ffd166';
-    for(let i=0;i<18;i++){
-      const t=(i/17+simT*(0.08+0.28*energyVal))%1; let x,y;
-      if(t<0.32){x=60+t/0.32*180;y=120}else if(t<0.50){x=240;y=120+(t-0.32)/0.18*120}else{x=240+(t-0.50)/0.50*280;y=240}
-      sctx.beginPath(); sctx.arc(x,y,4,0,Math.PI*2); sctx.fill();
-    }
-    drawSlider(60,300,200,diamVal,'pipe diameter',dragTarget==='pipe_diameter',`${(0.05+0.15*diamVal).toFixed(3)} m`);
-    drawSlider(310,300,180,energyVal,'flow energy',dragTarget==='pipe_energy',`${(2+18*energyVal).toFixed(1)} m head`);
-    activeReadout = `Diameter and energy both shift head loss and flow response`;
-  }
-  else if(c.sim==='orbit'){
-    const posVal = simControls.orbit.position;
-    const ang=posVal*Math.PI*2;
-    sctx.strokeStyle='rgba(125,211,252,.25)'; sctx.lineWidth=2;
-    sctx.beginPath(); sctx.arc(280,170,110,0,Math.PI*2); sctx.stroke();
-    sctx.beginPath(); sctx.ellipse(280,170,190,84,0,0,Math.PI*2); sctx.stroke();
-    sctx.fillStyle='#7dd3fc'; sctx.beginPath(); sctx.arc(280,170,18,0,Math.PI*2); sctx.fill();
-    const x=280+190*Math.cos(ang),y=170+84*Math.sin(ang);
-    sctx.fillStyle='#ffd166'; sctx.beginPath(); sctx.arc(x,y,7,0,Math.PI*2); sctx.fill();
-    drawSlider(60,300,200,posVal,'orbital position',dragTarget==='orbit_position',`${(posVal*360).toFixed(0)}°`);
-    activeReadout = `Position moves around the orbit while gravity keeps it on-path`;
-  }
-  else if(c.sim==='fbd'){
-    const forceVal = simControls.fbd.force;
-    const force=0.2+0.8*forceVal;
-    sctx.fillStyle='#182641'; sctx.fillRect(220,110,120,100);
-    const arr=(x1,y1,x2,y2,color='#ffd166')=>{sctx.strokeStyle=color;sctx.lineWidth=5;sctx.beginPath();sctx.moveTo(x1,y1);sctx.lineTo(x2,y2);sctx.stroke();};
-    arr(280,110,280,110-90*force); arr(220,160,220-85*force,160,'#7dd3fc'); arr(340,160,340+85*force,160,'#34d399'); arr(280,210,280,210+80*force,'#fb7185');
-    drawSlider(60,300,200,forceVal,'force scale',dragTarget==='fbd_force',`${(1+9*forceVal).toFixed(1)} kN`);
-    activeReadout = `Longer arrows mean larger force components on the free body`;
-  }
-  else if(c.sim==='energy'){
-    const vals=[.45,.7,.32,.84].map((v,i)=>v*(0.8+0.2*Math.sin(simT+i)));
-    ['#7dd3fc','#a78bfa','#ffd166','#34d399'].forEach((col,i)=>{sctx.fillStyle=col;sctx.fillRect(90+i*100,260,54,-150*vals[i]);});
-    activeReadout = `Bar heights compare energy states through the motion`;
-  }
-  else if(c.sim==='impulse'){
-    const widthVal = simControls.impulse.width;
-    const width=32+55*widthVal;
-    sctx.strokeStyle='#7dd3fc'; sctx.lineWidth=3; sctx.beginPath(); sctx.moveTo(50,270);
-    for(let x=50;x<520;x++){
-      const y=270-140*Math.exp(-Math.pow((x-(290+30*Math.sin(simT)))/width,2));
-      sctx.lineTo(x,y)
-    }
-    sctx.stroke();
-    drawSlider(60,300,200,widthVal,'pulse width',dragTarget==='impulse_width',`${width.toFixed(1)} ms`);
-    activeReadout = `A wider pulse changes total impulse area under F-t curve`;
-  }
-  else if(c.sim==='centroid'){
-    const holeVal = simControls.centroid.hole;
-    const hole=20+40*holeVal;
-    sctx.fillStyle='#13203a'; sctx.fillRect(120,90,240,150);
-    sctx.clearRect(210-hole/2,145-hole/2,hole,hole);
-    sctx.strokeStyle='#7dd3fc'; sctx.strokeRect(120,90,240,150);
-    sctx.fillStyle='#ffd166'; sctx.beginPath(); sctx.arc(240,165,7,0,Math.PI*2); sctx.fill();
-    drawSlider(60,300,200,holeVal,'hole size',dragTarget==='centroid_hole',`${hole.toFixed(0)} mm`);
-    activeReadout = `Changing removed area shifts the composite centroid`;
-  }
-  else if(c.sim==='reynolds'){
-    const chaosVal = simControls.reynolds.chaos;
-    const turbulence=0.1+0.9*chaosVal;
-    for(let i=0;i<44;i++){
-      const x=30+i*12;
-      const y=170+(i<22?18*Math.sin(i*0.5+simT*2):(Math.sin(i*2.2+simT*(3+5*turbulence))*18*turbulence+Math.cos(i*1.1+simT*4)*9*turbulence));
-      sctx.fillStyle=i<22?'#7dd3fc':'#ffd166';
-      sctx.beginPath(); sctx.arc(x,y,4,0,Math.PI*2); sctx.fill();
-    }
-    drawSlider(60,300,200,chaosVal,'chaos',dragTarget==='reynolds_chaos',`Re≈${(500+4500*chaosVal).toFixed(0)}`);
-    activeReadout = `Higher Reynolds means inertia dominates viscosity and chaos grows`;
-  }
-  else if(c.sim==='stress'){
-    const stretchVal = simControls.stress.stretch;
-    const stretch=0.1+0.75*stretchVal;
-    sctx.fillStyle='#7dd3fc'; sctx.fillRect(230,90,100,140+80*stretch);
-    sctx.strokeStyle='#ffd166'; sctx.lineWidth=4;
-    sctx.beginPath(); sctx.moveTo(280,60); sctx.lineTo(280,40); sctx.stroke();
-    sctx.beginPath(); sctx.moveTo(280,90+140+80*stretch); sctx.lineTo(280,90+180+80*stretch); sctx.stroke();
-    drawSlider(60,300,200,stretchVal,'stretch',dragTarget==='stress_stretch',`${(0.1+1.9*stretchVal).toFixed(2)} %`);
-    activeReadout = `More strain means bigger deformation for the same original length`;
-  }
-  else{
-    sctx.fillStyle='#9fdfff'; sctx.font='700 28px Inter'; sctx.fillText(currentCard.realm,50,70);
-    sctx.fillStyle='#dbe7ff'; sctx.font='600 18px Inter'; sctx.fillText(currentCard.title,50,108);
-    sctx.strokeStyle='#7dd3fc'; sctx.strokeRect(50,130,440,150);
-    activeReadout = 'Reference view';
-  }
-
-  if(activeReadout){
-    sctx.fillStyle='rgba(8,17,30,.92)';
-    sctx.fillRect(36,16,488,28);
-    sctx.strokeStyle='rgba(125,211,252,.2)';
-    sctx.strokeRect(36,16,488,28);
-    sctx.fillStyle='#dff5ff';
-    sctx.font='12px Inter';
-    sctx.fillText(activeReadout, 46, 34);
-  }
+  drawSlider(60,300,200,throatVal,'throat size', dragTarget==='venturi_throat');
+  drawSlider(310,300,180,speedVal,'speed rise', dragTarget==='venturi_speed');
 }
-const bg=document.getElementById('sky', bctx=bg.getContext('2d'); const GLYPHS='∫∑πΔ∞∂∇θλμφ√≈∀∃∈⊂⊆ωτΣΩ'; const stars=[], glyphs=[];
+else if(c.sim==='truss'){const pts=[[70,250],[170,150],[270,250],[370,150],[500,250]], lines=[[0,1],[1,2],[2,3],[3,4],[0,2],[2,4],[1,3]];sctx.strokeStyle='#7dd3fc';sctx.lineWidth=3;lines.forEach(([a,b])=>{sctx.beginPath();sctx.moveTo(...pts[a]);sctx.lineTo(...pts[b]);sctx.stroke();});sctx.fillStyle='#ffd166';pts.forEach(p=>{sctx.beginPath();sctx.arc(p[0],p[1],6,0,Math.PI*2);sctx.fill();});const joint=1+Math.floor((0.5+0.5*Math.sin(simT*0.7))*2.9);sctx.fillStyle='#34d399';sctx.beginPath();sctx.arc(pts[joint][0],pts[joint][1],10,0,Math.PI*2);sctx.fill();drawSlider(60,300,200,joint/4,'active joint');}
+else if(c.sim==='shaft'){const twist=0.4+0.4*(0.5+0.5*Math.sin(simT*0.9))*simAmp*0.4;sctx.strokeStyle='#7dd3fc';sctx.lineWidth=28;sctx.lineCap='round';sctx.beginPath();sctx.moveTo(80,170);sctx.lineTo(500,170);sctx.stroke();sctx.strokeStyle='#ffd166';sctx.lineWidth=3;for(let i=0;i<11;i++){const x=110+i*34,amp=(i/10)*30*twist;sctx.beginPath();sctx.moveTo(x,145);sctx.bezierCurveTo(x+10,145-amp*Math.sin(simT),x+24,195+amp*Math.sin(simT),x+34,195);sctx.stroke();}drawSlider(60,300,200,twist,'twist');}
+else if(c.sim==='pipe'){const diam=0.35+0.45*(0.5+0.5*Math.sin(simT*0.8));sctx.strokeStyle='#7dd3fc';sctx.lineWidth=18*diam+6;sctx.beginPath();sctx.moveTo(60,120);sctx.lineTo(240,120);sctx.lineTo(240,240);sctx.lineTo(520,240);sctx.stroke();sctx.fillStyle='#ffd166';for(let i=0;i<18;i++){const t=(i/17+simT*0.22)%1;let x,y;if(t<0.32){x=60+t/0.32*180;y=120}else if(t<0.50){x=240;y=120+(t-0.32)/0.18*120}else{x=240+(t-0.50)/0.50*280;y=240}sctx.beginPath();sctx.arc(x,y,4,0,Math.PI*2);sctx.fill();}drawSlider(60,300,200,diam,'pipe diameter');drawSlider(310,300,180,0.72,'flow energy');}
+else if(c.sim==='orbit'){const ang=simT*0.8;sctx.strokeStyle='rgba(125,211,252,.25)';sctx.lineWidth=2;sctx.beginPath();sctx.arc(280,170,110,0,Math.PI*2);sctx.stroke();sctx.beginPath();sctx.ellipse(280,170,190,84,0,0,Math.PI*2);sctx.stroke();sctx.fillStyle='#7dd3fc';sctx.beginPath();sctx.arc(280,170,18,0,Math.PI*2);sctx.fill();const x=280+190*Math.cos(ang),y=170+84*Math.sin(ang);sctx.fillStyle='#ffd166';sctx.beginPath();sctx.arc(x,y,7,0,Math.PI*2);sctx.fill();drawSlider(60,300,200,(Math.cos(ang)+1)/2,'orbital position');}
+else if(c.sim==='fbd'){const force=0.25+0.6*(0.5+0.5*Math.sin(simT*0.8));sctx.fillStyle='#182641';sctx.fillRect(220,110,120,100);const arr=(x1,y1,x2,y2,color='#ffd166')=>{sctx.strokeStyle=color;sctx.lineWidth=5;sctx.beginPath();sctx.moveTo(x1,y1);sctx.lineTo(x2,y2);sctx.stroke();};arr(280,110,280,110-90*force);arr(220,160,220-85*force,160,'#7dd3fc');arr(340,160,340+85*force,160,'#34d399');arr(280,210,280,210+80*force,'#fb7185');drawSlider(60,300,200,force,'force scale');}
+else if(c.sim==='energy'){const vals=[.45,.7,.32,.84].map((v,i)=>v*(0.8+0.2*Math.sin(simT+i)));['#7dd3fc','#a78bfa','#ffd166','#34d399'].forEach((col,i)=>{sctx.fillStyle=col;sctx.fillRect(90+i*100,260,54,-150*vals[i]);});}
+else if(c.sim==='impulse'){const width=42+25*(0.5+0.5*Math.sin(simT));sctx.strokeStyle='#7dd3fc';sctx.lineWidth=3;sctx.beginPath();sctx.moveTo(50,270);for(let x=50;x<520;x++){const y=270-140*Math.exp(-Math.pow((x-(290+30*Math.sin(simT)))/width,2));sctx.lineTo(x,y)}sctx.stroke();drawSlider(60,300,200,Math.min(1,(width-42)/25),'pulse width');}
+else if(c.sim==='centroid'){const hole=35+18*(0.5+0.5*Math.sin(simT*0.8));sctx.fillStyle='#13203a';sctx.fillRect(120,90,240,150);sctx.clearRect(210-hole/2,145-hole/2,hole,hole);sctx.strokeStyle='#7dd3fc';sctx.strokeRect(120,90,240,150);sctx.fillStyle='#ffd166';sctx.beginPath();sctx.arc(240,165,7,0,Math.PI*2);sctx.fill();drawSlider(60,300,200,Math.min(1,(hole-35)/18),'hole size');}
+else if(c.sim==='reynolds'){const turbulence=0.2+0.75*(0.5+0.5*Math.sin(simT*0.8));for(let i=0;i<44;i++){const x=30+i*12;const y=170+(i<22?18*Math.sin(i*0.5+simT*2):(Math.sin(i*2.2+simT*(3+5*turbulence))*18*turbulence+Math.cos(i*1.1+simT*4)*9*turbulence));sctx.fillStyle=i<22?'#7dd3fc':'#ffd166';sctx.beginPath();sctx.arc(x,y,4,0,Math.PI*2);sctx.fill();}drawSlider(60,300,200,turbulence,'chaos');}
+else if(c.sim==='stress'){const stretch=0.2+0.45*(0.5+0.5*Math.sin(simT));sctx.fillStyle='#7dd3fc';sctx.fillRect(230,90,100,140+80*stretch);sctx.strokeStyle='#ffd166';sctx.lineWidth=4;sctx.beginPath();sctx.moveTo(280,60);sctx.lineTo(280,40);sctx.stroke();sctx.beginPath();sctx.moveTo(280,90+140+80*stretch);sctx.lineTo(280,90+180+80*stretch);sctx.stroke();drawSlider(60,300,200,stretch,'stretch');}
+else{sctx.fillStyle='#9fdfff';sctx.font='700 28px Inter';sctx.fillText(currentCard.realm,50,70);sctx.fillStyle='#dbe7ff';sctx.font='600 18px Inter';sctx.fillText(currentCard.title,50,108);sctx.strokeStyle='#7dd3fc';sctx.strokeRect(50,130,440,150);}}
+const bg=document.getElementById('sky'), bctx=bg.getContext('2d'); const GLYPHS='∫∑πΔ∞∂∇θλμφ√≈∀∃∈⊂⊆ωτΣΩ'; const stars=[], glyphs=[];
 
 function getSimPos(evt){
   const rect = simCanvas.getBoundingClientRect();
@@ -385,66 +214,23 @@ function getSimPos(evt){
   return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
 }
 function clamp01(v){ return Math.max(0, Math.min(1, v)); }
-function sliderHit(p, x, w){ return p.y >= 288 && p.y <= 314 && p.x >= x && p.x <= x+w; }
 function tryStartDrag(evt){
-  if(!currentCard) return;
+  if(!currentCard || currentCard.sim!=='venturi') return;
   const p = getSimPos(evt);
-  const sim = currentCard.sim;
-  if(sim==='venturi'){
-    if(sliderHit(p,60,200)) dragTarget='venturi_throat';
-    else if(sliderHit(p,310,180)) dragTarget='venturi_speed';
-  } else if(sim==='beam'){
-    if(sliderHit(p,50,200)) dragTarget='beam_loadPos';
-    else if(sliderHit(p,300,200)) dragTarget='beam_bend';
-  } else if(sim==='mohr'){
-    if(sliderHit(p,60,200)) dragTarget='mohr_radius';
-    else if(sliderHit(p,310,180)) dragTarget='mohr_rotation';
-  } else if(sim==='shaft'){
-    if(sliderHit(p,60,200)) dragTarget='shaft_twist';
-  } else if(sim==='reynolds'){
-    if(sliderHit(p,60,200)) dragTarget='reynolds_chaos';
-  } else if(sim==='orbit'){
-    if(sliderHit(p,60,200)) dragTarget='orbit_position';
-  } else if(sim==='fbd'){
-    if(sliderHit(p,60,200)) dragTarget='fbd_force';
-  } else if(sim==='pipe'){
-    if(sliderHit(p,60,200)) dragTarget='pipe_diameter';
-    else if(sliderHit(p,310,180)) dragTarget='pipe_energy';
-  } else if(sim==='impulse'){
-    if(sliderHit(p,60,200)) dragTarget='impulse_width';
-  } else if(sim==='centroid'){
-    if(sliderHit(p,60,200)) dragTarget='centroid_hole';
-  } else if(sim==='stress'){
-    if(sliderHit(p,60,200)) dragTarget='stress_stretch';
+  if(p.y >= 288 && p.y <= 314){
+    if(p.x >= 60 && p.x <= 260){ dragTarget = 'venturi_throat'; updateDrag(evt); evt.preventDefault(); }
+    else if(p.x >= 310 && p.x <= 490){ dragTarget = 'venturi_speed'; updateDrag(evt); evt.preventDefault(); }
   }
-  if(dragTarget){ updateDrag(evt); evt.preventDefault(); }
 }
 function updateDrag(evt){
-  if(!dragTarget || !currentCard) return;
+  if(!dragTarget || !currentCard || currentCard.sim!=='venturi') return;
   const p = getSimPos(evt);
-  const map = {
-    'venturi_throat':[simControls.venturi,'throat',60,200],
-    'venturi_speed':[simControls.venturi,'speed',310,180],
-    'beam_loadPos':[simControls.beam,'loadPos',50,200],
-    'beam_bend':[simControls.beam,'bend',300,200],
-    'mohr_radius':[simControls.mohr,'radius',60,200],
-    'mohr_rotation':[simControls.mohr,'rotation',310,180],
-    'shaft_twist':[simControls.shaft,'twist',60,200],
-    'reynolds_chaos':[simControls.reynolds,'chaos',60,200],
-    'orbit_position':[simControls.orbit,'position',60,200],
-    'fbd_force':[simControls.fbd,'force',60,200],
-    'pipe_diameter':[simControls.pipe,'diameter',60,200],
-    'pipe_energy':[simControls.pipe,'energy',310,180],
-    'impulse_width':[simControls.impulse,'width',60,200],
-    'centroid_hole':[simControls.centroid,'hole',60,200],
-    'stress_stretch':[simControls.stress,'stretch',60,200]
-  };
-  const cfg = map[dragTarget];
-  if(!cfg) return;
-  const [obj,key,x,w] = cfg;
-  obj[key] = clamp01((p.x - x) / w);
+  if(dragTarget === 'venturi_throat'){
+    simControls.venturi.throat = clamp01((p.x - 60) / 200);
+  } else if(dragTarget === 'venturi_speed'){
+    simControls.venturi.speed = clamp01((p.x - 310) / 180);
+  }
   drawSim();
-  evt.preventDefault();
 }
 function stopDrag(){ dragTarget = null; }
 simCanvas.addEventListener('mousedown', tryStartDrag);
@@ -459,7 +245,7 @@ function seedBg(){stars.length=0;glyphs.length=0;for(let i=0;i<140;i++)stars.pus
 function bgLoop(){bctx.clearRect(0,0,window.innerWidth,window.innerHeight);stars.forEach(s=>{bctx.fillStyle=`rgba(230,245,255,${s.a})`;bctx.fillRect(s.x,s.y,s.r,s.r);});glyphs.forEach(g=>{g.y+=g.v*forgePulse;g.x+=g.d*forgePulse;if(g.y>window.innerHeight+50)Object.assign(g,newGlyph(false));bctx.save();bctx.translate(g.x,g.y);bctx.rotate(g.rot+Math.sin(Date.now()/1300+g.x)*0.05);bctx.fillStyle=g.c;bctx.shadowBlur=18;bctx.shadowColor=g.c;bctx.globalAlpha=g.a;bctx.font=`700 ${g.s}px Cambria, Georgia, serif`;bctx.fillText(g.g,0,0);bctx.restore();});forgePulse+=(1-forgePulse)*0.05;requestAnimationFrame(bgLoop);}
 function animLoop(){simT+=0.03;simAmp+=(1-simAmp)*0.06;sliderA+=0.01*sliderDir;if(sliderA>1||sliderA<0)sliderDir*=-1;if(modal.classList.contains('show'))drawSim();requestAnimationFrame(animLoop);}
 window.addEventListener('resize',()=>{resizeBg();seedBg();drawSim();updateStats();});
-makeHotPrompts();buildFeatured();resizeBg();seedBg();bgLoop();animLoop();applyFilters();renderDebug();note('variable controls build online');updateStats();
+makeHotPrompts();buildFeatured();resizeBg();seedBg();bgLoop();animLoop();applyFilters();renderDebug();note('real controls build online');updateStats();
 </script>
 </body>
 </html>
